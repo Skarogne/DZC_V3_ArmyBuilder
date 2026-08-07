@@ -338,7 +338,7 @@ TRANSPORT_DATA['phr-immortals'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0};
 TRANSPORT_DATA['phr-juno'] = {reqInf:0, reqVeh:1, capInf:2, capVeh:0};
 TRANSPORT_DATA['phr-t1walker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0};
 TRANSPORT_DATA['phr-juno'] = {reqInf:0, reqVeh:1, capInf:2, capVeh:0};
-TRANSPORT_DATA['phr-neptune'] = {reqInf:0, reqVeh:0, capInf:2, capVeh:0};
+TRANSPORT_DATA['phr-neptune'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:2};
 
 /* ---------------- DATA: UNITS ---------------- */
 const UNITS = [
@@ -979,17 +979,26 @@ function renderGlossary(){
 
 /* ---------------- CSV EXPORT ---------------- */
 function exportCsv(){
-  const rows = [['Faction','Categorie','Behemoth','Unite','Loadout','Taille escouade','Pts/unite','Pts total entree','Groupe','Rare','Unique','Type','Mv','Stats','Regles speciales unite','Gear','ReqInf','CapInf','ReqVeh','CapVeh','Weapons_Detail']];
-  roster.forEach(entry=>{
+	const rows = [['Faction','Categorie','Behemoth','Unite','Loadout','Taille escouade','Pts/unite','Pts total entree','Groupe','Rare','Unique','Type','Mv','Stats','Regles speciales unite','Gear','ReqInf','CapInf','ReqVeh','CapVeh','Arme_Nom','Arme_Arc','Arme_MA','Arme_R','Arme_Att','Arme_Ac','Arme_E','Arme_Special']];
+	roster.forEach(entry=>{
     const u = UNITS.find(uu=>uu.id===entry.unitId);
     const v = u.variants[entry.variantIdx];
     const td = TRANSPORT_DATA[entry.unitId] || {reqInf:0,reqVeh:0,capInf:0,capVeh:0};
-    const weaponsStr = u.weapons.map(w=>weaponLine(w)).join(' | ');
-    rows.push([
+    const baseRow = [
       u.faction, u.category, u.isBehemoth?'Oui':'Non', u.name, v.name, entry.squadSize, v.pts, unitTotalPts(entry), entry.groupId,
       u.rare?'Oui':'Non', u.unique?'Oui':'Non', u.type, u.mv, u.stats, u.special, (u.gear||[]).join(' | '),
-      td.reqInf, td.capInf, td.reqVeh, td.capVeh, weaponsStr
-    ]);
+      td.reqInf, td.capInf, td.reqVeh, td.capVeh
+    ];
+    const emptyRow = baseRow.map(()=>'');
+
+    if(u.weapons.length===0){
+      rows.push([...baseRow, '-', '-', '-', '-', '-', '-', '-', '-']);
+    } else {
+      u.weapons.forEach((w,i)=>{
+        const rowPrefix = i===0 ? baseRow : emptyRow;
+        rows.push([...rowPrefix, w.n, w.arc, w.ma, w.r, w.att, w.ac, w.e, w.sp]);
+      });
+    }
   });
   rows.push([]);
   rows.push(['Total points', totalPoints()]);
