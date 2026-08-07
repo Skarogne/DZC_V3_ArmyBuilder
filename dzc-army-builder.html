@@ -162,8 +162,9 @@
     <div id="groupSummary"></div>
     <div class="cat-breakdown" id="catBreakdown"></div>
     <div class="warnbox" id="warnBox"></div>
-    <div class="export-row">
+	<div class="export-row">
       <button class="btn-primary" id="exportCsv">⇩ Exporter en CSV</button>
+      <button class="btn-primary" id="exportPdf" style="background:var(--behe); border-color:var(--behe);">⇩ Exporter en PDF</button>
       <button class="btn-danger" id="resetBtn">Vider le roster</button>
     </div>
 
@@ -1075,6 +1076,81 @@ function renderGroupSummary(){
   }).join('');
 }
 
+/* ---------------- PDF EXPORT (via impression navigateur) ---------------- */
+function exportPdf(){
+  const cfg = currentGameSizeCfg();
+  const target = parseInt(targetPointsInput.value,10) || cfg.max;
+  const total = totalPoints();
+
+  const rosterRows = roster.map(entry=>{
+    const u = UNITS.find(uu=>uu.id===entry.unitId);
+    const v = u.variants[entry.variantIdx];
+    const cls = u.isBehemoth ? 'row-behe' : (u.faction==='PHR' ? 'row-phr' : 'row-res');
+    const weapons = u.weapons.length
+      ? u.weapons.map(w=>`<div class="pdf-wline"><b>${w.n}</b> — ${w.arc} / MA ${w.ma} / R ${w.r} / Att ${w.att} / Ac ${w.ac} / E ${w.e}${w.sp&&w.sp!=='-'?' / '+w.sp:''}</div>`).join('')
+      : '<div class="pdf-wline" style="font-style:italic;">Sans armement</div>';
+    return `<tr class="${cls}">
+      <td>${u.category}${u.isBehemoth?' ⚙':''}</td>
+      <td><b>${u.name}</b><br><span class="dim">${v.name}</span></td>
+      <td>×${entry.squadSize}</td>
+      <td>${entry.groupId}</td>
+      <td>${fmt(unitTotalPts(entry))}</td>
+      <td>${u.type}<br>${u.mv} · ${u.stats}</td>
+      <td>${u.special}</td>
+      <td>${weapons}</td>
+    </tr>`;
+  }).join('');
+
+  const catMap = categoryPointsMap();
+  const catRows = ['Standard','Vanguard','Heavy','Support','Transport'].map(c=>
+    `<tr><td>${c}</td><td>${fmt(catMap[c])} pts</td></tr>`).join('');
+
+  const warnings = computeWarnings(target, cfg, total, reservedGroupsCount());
+  const warnHtml = warnings.map(w=>`<div class="pdf-warn ${w.type}">${w.type==='bad'?'⚠':'✓'} ${w.msg}</div>`).join('');
+
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>DZC Roster - ${factionSelect.value} - ${gameSizeSelect.value}</title>
+    <style>
+      @media print { body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+      body{ font-family:Arial, sans-serif; padding:20px; color:#1a1a1a; }
+      h1{ font-size:20px; margin-bottom:2px; }
+      h2{ font-size:14px; margin-top:26px; border-bottom:2px solid #333; padding-bottom:4px; }
+      .meta{ font-size:12px; color:#555; margin-bottom:14px; }
+      table{ width:100%; border-collapse:collapse; font-size:11px; }
+      td, th{ border:1px solid #ccc; padding:6px 8px; vertical-align:top; text-align:left; }
+      th{ background:#222; color:#fff; }
+      .row-phr{ background:#e6f7fb; }
+      .row-res{ background:#fdece0; }
+      .row-behe{ background:#f1e6fb; }
+      .dim{ color:#777; font-size:10px; }
+      .pdf-wline{ font-family:monospace; font-size:9.5px; margin-bottom:2px; }
+      .pdf-warn{ font-size:11px; padding:5px 8px; border-radius:4px; margin-bottom:4px; }
+      .pdf-warn.bad{ background:#ffdede; border:1px solid #d33; }
+      .pdf-warn.good{ background:#dcf5e3; border:1px solid #2a2; }
+      .printbtn{ margin-bottom:16px; padding:8px 16px; }
+    </style></head>
+    <body>
+      <button class="printbtn" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
+      <h1>DZC Roster — ${factionSelect.value}</h1>
+      <div class="meta">${gameSizeSelect.value} · ${fmt(total)} / ${fmt(target)} pts · ${reservedGroupsCount()} / ${cfg.groups} Groupes</div>
+
+      <h2>Composition</h2>
+      <table>
+        <tr><th>Cat.</th><th>Unité</th><th>Qté</th><th>Grp</th><th>Pts</th><th>Type/Mv/Stats</th><th>Spécial</th><th>Armement</th></tr>
+        ${rosterRows}
+      </table>
+
+      <h2>Points par catégorie</h2>
+      <table>${catRows}</table>
+
+      <h2>Validation</h2>
+      ${warnHtml}
+    </body></html>
+  `);
+  win.document.close();
+}
+
 /* ---------------- WIRE UP ---------------- */
 function renderAll(){ renderCatalog(); renderRoster(); renderGroupSummary(); renderSummary(); }
 
@@ -1094,6 +1170,7 @@ targetPointsInput.addEventListener('input', renderSummary);
 searchBox.addEventListener('input', renderCatalog);
 catFilter.addEventListener('change', renderCatalog);
 $('#exportCsv').addEventListener('click', exportCsv);
+$('#exportPdf').addEventListener('click', exportPdf);
 $('#resetBtn').addEventListener('click', ()=>{ if(roster.length===0 || confirm('Vider tout le roster ?')){ roster=[]; nextGroup=1; renderAll(); } });
 
 renderGlossary();
