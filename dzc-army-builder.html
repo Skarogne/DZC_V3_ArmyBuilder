@@ -43,9 +43,9 @@
   .unit-card.phr{ border-left-color:var(--phr); }
   .unit-card.res{ border-left-color:var(--res); }
   .unit-card.behe{ border-left-color:var(--behe); background:#191420; }
-  .unit-img-wrap{ float:right; width:64px; height:64px; margin-left:10px; margin-bottom:4px; }
-  .unit-img-wrap img{ width:64px; height:64px; object-fit:cover; border-radius:5px; border:1px solid var(--line); display:block; }
-  .unit-img-placeholder{ width:64px; height:64px; border-radius:5px; border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:9px; color:var(--dim); text-align:center; padding:4px; }
+  .unit-img-wrap{ float:left; width:96px; height:96px; margin-right:12px; margin-bottom:4px; }
+  .unit-img-wrap img{ width:96px; height:96px; object-fit:contain; border-radius:5px; border:1px solid var(--line); display:block; }
+  .unit-img-placeholder{ width:96px; height:96px; border-radius:5px; border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:10px; color:var(--dim); text-align:center; padding:4px; }
   .unit-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
   .unit-name{ font-weight:700; font-size:14px; }
   .unit-tags{ font-size:10px; color:var(--dim); font-family:var(--mono); }
@@ -301,26 +301,27 @@ const GLOSSARY = [
    un simple encadré de type s'affichera à la place.
 ------------------------------------------------------------- */
 const UNIT_IMAGES = {
-  'phr-angelos': '', 'phr-immortals': '', 'phr-proteus': '', 'phr-t1walker': '',
-  'phr-hecate': '', 'phr-luna': '', 'phr-medusa': '', 'phr-advjetskimmer': '',
-  'phr-artillerytank': '', 'phr-siren': '', 'phr-supjetskimmer': '', 'phr-tritonx': '',
-  'phr-t3emwalker': '', 'phr-tiamat': '', 'phr-t2heavywalker': '', 'phr-battlescorpion': '',
-  'phr-commandscorpion': '', 'phr-frontierwalker': '', 'phr-lokheira': '', 'phr-type7grandwalker': '',
-  'phr-type6grandwalker': '', 'phr-mercuryscout': '', 'phr-longreach': '', 'phr-airsuperiority': '',
-  'phr-columbuswalker': '', 'phr-strikewalker': '', 'phr-scoutwalker': '', 'phr-valkyrie': '',
-  'phr-juno': '', 'phr-neptune': '', 'phr-njord': '', 'phr-poseidon': '',
-  'phr-tritonlightdrop': '', 'phr-tritonlighttroop': '', 'phr-atlasquad': '',
-  'res-mcclellan': '', 'res-commandhover': '', 'res-fighters': '', 'res-mbt': '',
-  'res-technical': '', 'res-wagon': '', 'res-artillerywagon': '', 'res-attackheli': '',
-  'res-berserkers': '', 'res-lifthawkgun': '', 'res-mechloader': '', 'res-bombbus': '',
-  'res-repairtechnical': '', 'res-sentry': '', 'res-strikehawk': '', 'res-atilla': '',
-  'res-carryhawk': '', 'res-hellhog': '', 'res-occupation': '', 'res-ordnancebus': '',
-  'res-superheavy': '', 'res-thunderstorm': '', 'res-explorator': '', 'res-miningengine': '',
-  'res-drill109': '', 'res-drill209': '', 'res-atvs': '', 'res-freeriders': '',
-  'res-k9pack': '', 'res-columbuswalker': '', 'res-sappers': '', 'res-tempest': '',
-  'res-theropod': '', 'res-battlebus': '', 'res-jackson': '', 'res-k9technical': '',
-  'res-kraken': '', 'res-leviathan': '', 'res-lifthawkdrop': '', 'res-lifthawktroop': '',
-  'res-patton': '', 'res-swifthawk': ''
+  'phr-angelos': 'phr-angelos.png', 'phr-immortals': 'phr-immortals.png', 'phr-proteus': 'phr-proteus.png', 'phr-t1walker': 'phr-t1walker.png',
+  'phr-hecate': 'phr-hecate.png', 'phr-luna': 'phr-luna.png', 'phr-medusa': 'phr-medusa.png', 'phr-advjetskimmer': 'phr-advjetskimmer.png',
+  'phr-artillerytank': 'phr-artillerytank.png', 'phr-siren': 'phr-siren.png', 'phr-supjetskimmer': 'phr-supjetskimmer.png', 'phr-tritonx': 'phr-tritonx.png',
+  'phr-t3emwalker': 'phr-t3emwalker.png', 'phr-tiamat': 'phr-tiamat.png', 'phr-t2heavywalker': 'phr-t2heavywalker.png', 'phr-battlescorpion': 'phr-battlescorpion.png',
+  'phr-commandscorpion': 'phr-commandscorpion.png', 'phr-frontierwalker': 'phr-frontierwalker.png', 'phr-lokheira': 'phr-lokheira.png', 'phr-type7grandwalker': 'phr-type7grandwalker.png',
+  'phr-type6grandwalker': 'phr-type6grandwalker.png', 'phr-mercuryscout': 'phr-mercuryscout.png', 'phr-longreach': 'phr-longreach.png', 'phr-airsuperiority': 'phr-airsuperiority.png',
+  'phr-columbuswalker': 'phr-columbuswalker.png', 'phr-strikewalker': 'phr-strikewalker.png', 'phr-scoutwalker': 'phr-scoutwalker.png', 'phr-valkyrie': 'phr-valkyrie.png',
+  'phr-juno': 'phr-juno.png', 'phr-neptune': 'phr-neptune.png', 'phr-njord': 'phr-njord.png', 'phr-poseidon': 'phr-poseidon.png',
+  'phr-tritonlightdrop': 'phr-tritonlightdrop.png', 'phr-tritonlighttroop': 'phr-tritonlighttroop.png', 'phr-atlasquad': 'phr-atlasquad.png',
+  'res-mcclellan': 'res-mcclellan.png', 'res-commandhover': 'res-commandhover.png', 'res-fighters': 'res-fighters.png', 'res-mbt': 'res-mbt.png',
+  'res-technical': 'res-technical.png', 'res-wagon': 'res-wagon.png', 'res-artillerywagon': 'res-artillerywagon.png', 'res-attackheli': 'res-attackheli.png',
+  'res-berserkers': 'res-berserkers.png', 'res-lifthawkgun': 'res-lifthawkgun.png', 'res-mechloader': 'res-mechloader.png', 'res-bombbus': 'res-bombbus.png',
+  'res-repairtechnical': 'res-repairtechnical.png', 'res-sentry': 'res-sentry.png', 'res-strikehawk': 'res-strikehawk.png', 'res-atilla': 'res-atilla.png',
+  'res-carryhawk': 'res-carryhawk.png', 'res-hellhog': 'res-hellhog.png', 'res-occupation': 'res-occupation.png', 'res-ordnancebus': 'res-ordnancebus.png',
+  'res-superheavy': 'res-superheavy.png', 'res-thunderstorm': 'res-thunderstorm.png', 'res-explorator': 'res-explorator.png', 'res-miningengine': 'res-miningengine.png',
+  'res-drill109': 'res-drill109.png', 'res-drill209': 'res-drill209.png', 'res-atvs': 'res-atvs.png', 'res-freeriders': 'res-freeriders.png',
+  'res-k9pack': 'res-k9pack.png', 'res-columbuswalker': 'res-columbuswalker.png', 'res-sappers': 'res-sappers.png', 'res-tempest': 'res-tempest.png',
+  'res-theropod': 'res-theropod.png', 'res-battlebus': 'res-battlebus.png', 'res-jackson': 'res-jackson.png', 'res-k9technical': 'res-k9technical.png',
+  'res-kraken': 'res-kraken.png', 'res-leviathan': 'res-leviathan.png', 'res-lifthawkdrop': 'res-lifthawkdrop.png', 'res-lifthawktroop': 'res-lifthawktroop.png',
+  'res-patton': 'res-patton.png', 'res-swifthawk': 'res-swifthawk.png'
+
 };
 
 /* ---------------- TRANSPORT: Requirement / Capacity par type (V3, à remplir toi-même) ----------------
@@ -337,8 +338,11 @@ Object.keys(UNIT_IMAGES).forEach(id => { TRANSPORT_DATA[id] = {reqInf:0, reqVeh:
 TRANSPORT_DATA['phr-immortals'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0};
 TRANSPORT_DATA['phr-juno'] = {reqInf:0, reqVeh:1, capInf:2, capVeh:0};
 TRANSPORT_DATA['phr-t1walker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0};
-TRANSPORT_DATA['phr-juno'] = {reqInf:0, reqVeh:1, capInf:2, capVeh:0};
 TRANSPORT_DATA['phr-neptune'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:2};
+TRANSPORT_DATA['phr-advjetskimmer'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0};
+TRANSPORT_DATA['phr-t2heavywalker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0};
+TRANSPORT_DATA['phr-t3emwalker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0};
+
 
 TRANSPORT_DATA['res-commandhover'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0};
 TRANSPORT_DATA['res-fighters'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0};
@@ -347,6 +351,9 @@ TRANSPORT_DATA['res-wagon'] = {reqInf:0, reqVeh:2, capInf:0, capVeh:0};
 TRANSPORT_DATA['res-lifthawkdrop'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:6};
 TRANSPORT_DATA['res-jackson'] = {reqInf:0, reqVeh:2, capInf:2, capVeh:0};
 TRANSPORT_DATA['res-kraken'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:6};
+TRANSPORT_DATA['res-attackheli'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0};
+TRANSPORT_DATA['res-atilla'] = {reqInf:3, reqVeh:3, capInf:0, capVeh:0}
+TRANSPORT_DATA['res-tempest'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0};
 
 /* ---------------- DATA: UNITS ---------------- */
 const UNITS = [
