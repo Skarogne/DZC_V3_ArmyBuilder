@@ -53,6 +53,9 @@
   .unit-tags .flag.behe{ color:var(--behe); }
   .unit-stats{ font-family:var(--mono); font-size:11.5px; color:var(--dim); margin-top:4px; }
 .weapon-table{ clear:left; margin-top:6px; border-top:1px dashed var(--line); padding-top:6px; }
+.stats-table{ width:100%; border-collapse:collapse; margin-top:2px; font-family:var(--mono); font-size:11px; }
+  .stats-table th, .stats-table td{ border:1px solid var(--line); padding:2px 6px; text-align:center; }
+  .stats-table th{ background:var(--panel2); color:var(--dim); font-weight:700; }
   .weapon-row{ font-family:var(--mono); font-size:10.5px; color:#b7c2c8; padding:1px 0; display:grid; grid-template-columns: 1.4fr 0.5fr 0.55fr 0.7fr 0.35fr 0.35fr 0.35fr 1.6fr; gap:4px; }
   .weapon-row.hdr{ color:var(--dim); font-weight:700; border-bottom:1px solid var(--line); padding-bottom:2px; margin-bottom:2px;}
   .gear-line{ font-family:var(--mono); font-size:10.5px; color:var(--behe); margin-top:5px; }
@@ -207,6 +210,31 @@ function weaponMatchesVariant(weaponName, variantName){
   const inside = m[1];
   return inside.split(/[,/]/).map(s=>s.trim())
     .some(part => part.toLowerCase() === variantName.toLowerCase() || variantName.toLowerCase().includes(part.toLowerCase()));
+}
+
+function parseStats(u){
+  const s = u.stats;
+  const mA = s.match(/A(\d+)/);
+  const mOF = s.match(/OF(\d+)/);
+  const mDF = s.match(/DF([A-Za-z0-9+]+)/);
+  const mB = s.match(/B\(?([A-Za-z0-9+]+)\)?/);
+  const mDP = s.match(/DP\s*([\d/]+)/);
+  return {
+    mv: u.mv,
+    a:  mA  ? mA[1]  : '-',
+    of: mOF ? mOF[1] : '-',
+    df: mDF ? mDF[1] : '-',
+    b:  mB  ? mB[1]  : '-',
+    dp: mDP ? mDP[1] : '-'
+  };
+}
+
+function statsTableHtmlWeb(u){
+  const p = parseStats(u);
+  const isInfantry = p.of !== '-' || p.df !== '-' || p.b !== '-';
+  return isInfantry
+    ? `<table class="stats-table"><tr><th>Mv</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr><tr><td>${p.mv}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr></table>`
+    : `<table class="stats-table"><tr><th>Mv</th><th>A</th><th>DP</th></tr><tr><td>${p.mv}</td><td>${p.a}</td><td>${p.dp}</td></tr></table>`;
 }
 
 function weaponTableHtml(u, variantName){
@@ -894,7 +922,8 @@ function renderUnitCard(u){
       <div class="unit-name">${u.name}</div>
       <div class="unit-tags">${u.type} ${flags.join(' ')}</div>
     </div>
-    <div class="unit-stats">Mv ${u.mv} · ${u.stats} · ${squadTxt}</div>
+<div class="unit-stats">${squadTxt}</div>
+    ${statsTableHtmlWeb(u)}
     <div class="unit-stats">${u.special}</div>
     ${weaponsHtml}
     ${gearHtml}
@@ -1177,6 +1206,18 @@ function explainSpecialString(spStr){
   return explained.join('<br>');
 }
 
+function extractGlossaryMatches(str){
+  if(!str || str==='-' || str==='—') return [];
+  return str.split(',').map(s=>s.trim()).filter(Boolean).map(part=>{
+    const keyGuess = part.replace(/[0-9+":.\-]/g,' ').trim().split(/\s+/)[0].toLowerCase();
+    const match = GLOSSARY.find(([term])=>{
+      const termKey = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
+      return termKey === keyGuess;
+    });
+    return match ? {term:match[0], def:match[1]} : null;
+  }).filter(Boolean);
+}
+
 function exportPdf(){
   const cfg = currentGameSizeCfg();
   const target = parseInt(targetPointsInput.value,10) || cfg.max;
@@ -1194,6 +1235,8 @@ function exportPdf(){
     const bgColor = GROUP_PALETTE[idx % GROUP_PALETTE.length];
     const borderColor = (overInf||overVeh) ? '#d33' : '#bbb';
 
+    const groupGlossary = new Map(); // term -> def, dédupliqué pour tout le groupe
+
     const memberRows = entries.map(entry=>{
       const u = UNITS.find(uu=>uu.id===entry.unitId);
       const v = u.variants[entry.variantIdx];
@@ -1201,29 +1244,27 @@ function exportPdf(){
       const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
       const allWeapons = [...filteredWeapons, ...extraWeapons];
 
-      const typeTable = `<table class="pdf-mini-table">
-        <tr><td><b>Type</b></td><td>${u.type}</td></tr>
-        <tr><td><b>Mv</b></td><td>${u.mv}</td></tr>
-        <tr><td><b>Stats</b></td><td>${u.stats}</td></tr>
-      </table>`;
+      extractGlossaryMatches(u.special).forEach(m=>groupGlossary.set(m.term, m.def));
+      allWeapons.forEach(w=> extractGlossaryMatches(w.sp).forEach(m=>groupGlossary.set(m.term, m.def)));
+
+const p = parseStats(u);
+      const isInfantry = p.of !== '-' || p.df !== '-' || p.b !== '-';
+      const statsTable = isInfantry
+        ? `<table class="pdf-weapon-table"><tr><th>Mv</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr><tr><td>${p.mv}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr></table>`
+        : `<table class="pdf-weapon-table"><tr><th>Mv</th><th>A</th><th>DP</th></tr><tr><td>${p.mv}</td><td>${p.a}</td><td>${p.dp}</td></tr></table>`;
 
       const weapons = allWeapons.length
         ? `<table class="pdf-weapon-table">
-            <tr><th>Arme</th><th>Arc</th><th>MA</th><th>R</th><th>Att</th><th>Ac</th><th>E</th><th>Spécial</th><th>Explication</th></tr>
-            ${allWeapons.map(w=>`<tr>
-              <td>${w.n}</td><td>${w.arc}</td><td>${w.ma}</td><td>${w.r}</td><td>${w.att}</td><td>${w.ac}</td><td>${w.e}</td>
-              <td>${w.sp}</td><td>${explainSpecialString(w.sp)}</td>
-            </tr>`).join('')}
+            <tr><th>Arme</th><th>Arc</th><th>MA</th><th>R</th><th>Att</th><th>Ac</th><th>E</th><th>Spécial</th></tr>
+            ${allWeapons.map(w=>`<tr><td>${w.n}</td><td>${w.arc}</td><td>${w.ma}</td><td>${w.r}</td><td>${w.att}</td><td>${w.ac}</td><td>${w.e}</td><td>${w.sp}</td></tr>`).join('')}
           </table>`
         : '<span style="font-style:italic;">Sans armement</span>';
 
-      return `<tr>
-        <td class="col-narrow">${u.category}${u.isBehemoth?' ⚙':''}</td>
-        <td class="col-narrow"><b>${u.name}</b><br><span class="dim">${v.name}</span></td>
-        <td class="col-narrow">×${entry.squadSize}</td>
-        <td class="col-narrow">${fmt(unitTotalPts(entry))}</td>
-        <td>${typeTable}</td>
-        <td>${u.special}</td>
+return `<tr>
+        <td class="col-cat">${u.category}${u.isBehemoth?' ⚙':''}<br><span class="dim">×${entry.squadSize} (${fmt(unitTotalPts(entry))} points)</span></td>
+        <td class="col-unit"><b>${u.name}</b><br><span class="dim">${u.type} — ${v.name}</span></td>
+        <td class="col-stats">${statsTable}</td>
+        <td class="col-special">${u.special}</td>
         <td>${weapons}</td>
       </tr>`;
     }).join('');
@@ -1231,15 +1272,22 @@ function exportPdf(){
     const loadLine = (load.capInf||load.reqInf||load.capVeh||load.reqVeh)
       ? `<span>Inf ${load.reqInf}/${load.capInf}</span> · <span>Véh ${load.reqVeh}/${load.capVeh}</span>` : '';
 
+    const glossaryHtml = groupGlossary.size ? `
+      <table class="pdf-group-glossary">
+        <tr><th colspan="2">Définitions des règles spéciales de ce Groupe</th></tr>
+        ${Array.from(groupGlossary.entries()).map(([term,def])=>`<tr><td class="gt">${term}</td><td>${def}</td></tr>`).join('')}
+      </table>` : '';
+
     return `<div class="pdf-group" style="background:${bgColor}; border-color:${borderColor};">
       <div class="pdf-group-head">Groupe ${gid} ${loadLine ? '— '+loadLine : ''}</div>
       <table>
         <tr>
-          <th class="col-narrow">Cat.</th><th class="col-narrow">Unité</th><th class="col-narrow">Qté</th><th class="col-narrow">Pts</th>
-          <th>Type/Mv/Stats</th><th>Spécial</th><th>Armement</th>
+          <th class="col-cat">Cat.</th><th class="col-unit">Unité</th>
+          <th class="col-stats">Stats</th><th class="col-special">Spécial</th><th>Armement</th>
         </tr>
         ${memberRows}
       </table>
+      ${glossaryHtml}
     </div>`;
   }).join('');
 
@@ -1247,25 +1295,31 @@ function exportPdf(){
   win.document.write(`
     <html><head><title>DZC Roster - ${factionSelect.value} - ${gameSizeSelect.value}</title>
     <style>
-      @media print { body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+      @page { size: A4 landscape; margin: 12mm; }
+      @media print {
+        body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+        .pdf-group{ break-inside: avoid; page-break-inside: avoid; }
+      }
+      .pdf-group{ break-inside: avoid; page-break-inside: avoid; }
       body{ font-family:Arial, sans-serif; padding:20px; color:#1a1a1a; }
       h1{ font-size:20px; margin-bottom:2px; }
       .meta{ font-size:12px; color:#555; margin-bottom:18px; }
-      table{ width:100%; border-collapse:collapse; font-size:11px; margin-top:4px; }
-      td, th{ border:1px solid #ccc; padding:6px 8px; vertical-align:top; text-align:left; }
+      table{ width:100%; border-collapse:collapse; font-size:10.5px; margin-top:4px; table-layout:fixed; }
+      td, th{ border:1px solid #ccc; padding:4px 6px; vertical-align:top; text-align:left; word-wrap:break-word; }
       th{ background:#222; color:#fff; }
-      .col-narrow{ width:70px; max-width:70px; }
-      .dim{ color:#777; font-size:10px; }
-      .pdf-mini-table{ background:rgba(255,255,255,0.55); font-size:10px; }
-      .pdf-mini-table td{ border:1px solid #ddd; padding:2px 5px; }
-      .pdf-weapon-table{ background:rgba(255,255,255,0.55); font-size:9px; }
+      .col-cat{ width:80px; }
+      .col-unit{ width:110px; }
+      .col-stats{ width:165px; white-space:nowrap; }
+      .col-special{ width:60px; }
+      .dim{ color:#777; font-size:9.5px; }
+      .pdf-weapon-table{ background:rgba(255,255,255,0.55); font-size:9px; width:100%; table-layout:auto; }
       .pdf-weapon-table th, .pdf-weapon-table td{ border:1px solid #ddd; padding:2px 4px; }
       .pdf-weapon-table th{ background:rgba(60,60,60,0.85); color:#fff; font-size:8.5px; }
       .pdf-group{ border-radius:6px; padding:10px; margin-bottom:16px; border:2px solid #bbb; }
       .pdf-group-head{ font-weight:bold; font-size:13px; margin-bottom:6px; }
-      .pdf-glossary{ margin-top:24px; border-top:2px solid #333; padding-top:10px; }
-      .pdf-glossary h2{ font-size:14px; }
-      .pdf-glossary .g-item{ font-size:10.5px; margin-bottom:3px; }
+      .pdf-group-glossary{ margin-top:8px; table-layout:auto; font-size:9.5px; }
+      .pdf-group-glossary th{ background:#444; }
+      .pdf-group-glossary .gt{ width:130px; font-weight:bold; background:rgba(255,255,255,0.4); }
       .printbtn{ margin-bottom:16px; padding:8px 16px; }
     </style></head>
     <body>
@@ -1273,10 +1327,6 @@ function exportPdf(){
       <h1>DZC Roster — ${factionSelect.value}</h1>
       <div class="meta">${gameSizeSelect.value} · ${fmt(total)} / ${fmt(target)} pts · ${reservedGroupsCount()} / ${cfg.groups} Groupes</div>
       ${groupBlocksHtml}
-      <div class="pdf-glossary">
-        <h2>Glossaire des règles spéciales utilisées</h2>
-        ${usedGlossaryTerms().map(([k,v])=>`<div class="g-item"><b>${k}</b> — ${v}</div>`).join('')}
-      </div>
     </body></html>
   `);
   win.document.close();
