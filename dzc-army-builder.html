@@ -1145,39 +1145,75 @@ function renderGroupSummary(){
 }
 
 /* ---------------- PDF EXPORT (via impression navigateur) ---------------- */
+function usedGlossaryTerms(){
+  const bits = [];
+  roster.forEach(entry=>{
+    const u = UNITS.find(uu=>uu.id===entry.unitId);
+    const v = u.variants[entry.variantIdx];
+    bits.push(u.special);
+    (u.gear||[]).forEach(g=>bits.push(g));
+    const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
+    const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
+    [...filteredWeapons, ...extraWeapons].forEach(w=>bits.push(w.sp));
+  });
+  const blob = bits.join(' ; ').toLowerCase();
+  return GLOSSARY.filter(([term])=>{
+    const key = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
+    return key.length>=2 && blob.includes(key);
+  });
+}
+
 function exportPdf(){
   const cfg = currentGameSizeCfg();
   const target = parseInt(targetPointsInput.value,10) || cfg.max;
   const total = totalPoints();
 
-  const rosterRows = roster.map(entry=>{
-    const u = UNITS.find(uu=>uu.id===entry.unitId);
-    const v = u.variants[entry.variantIdx];
-    const cls = u.isBehemoth ? 'row-behe' : (u.faction==='PHR' ? 'row-phr' : 'row-res');
-const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
-    const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
-    const allWeapons = [...filteredWeapons, ...extraWeapons];
-    const weapons = allWeapons.length
-      ? allWeapons.map(w=>`<div class="pdf-wline"><b>${w.n}</b> — ${w.arc} / MA ${w.ma} / R ${w.r} / Att ${w.att} / Ac ${w.ac} / E ${w.e}${w.sp&&w.sp!=='-'?' / '+w.sp:''}</div>`).join('')
-      : '<div class="pdf-wline" style="font-style:italic;">Sans armement</div>';
-    return `<tr class="${cls}">
-      <td>${u.category}${u.isBehemoth?' ⚙':''}</td>
-      <td><b>${u.name}</b><br><span class="dim">${v.name}</span></td>
-      <td>×${entry.squadSize}</td>
-      <td>${entry.groupId}</td>
-      <td>${fmt(unitTotalPts(entry))}</td>
-      <td>${u.type}<br>${u.mv} · ${u.stats}</td>
-      <td>${u.special}</td>
-      <td>${weapons}</td>
-    </tr>`;
+  const groups = {};
+  roster.forEach(r=>{ (groups[r.groupId] = groups[r.groupId]||[]).push(r); });
+  const tmap = transportLoadMap();
+
+const GROUP_PALETTE = ['#e8f3ff','#fff3e0','#e8f8ee','#f5e8ff','#fff9e0','#e0faf7','#ffe8ec','#eef0ff','#f0f7e0','#fbe8f6'];
+  const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
+    const load = tmap[gid] || {reqInf:0,capInf:0,reqVeh:0,capVeh:0};
+    const overInf = load.reqInf > load.capInf;
+    const overVeh = load.reqVeh > load.capVeh;
+    const bgColor = GROUP_PALETTE[idx % GROUP_PALETTE.length];
+    const borderColor = (overInf||overVeh) ? '#d33' : '#bbb';
+
+    const memberRows = entries.map(entry=>{
+      const u = UNITS.find(uu=>uu.id===entry.unitId);
+      const v = u.variants[entry.variantIdx];
+      const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
+      const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
+      const allWeapons = [...filteredWeapons, ...extraWeapons];
+const weapons = allWeapons.length
+        ? `<table class="pdf-weapon-table">
+            <tr><th>Arme</th><th>Arc</th><th>MA</th><th>R</th><th>Att</th><th>Ac</th><th>E</th><th>Spécial</th></tr>
+            ${allWeapons.map(w=>`<tr><td>${w.n}</td><td>${w.arc}</td><td>${w.ma}</td><td>${w.r}</td><td>${w.att}</td><td>${w.ac}</td><td>${w.e}</td><td>${w.sp}</td></tr>`).join('')}
+          </table>`
+        : '<span style="font-style:italic;">Sans armement</span>';
+      return `<tr>
+        <td>${u.category}${u.isBehemoth?' ⚙':''}</td>
+        <td><b>${u.name}</b><br><span class="dim">${v.name}</span></td>
+        <td>×${entry.squadSize}</td>
+        <td>${fmt(unitTotalPts(entry))}</td>
+        <td>${u.type}<br>${u.mv} · ${u.stats}</td>
+        <td>${u.special}</td>
+        <td>${weapons}</td>
+      </tr>`;
+    }).join('');
+
+    const loadLine = (load.capInf||load.reqInf||load.capVeh||load.reqVeh)
+      ? `<span>Inf ${load.reqInf}/${load.capInf}</span> · <span>Véh ${load.reqVeh}/${load.capVeh}</span>` : '';
+
+return `<div class="pdf-group" style="background:${bgColor}; border-color:${borderColor};">
+      <div class="pdf-group-head">Groupe ${gid} ${loadLine ? '— '+loadLine : ''}</div>
+      <table>
+        <tr><th>Cat.</th><th>Unité</th><th>Qté</th><th>Pts</th><th>Type/Mv/Stats</th><th>Spécial</th><th>Armement</th></tr>
+        ${memberRows}
+      </table>
+    </div>`;
   }).join('');
-
-  const catMap = categoryPointsMap();
-  const catRows = ['Standard','Vanguard','Heavy','Support','Transport'].map(c=>
-    `<tr><td>${c}</td><td>${fmt(catMap[c])} pts</td></tr>`).join('');
-
-  const warnings = computeWarnings(target, cfg, total, reservedGroupsCount());
-  const warnHtml = warnings.map(w=>`<div class="pdf-warn ${w.type}">${w.type==='bad'?'⚠':'✓'} ${w.msg}</div>`).join('');
 
   const win = window.open('', '_blank');
   win.document.write(`
@@ -1186,37 +1222,31 @@ const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatc
       @media print { body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
       body{ font-family:Arial, sans-serif; padding:20px; color:#1a1a1a; }
       h1{ font-size:20px; margin-bottom:2px; }
-      h2{ font-size:14px; margin-top:26px; border-bottom:2px solid #333; padding-bottom:4px; }
-      .meta{ font-size:12px; color:#555; margin-bottom:14px; }
-      table{ width:100%; border-collapse:collapse; font-size:11px; }
+      .meta{ font-size:12px; color:#555; margin-bottom:18px; }
+      table{ width:100%; border-collapse:collapse; font-size:11px; margin-top:4px; }
       td, th{ border:1px solid #ccc; padding:6px 8px; vertical-align:top; text-align:left; }
       th{ background:#222; color:#fff; }
-      .row-phr{ background:#e6f7fb; }
-      .row-res{ background:#fdece0; }
-      .row-behe{ background:#f1e6fb; }
       .dim{ color:#777; font-size:10px; }
-      .pdf-wline{ font-family:monospace; font-size:9.5px; margin-bottom:2px; }
-      .pdf-warn{ font-size:11px; padding:5px 8px; border-radius:4px; margin-bottom:4px; }
-      .pdf-warn.bad{ background:#ffdede; border:1px solid #d33; }
-      .pdf-warn.good{ background:#dcf5e3; border:1px solid #2a2; }
+.pdf-wline{ font-family:monospace; font-size:9.5px; margin-bottom:2px; }
+      .pdf-weapon-table{ width:100%; font-size:9px; margin:0; }
+      .pdf-weapon-table th, .pdf-weapon-table td{ border:1px solid #ddd; padding:2px 4px; background:#fff; }
+      .pdf-weapon-table th{ background:#555; color:#fff; font-size:8.5px; }
+.pdf-group{ border-radius:6px; padding:10px; margin-bottom:16px; border:2px solid #bbb; }
+      .pdf-glossary{ margin-top:24px; border-top:2px solid #333; padding-top:10px; }
+      .pdf-glossary h2{ font-size:14px; }
+      .pdf-glossary .g-item{ font-size:10.5px; margin-bottom:3px; }
+      .pdf-group-head{ font-weight:bold; font-size:13px; margin-bottom:6px; }
       .printbtn{ margin-bottom:16px; padding:8px 16px; }
     </style></head>
     <body>
       <button class="printbtn" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
       <h1>DZC Roster — ${factionSelect.value}</h1>
       <div class="meta">${gameSizeSelect.value} · ${fmt(total)} / ${fmt(target)} pts · ${reservedGroupsCount()} / ${cfg.groups} Groupes</div>
-
-      <h2>Composition</h2>
-      <table>
-        <tr><th>Cat.</th><th>Unité</th><th>Qté</th><th>Grp</th><th>Pts</th><th>Type/Mv/Stats</th><th>Spécial</th><th>Armement</th></tr>
-        ${rosterRows}
-      </table>
-
-      <h2>Points par catégorie</h2>
-      <table>${catRows}</table>
-
-      <h2>Validation</h2>
-      ${warnHtml}
+  ${groupBlocksHtml}
+      <div class="pdf-glossary">
+        <h2>Glossaire des règles spéciales utilisées</h2>
+        ${usedGlossaryTerms().map(([k,v])=>`<div class="g-item"><b>${k}</b> — ${v}</div>`).join('')}
+      </div>
     </body></html>
   `);
   win.document.close();
