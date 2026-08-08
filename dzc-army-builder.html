@@ -29,7 +29,7 @@
   .stat-pill.warn{ border-color:var(--bad); color:var(--bad); }
   .stat-pill.ok{ border-color:var(--good); }
 
-  .layout{ display:grid; grid-template-columns:1fr 460px; gap:0; min-height:calc(100vh - 64px); }
+  .layout{ display:grid; grid-template-columns:1fr 400px; gap:0; min-height:calc(100vh - 64px); }
   @media (max-width:960px){ .layout{ grid-template-columns:1fr; } }
 
   .catalog{ padding:16px 18px; overflow-y:auto; }
@@ -52,7 +52,7 @@
   .unit-tags .flag{ color:var(--amber); }
   .unit-tags .flag.behe{ color:var(--behe); }
   .unit-stats{ font-family:var(--mono); font-size:11.5px; color:var(--dim); margin-top:4px; }
-  .weapon-table{ margin-top:6px; border-top:1px dashed var(--line); padding-top:6px; }
+.weapon-table{ clear:left; margin-top:6px; border-top:1px dashed var(--line); padding-top:6px; }
   .weapon-row{ font-family:var(--mono); font-size:10.5px; color:#b7c2c8; padding:1px 0; display:grid; grid-template-columns: 1.4fr 0.5fr 0.55fr 0.7fr 0.35fr 0.35fr 0.35fr 1.6fr; gap:4px; }
   .weapon-row.hdr{ color:var(--dim); font-weight:700; border-bottom:1px solid var(--line); padding-bottom:2px; margin-bottom:2px;}
   .gear-line{ font-family:var(--mono); font-size:10.5px; color:var(--behe); margin-top:5px; }
@@ -102,8 +102,8 @@
   .cat-breakdown div{ display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid var(--line); font-family:var(--mono);}
   .cat-breakdown .over{ color:var(--bad); }
 
-  .export-row{ display:flex; gap:8px; margin-top:16px; }
-  .export-row button{ flex:1; padding:10px; font-size:12px; text-transform:uppercase; letter-spacing:1px;}
+  .export-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .export-row button{ flex:1 1 45%; padding:10px; font-size:11px; text-transform:uppercase; letter-spacing:1px;}
 
   .footnote{ font-size:10.5px; color:var(--dim); margin-top:16px; line-height:1.5; border-top:1px solid var(--line); padding-top:10px;}
 
@@ -166,6 +166,9 @@
       <button class="btn-primary" id="exportCsv">⇩ Exporter en CSV</button>
       <button class="btn-primary" id="exportPdf" style="background:var(--behe); border-color:var(--behe);">⇩ Exporter en PDF</button>
       <button class="btn-danger" id="resetBtn">Vider le roster</button>
+	  <button class="btn-primary" id="exportJson">⇩ Exporter la liste (JSON)</button>
+      <button class="btn-ghost" id="importJsonBtn" style="border-color:var(--amber); color:var(--amber);">⇧ Importer une liste (JSON)</button>
+      <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
     </div>
 
     <details class="glossary">
@@ -1219,6 +1222,50 @@ const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatc
   win.document.close();
 }
 
+/* ---------------- JSON EXPORT / IMPORT (sauvegarde de la liste) ---------------- */
+function exportRosterJson(){
+  const data = {
+    version: 'dzc-roster-v1',
+    faction: factionSelect.value,
+    gameSize: gameSizeSelect.value,
+    targetPoints: targetPointsInput.value,
+    nextRid, nextGroup,
+    roster
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `dzc-roster-${factionSelect.value}-${gameSizeSelect.value}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importRosterJson(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(data.version !== 'dzc-roster-v1') { alert('Fichier de liste non reconnu.'); return; }
+      // vérifie que chaque unité importée existe toujours dans le catalogue actuel
+      const validRoster = (data.roster||[]).filter(r => UNITS.some(u=>u.id===r.unitId));
+      if(validRoster.length !== (data.roster||[]).length){
+        alert('Attention : certaines unités du fichier importé ne correspondent plus au catalogue actuel et ont été ignorées.');
+      }
+      factionSelect.value = data.faction || factionSelect.value;
+      gameSizeSelect.value = data.gameSize || gameSizeSelect.value;
+      targetPointsInput.value = data.targetPoints || targetPointsInput.value;
+      roster = validRoster;
+      nextRid = data.nextRid || (Math.max(0, ...roster.map(r=>r.rid)) + 1);
+      nextGroup = data.nextGroup || (Math.max(0, ...roster.map(r=>r.groupId)) + 1);
+      renderAll();
+    } catch(err){
+      alert('Impossible de lire ce fichier JSON : ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+
 /* ---------------- WIRE UP ---------------- */
 function renderAll(){ renderCatalog(); renderRoster(); renderGroupSummary(); renderSummary(); }
 
@@ -1240,6 +1287,12 @@ catFilter.addEventListener('change', renderCatalog);
 $('#exportCsv').addEventListener('click', exportCsv);
 $('#exportPdf').addEventListener('click', exportPdf);
 $('#resetBtn').addEventListener('click', ()=>{ if(roster.length===0 || confirm('Vider tout le roster ?')){ roster=[]; nextGroup=1; renderAll(); } });
+$('#exportJson').addEventListener('click', exportRosterJson);
+$('#importJsonBtn').addEventListener('click', ()=> $('#importJsonFile').click());
+$('#importJsonFile').addEventListener('change', (e)=>{
+  if(e.target.files[0]) importRosterJson(e.target.files[0]);
+  e.target.value = ''; // permet de réimporter le même fichier plusieurs fois
+});
 
 renderGlossary();
 renderAll();
