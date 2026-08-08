@@ -1163,6 +1163,20 @@ function usedGlossaryTerms(){
   });
 }
 
+function explainSpecialString(spStr){
+  if(!spStr || spStr==='-') return '';
+  const parts = spStr.split(',').map(s=>s.trim()).filter(Boolean);
+  const explained = parts.map(part=>{
+    const keyGuess = part.replace(/[0-9+":.\-]/g,' ').trim().split(/\s+/)[0].toLowerCase();
+    const match = GLOSSARY.find(([term])=>{
+      const termKey = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
+      return termKey === keyGuess;
+    });
+    return match ? `<b>${part}</b> : ${match[1]}` : `<b>${part}</b>`;
+  });
+  return explained.join('<br>');
+}
+
 function exportPdf(){
   const cfg = currentGameSizeCfg();
   const target = parseInt(targetPointsInput.value,10) || cfg.max;
@@ -1172,7 +1186,7 @@ function exportPdf(){
   roster.forEach(r=>{ (groups[r.groupId] = groups[r.groupId]||[]).push(r); });
   const tmap = transportLoadMap();
 
-const GROUP_PALETTE = ['#e8f3ff','#fff3e0','#e8f8ee','#f5e8ff','#fff9e0','#e0faf7','#ffe8ec','#eef0ff','#f0f7e0','#fbe8f6'];
+  const GROUP_PALETTE = ['#e8f3ff','#fff3e0','#e8f8ee','#f5e8ff','#fff9e0','#e0faf7','#ffe8ec','#eef0ff','#f0f7e0','#fbe8f6'];
   const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
     const load = tmap[gid] || {reqInf:0,capInf:0,reqVeh:0,capVeh:0};
     const overInf = load.reqInf > load.capInf;
@@ -1186,18 +1200,29 @@ const GROUP_PALETTE = ['#e8f3ff','#fff3e0','#e8f8ee','#f5e8ff','#fff9e0','#e0faf
       const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
       const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
       const allWeapons = [...filteredWeapons, ...extraWeapons];
-const weapons = allWeapons.length
+
+      const typeTable = `<table class="pdf-mini-table">
+        <tr><td><b>Type</b></td><td>${u.type}</td></tr>
+        <tr><td><b>Mv</b></td><td>${u.mv}</td></tr>
+        <tr><td><b>Stats</b></td><td>${u.stats}</td></tr>
+      </table>`;
+
+      const weapons = allWeapons.length
         ? `<table class="pdf-weapon-table">
-            <tr><th>Arme</th><th>Arc</th><th>MA</th><th>R</th><th>Att</th><th>Ac</th><th>E</th><th>Spécial</th></tr>
-            ${allWeapons.map(w=>`<tr><td>${w.n}</td><td>${w.arc}</td><td>${w.ma}</td><td>${w.r}</td><td>${w.att}</td><td>${w.ac}</td><td>${w.e}</td><td>${w.sp}</td></tr>`).join('')}
+            <tr><th>Arme</th><th>Arc</th><th>MA</th><th>R</th><th>Att</th><th>Ac</th><th>E</th><th>Spécial</th><th>Explication</th></tr>
+            ${allWeapons.map(w=>`<tr>
+              <td>${w.n}</td><td>${w.arc}</td><td>${w.ma}</td><td>${w.r}</td><td>${w.att}</td><td>${w.ac}</td><td>${w.e}</td>
+              <td>${w.sp}</td><td>${explainSpecialString(w.sp)}</td>
+            </tr>`).join('')}
           </table>`
         : '<span style="font-style:italic;">Sans armement</span>';
+
       return `<tr>
-        <td>${u.category}${u.isBehemoth?' ⚙':''}</td>
-        <td><b>${u.name}</b><br><span class="dim">${v.name}</span></td>
-        <td>×${entry.squadSize}</td>
-        <td>${fmt(unitTotalPts(entry))}</td>
-        <td>${u.type}<br>${u.mv} · ${u.stats}</td>
+        <td class="col-narrow">${u.category}${u.isBehemoth?' ⚙':''}</td>
+        <td class="col-narrow"><b>${u.name}</b><br><span class="dim">${v.name}</span></td>
+        <td class="col-narrow">×${entry.squadSize}</td>
+        <td class="col-narrow">${fmt(unitTotalPts(entry))}</td>
+        <td>${typeTable}</td>
         <td>${u.special}</td>
         <td>${weapons}</td>
       </tr>`;
@@ -1206,10 +1231,13 @@ const weapons = allWeapons.length
     const loadLine = (load.capInf||load.reqInf||load.capVeh||load.reqVeh)
       ? `<span>Inf ${load.reqInf}/${load.capInf}</span> · <span>Véh ${load.reqVeh}/${load.capVeh}</span>` : '';
 
-return `<div class="pdf-group" style="background:${bgColor}; border-color:${borderColor};">
+    return `<div class="pdf-group" style="background:${bgColor}; border-color:${borderColor};">
       <div class="pdf-group-head">Groupe ${gid} ${loadLine ? '— '+loadLine : ''}</div>
       <table>
-        <tr><th>Cat.</th><th>Unité</th><th>Qté</th><th>Pts</th><th>Type/Mv/Stats</th><th>Spécial</th><th>Armement</th></tr>
+        <tr>
+          <th class="col-narrow">Cat.</th><th class="col-narrow">Unité</th><th class="col-narrow">Qté</th><th class="col-narrow">Pts</th>
+          <th>Type/Mv/Stats</th><th>Spécial</th><th>Armement</th>
+        </tr>
         ${memberRows}
       </table>
     </div>`;
@@ -1226,23 +1254,25 @@ return `<div class="pdf-group" style="background:${bgColor}; border-color:${bord
       table{ width:100%; border-collapse:collapse; font-size:11px; margin-top:4px; }
       td, th{ border:1px solid #ccc; padding:6px 8px; vertical-align:top; text-align:left; }
       th{ background:#222; color:#fff; }
+      .col-narrow{ width:70px; max-width:70px; }
       .dim{ color:#777; font-size:10px; }
-.pdf-wline{ font-family:monospace; font-size:9.5px; margin-bottom:2px; }
-      .pdf-weapon-table{ width:100%; font-size:9px; margin:0; }
-      .pdf-weapon-table th, .pdf-weapon-table td{ border:1px solid #ddd; padding:2px 4px; background:#fff; }
-      .pdf-weapon-table th{ background:#555; color:#fff; font-size:8.5px; }
-.pdf-group{ border-radius:6px; padding:10px; margin-bottom:16px; border:2px solid #bbb; }
+      .pdf-mini-table{ background:rgba(255,255,255,0.55); font-size:10px; }
+      .pdf-mini-table td{ border:1px solid #ddd; padding:2px 5px; }
+      .pdf-weapon-table{ background:rgba(255,255,255,0.55); font-size:9px; }
+      .pdf-weapon-table th, .pdf-weapon-table td{ border:1px solid #ddd; padding:2px 4px; }
+      .pdf-weapon-table th{ background:rgba(60,60,60,0.85); color:#fff; font-size:8.5px; }
+      .pdf-group{ border-radius:6px; padding:10px; margin-bottom:16px; border:2px solid #bbb; }
+      .pdf-group-head{ font-weight:bold; font-size:13px; margin-bottom:6px; }
       .pdf-glossary{ margin-top:24px; border-top:2px solid #333; padding-top:10px; }
       .pdf-glossary h2{ font-size:14px; }
       .pdf-glossary .g-item{ font-size:10.5px; margin-bottom:3px; }
-      .pdf-group-head{ font-weight:bold; font-size:13px; margin-bottom:6px; }
       .printbtn{ margin-bottom:16px; padding:8px 16px; }
     </style></head>
     <body>
       <button class="printbtn" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
       <h1>DZC Roster — ${factionSelect.value}</h1>
       <div class="meta">${gameSizeSelect.value} · ${fmt(total)} / ${fmt(target)} pts · ${reservedGroupsCount()} / ${cfg.groups} Groupes</div>
-  ${groupBlocksHtml}
+      ${groupBlocksHtml}
       <div class="pdf-glossary">
         <h2>Glossaire des règles spéciales utilisées</h2>
         ${usedGlossaryTerms().map(([k,v])=>`<div class="g-item"><b>${k}</b> — ${v}</div>`).join('')}
