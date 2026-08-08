@@ -53,8 +53,8 @@
   .unit-tags .flag.behe{ color:var(--behe); }
   .unit-stats{ font-family:var(--mono); font-size:11.5px; color:var(--dim); margin-top:4px; }
 .weapon-table{ clear:left; margin-top:6px; border-top:1px dashed var(--line); padding-top:6px; }
-.stats-table{ width:100%; border-collapse:collapse; margin-top:2px; font-family:var(--mono); font-size:11px; }
-  .stats-table th, .stats-table td{ border:1px solid var(--line); padding:2px 6px; text-align:center; }
+.stats-table{ width:auto; border-collapse:collapse; margin-top:2px; font-family:var(--mono); font-size:11px; }
+  .stats-table th, .stats-table td{ border:1px solid var(--line); padding:2px 6px; text-align:center; white-space:nowrap; }
   .stats-table th{ background:var(--panel2); color:var(--dim); font-weight:700; }
   .weapon-row{ font-family:var(--mono); font-size:10.5px; color:#b7c2c8; padding:1px 0; display:grid; grid-template-columns: 1.4fr 0.5fr 0.55fr 0.7fr 0.35fr 0.35fr 0.35fr 1.6fr; gap:4px; }
   .weapon-row.hdr{ color:var(--dim); font-weight:700; border-bottom:1px solid var(--line); padding-bottom:2px; margin-bottom:2px;}
@@ -1252,7 +1252,7 @@ const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
       allWeapons.forEach(w=> extractGlossaryMatches(w.sp).forEach(m=>groupGlossary.set(m.term, m.def)));
 
 const p = parseStats(u);
-      const statsTable = `<table class="pdf-weapon-table">
+const statsTable = `<table class="pdf-stats-table">
         <tr><th>Mv</th><th>A</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr>
         <tr><td>${p.mv}</td><td>${p.a}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr>
       </table>`;
@@ -1298,7 +1298,7 @@ ${hasAnySpecial ? `<td class="col-special">${u.special}</td>` : ''}
   win.document.write(`
     <html><head><title>DZC Roster - ${factionSelect.value} - ${gameSizeSelect.value}</title>
     <style>
-      @page { size: A4 landscape; margin: 12mm; }
+      @page { margin: 8mm; }
       @media print {
         body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
         .pdf-group{ break-inside: avoid; page-break-inside: avoid; }
@@ -1315,23 +1315,28 @@ ${hasAnySpecial ? `<td class="col-special">${u.special}</td>` : ''}
       .col-stats{ width:165px; white-space:nowrap; }
       .col-special{ width:60px; }
       .dim{ color:#777; font-size:9.5px; }
-.pdf-weapon-table{ background:rgba(255,255,255,0.55); font-size:9px; width:100%; table-layout:fixed; }
-      .pdf-weapon-table th, .pdf-weapon-table td{ border:1px solid #ddd; padding:2px 4px; word-wrap:break-word; }
+.pdf-stats-table{ background:rgba(255,255,255,0.55); font-size:9px; width:auto; table-layout:auto; border-collapse:collapse; }
+      .pdf-weapon-table{ background:rgba(255,255,255,0.55); font-size:9px; width:100%; table-layout:fixed; border-collapse:collapse; }
+      .pdf-weapon-table th, .pdf-weapon-table td,
+      .pdf-stats-table th, .pdf-stats-table td{ border:1px solid #ddd; padding:2px 6px; white-space:normal; overflow-wrap:break-word; }
+      .pdf-stats-table th, .pdf-stats-table td{ white-space:nowrap; }
+      .pdf-weapon-table th, .pdf-stats-table th{ background:rgba(60,60,60,0.85); color:#fff; font-size:8.5px; }
       .pdf-weapon-table th:nth-child(1), .pdf-weapon-table td:nth-child(1){ width:22%; }
-      .pdf-weapon-table th:nth-child(2), .pdf-weapon-table td:nth-child(2){ width:7%; }
-      .pdf-weapon-table th:nth-child(3), .pdf-weapon-table td:nth-child(3){ width:8%; }
-      .pdf-weapon-table th:nth-child(4), .pdf-weapon-table td:nth-child(4){ width:10%; }
-      .pdf-weapon-table th:nth-child(5), .pdf-weapon-table td:nth-child(5){ width:7%; }
-      .pdf-weapon-table th:nth-child(6), .pdf-weapon-table td:nth-child(6){ width:7%; }
-      .pdf-weapon-table th:nth-child(7), .pdf-weapon-table td:nth-child(7){ width:6%; }
-      .pdf-weapon-table th:nth-child(8), .pdf-weapon-table td:nth-child(8){ width:33%; }
-      .pdf-weapon-table th{ background:rgba(60,60,60,0.85); color:#fff; font-size:8.5px; }
+      .pdf-weapon-table th:nth-child(2), .pdf-weapon-table td:nth-child(2){ width:6%; }
+      .pdf-weapon-table th:nth-child(3), .pdf-weapon-table td:nth-child(3){ width:6%; }
+      .pdf-weapon-table th:nth-child(4), .pdf-weapon-table td:nth-child(4){ width:9%; }
+      .pdf-weapon-table th:nth-child(5), .pdf-weapon-table td:nth-child(5){ width:4%; }
+      .pdf-weapon-table th:nth-child(6), .pdf-weapon-table td:nth-child(6){ width:4%; }
+      .pdf-weapon-table th:nth-child(7), .pdf-weapon-table td:nth-child(7){ width:4%; }
+      .pdf-weapon-table th:nth-child(8), .pdf-weapon-table td:nth-child(8){ width:45%; }
       .pdf-group{ border-radius:6px; padding:10px; margin-bottom:16px; border:2px solid #bbb; }
       .pdf-group-head{ font-weight:bold; font-size:13px; margin-bottom:6px; }
       .pdf-group-glossary{ margin-top:8px; table-layout:auto; font-size:9.5px; }
       .pdf-group-glossary th{ background:#444; }
       .pdf-group-glossary .gt{ width:130px; font-weight:bold; background:rgba(255,255,255,0.4); }
-      .printbtn{ margin-bottom:16px; padding:8px 16px; }
+	  .pdf-group table{ width:100%; table-layout:fixed; }
+.printbtn{ margin-bottom:16px; padding:8px 16px; }
+      @media print { .printbtn{ display:none; } }
     </style></head>
     <body>
       <button class="printbtn" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
