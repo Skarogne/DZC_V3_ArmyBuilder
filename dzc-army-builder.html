@@ -202,18 +202,27 @@ function weaponMatchesVariant(weaponName, variantName){
   const m = weaponName.match(/\(([^)]+)\)\s*$/);
   if(!m) return true; // pas de parenthèse = arme générique, toujours affichée
   const inside = m[1];
-  return inside.split(',').map(s=>s.trim())
+  return inside.split(/[,/]/).map(s=>s.trim())
     .some(part => part.toLowerCase() === variantName.toLowerCase() || variantName.toLowerCase().includes(part.toLowerCase()));
 }
 
 function weaponTableHtml(u, variantName){
-  const filtered = u.weapons.filter(w => weaponMatchesVariant(w.n, variantName));
+  const filtered = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, variantName));
   if(filtered.length===0) return '<div class="unit-stats" style="font-style:italic;">Sans armement</div>';
   return `<div class="weapon-table">
     <div class="weapon-row hdr"><span>Arme</span><span>Arc</span><span>MA</span><span>R</span><span>Att</span><span>Ac</span><span>E</span><span>Spécial</span></div>
     ${filtered.map(w=>`<div class="weapon-row"><span>${w.n}</span><span>${w.arc}</span><span>${w.ma}</span><span>${w.r}</span><span>${w.att}</span><span>${w.ac}</span><span>${w.e}</span><span>${w.sp}</span></div>`).join('')}
   </div>`;
 }
+
+function parseOptionalCost(weaponName){
+  const m = weaponName.match(/\(\+\s*(\d+)\s*pts\*?\)/i);
+  return m ? parseInt(m[1],10) : null;
+}
+function isOptionalWeapon(w){ return parseOptionalCost(w.n) !== null; }
+function optionalWeaponsOf(u){ return u.weapons.filter(isOptionalWeapon); }
+
+
 
 /* ---------------- GLOSSARY ---------------- */
 const GLOSSARY = [
@@ -418,7 +427,7 @@ const UNITS = [
   type:'Vehicle', mv:'6"', stats:'A4 DP2', special:'—',
   weapons:[W('RXs-60B Mjolnir Bombard (Thor)','F/S/R','0"','24"',1,'3+',7,'Blast, Indirect'), W('RM-2 Constellation Missile, Penetrator (Taranis)','F/S','0"','∞/18"',1,'2+',8,'Alt 1, Demo 3, Destroyer 4+, Indirect'),
     W('RM-2 Constellation Missile, Airburst (Taranis)','F/S','0"','∞/18"',1,'2+',2,'Alt 1, Blast, Indirect')],
-  variants:[{name:'Thor / Taranis', pts:50}]},
+variants:[{name:'Thor', pts:50},{name:'Taranis', pts:50}]},
 {id:'phr-siren', faction:'PHR', name:'Siren Corps', category:'Support', squadMin:2, squadMax:2, rare:false, unique:false,
   type:'Infantry', mv:'3"', stats:'OF3 DF4+ B3+ DP3', special:'Agile 4, Breachers 1, FS5, Lethal, Rapid Insertion 6"',
   weapons:[], variants:[{name:'Standard', pts:50}]},
@@ -468,7 +477,7 @@ const UNITS = [
     W('Beastslayer Blade (Agas)','F/S','Full','2"',4,'2+',5,'Assault, Ineffective: Zones, Strafe'), W('RXs-70 Styx Autocannons (Dahaka)','F/S','Full','36/18"',6,'3+',3,'Ignores Cover, Strafe'),
     W('RM-4 Foeslayer Missiles (Dahaka)','F/S','Full','48/12"',2,'3+',5,'Demo 1, Devastator 1, L1'), W('Electro Gladius (Dahaka)','F/S','Full','CC',1,'3+',8,'Assault, Destroyer 5+'),
     W('Twin RXs-120 Smoothbores (Mithra)','F/S','Full','∞/12"',2,'2+',6,'Demo 2'), W('Twin RX-1000 Sunspear Lasers (Mithra)','F/S','0"','∞',2,'2+',7,'Destroyer 5+')],
-  variants:[{name:'Rashnu / Agas / Dahaka', pts:70},{name:'Mithra', pts:95}]},
+  variants:[{name:'Rashnu', pts:70},{name:'Agas', pts:70},{name:'Dahaka', pts:70},{name:'Mithra', pts:95}]},
 {id:'phr-lokheira', faction:'PHR', name:'Type-11 Lokheira Quad Walker', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
   type:'Vehicle', mv:'4"', stats:'A6 DP4', special:'P5+',
   weapons:[W('Twin RX-1L Short Railguns','F','Full','∞/24"',2,'2+',6,'Demo 0'), W('Twin RX-1R Rail Repeaters','F/S','Full','∞/24"',6,'2+',3,'AA, Strafe'), W('RX-20 Minigun Pair','F','Full','36/12"',8,'3+','S3','Strafe')],
@@ -522,7 +531,7 @@ const UNITS = [
   type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Jump 18", Rapid Insertion 8"(All), Command Centre, Ev1, Resilient(Hera)',
   weapons:[W('Twin RX-1L Short Railguns (Hera)','F/S','9"','∞/24"',2,'2+',6,'Demo 0'), W('RX-1L Short Railgun (Apollo A)','F/S','9"','∞/24"',1,'2+',6,'Demo 0'),
     W('RX-13 Cannon, Slugs (Apollo B)','F/S','6"','24/12"',2,'2+',4,'Alt-1'), W('RX-13 Cannon, Seeker Submunitions (Apollo B)','F/S','6"','24/12"',3,'3+','S1','Alt-1, Concussion, Seeker')],
-  variants:[{name:'Apollo A/B', pts:35},{name:'Hera', pts:65}]},
+  variants:[{name:'Apollo A', pts:35},{name:'Apollo B', pts:35},{name:'Hera', pts:65}]},
 {id:'phr-scoutwalker', faction:'PHR', name:'Type-S Scout Walker', category:'Vanguard', squadMin:2, squadMax:6, rare:false, unique:false,
   type:'Vehicle', mv:'6"', stats:'A5 DP1', special:'Scout',
   weapons:[W('RX-20 Minigun','F','Full','36/12"',4,'3+','S3','-'), W('RM-1AA Stealth Missiles (Janus)','F','Full','36/12"',1,'3+',3,'AA, Pen 6+'),
@@ -578,7 +587,7 @@ const UNITS = [
   weapons:[W('MC-90 Cannon','F','Full','∞/18"',1,'2+',5,'-'), W('MG-3 Machine Gun','F/S/R','Full','24/12"',3,'3+','S1','-'), W('MC-120 Punisher Cannon (Hannibal)','F/S/R','Full','∞/18"',1,'2+',6,'Demo 0'),
     W('MS-7 Hammer Bombard (Mehmed)','F/S/R','Full','12"',1,'2+',7,'Demo 3'), W('MX-202 Shock Bombard (Saladin)','F/S/R','Full','18"',1,'2+',2,'Indirect, Ineffective: Zones, Overcharge 5, Suppress'),
     W('MR-32 Rail Cannon (Zhukov)','F/S/R','Full','∞/24"',1,'2+',4,'AA, Critical 1, Devastator 1')],
-  variants:[{name:'Constantine', pts:35},{name:'Hannibal / Mehmed / Saladin', pts:45},{name:'Zhukov', pts:60}]},
+  variants:[{name:'Constantine', pts:35},{name:'Hannibal', pts:45},{name:'Mehmed', pts:45},{name:'Saladin', pts:45},{name:'Zhukov', pts:60}]},
 {id:'res-technical', faction:'Resistance', name:'Resistance Technical', category:'Standard', squadMin:6, squadMax:12, rare:false, unique:false,
   type:'Vehicle', mv:'9"', stats:'A2 DP1', special:'Ev1, UC',
   weapons:[W('Rocket Launcher (Rocket Technical)','F/S','Full','18/6"',1,'2+',3,'Focus 2, Pen 6+'), W('Heavy Machine Gun (Gun Technical)','F/S','6"','36/12"',2,'3+',2,'AA')],
@@ -597,7 +606,7 @@ const UNITS = [
   type:'Aircraft (30mm)', mv:'16"', stats:'A3 DP2', special:'Aegis 3"(Hurricane)',
   weapons:[W('MG-12 Gatling','F','Full','36/12"',10,'3+','S1','-'), W('MC-25 Azrael Chainguns (Typhoon)','F','Full','48/18"',4,'3+',5,'Focus 1, Strafe'),
     W('ML-18 Wyrmfire Lasers (Hurricane)','F','2"','∞',4,'2+',1,'AA-S, Pen 6+, T2'), W('MM-2 Hornet Missiles (Cyclone)','F','8"','36/24"',1,'3+',3,'Blast, Indirect, Pen 6+'), W('MM-70 Beowulf Missile (Cyclone)','F/S','8"','36/18"',2,'3+',6,'Demo 0, Strafe')],
-  variants:[{name:'Typhoon / Cyclone', pts:60},{name:'Hurricane', pts:65}]},
+  variants:[{name:'Typhoon', pts:60},{name:'Cyclone', pts:60},{name:'Hurricane', pts:65}]},
 {id:'res-berserkers', faction:'Resistance', name:'Berserkers', category:'Support', squadMin:2, squadMax:4, rare:false, unique:false,
   type:'Infantry', mv:'3"', stats:'OF8 DF6+ B(A) DP5', special:'Bloodthirsty, Lethal, Terror',
   weapons:[W('Assorted Nasties','F/S/R','Full','CC',10,'3+','S0','Assault')], variants:[{name:'Standard', pts:35}]},
@@ -654,7 +663,7 @@ const UNITS = [
     W('MM-7 Maelstrom Launcher (Alexander/Belisarius/Genghis)','F/S/R','Full','18/9"',1,'2+',4,'Blast, L1, Pen 5+'), W('MC-42 Banisher Gatling Cannons (Napoleon)','F/S/R','Full','36/18"',20,'3+','S7','Ignores Cover, Precision 1, Strafe'),
     W('MM-15 Sidearm Missiles (+0pts*)','F/S','Full','36/9"',2,'2+',7,'Critical 1, Demo 0, L1, Pen 5+, Strafe')],
   note:'*Peut remplacer les 2 MC-20 Chaingun par des MM-15 Sidearm Missiles.',
-  variants:[{name:'Alexander / Genghis', pts:100},{name:'Belisarius', pts:120},{name:'Napoleon', pts:130}]},
+  variants:[{name:'Alexander', pts:100},{name:'Genghis', pts:100},{name:'Belisarius', pts:120},{name:'Napoleon', pts:130}]},
 {id:'res-thunderstorm', faction:'Resistance', name:'Thunderstorm Heavy Hovercraft', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
   type:'Vehicle', mv:'10"', stats:'A4 DP12', special:'Command Centre, Large, Skimmer, Strike',
   weapons:[W('Overcharged Plasma Cannon x4','F/S/R','5"','18"',1,'2+',8,'Demo 1')], variants:[{name:'Standard', pts:190}]},
@@ -785,7 +794,11 @@ function unitTotalPts(entry){
   const unit = UNITS.find(u=>u.id===entry.unitId);
   const variant = unit.variants[entry.variantIdx];
   const qty = entry.squadSize || 1;
-  return variant.pts * qty;
+  const extrasCost = (entry.extras||[]).reduce((s,name)=>{
+    const w = unit.weapons.find(ww=>ww.n===name);
+    return s + (w ? (parseOptionalCost(w.n)||0) : 0);
+  }, 0);
+  return (variant.pts + extrasCost) * qty;
 }
 function groupPointsMap(){
   const map = {};
@@ -855,6 +868,16 @@ function renderUnitCard(u){
 
   const weaponsHtml = `<div class="weapon-table-slot">${weaponTableHtml(u, u.variants[0].name)}</div>`;
 
+	
+  const optWeapons = optionalWeaponsOf(u);
+  const optHtml = optWeapons.length ? `
+    <div class="field" style="min-width:220px;">
+      <label>Options d'armement</label>
+      ${optWeapons.map(w=>`<label style="display:block; font-size:11px; font-weight:400; color:var(--text);">
+        <input type="checkbox" class="ctl-opt" value="${w.n}"> ${w.n} — +${parseOptionalCost(w.n)}pts
+      </label>`).join('')}
+    </div>` : '';
+	
   const gearHtml = u.gear ? `<div class="gear-line">Gear: ${u.gear.join(' · ')}</div>` : '';
   const noteHtml = u.note ? `<div class="unit-stats" style="color:var(--amber);">${u.note}</div>` : '';
   const imgPath = UNIT_IMAGES[u.id];
@@ -880,14 +903,16 @@ function renderUnitCard(u){
       <div class="field"><label>${u.squadMin===null?'Nombre':'Taille escouade'}</label>
         <input type="number" class="ctl-size" min="${u.squadMin===null?1:u.squadMin}" max="${u.squadMin===null?20:u.squadMax}" value="${u.squadMin===null?1:u.squadMin}" style="width:60px;">
       </div>
+	  ${optHtml}
       <button class="btn-add">+ Ajouter</button>
     </div>
   `;
-  el.querySelector('.btn-add').addEventListener('click', ()=>{
+el.querySelector('.btn-add').addEventListener('click', ()=>{
     const variantIdx = parseInt(el.querySelector('.ctl-variant').value,10);
     let squadSize = parseInt(el.querySelector('.ctl-size').value,10);
     if(isNaN(squadSize) || squadSize<1) squadSize=1;
-    roster.push({rid: nextRid++, unitId:u.id, variantIdx, squadSize, groupId: nextGroup++});
+    const extras = Array.from(el.querySelectorAll('.ctl-opt:checked')).map(c=>c.value);
+    roster.push({rid: nextRid++, unitId:u.id, variantIdx, squadSize, groupId: nextGroup++, extras});
     renderAll();
   });
   
@@ -908,9 +933,18 @@ function renderRoster(){
     return;
   }
   roster.forEach(entry=>{
-    const unit = UNITS.find(u=>u.id===entry.unitId);
+const unit = UNITS.find(u=>u.id===entry.unitId);
     const variant = unit.variants[entry.variantIdx];
     const pts = unitTotalPts(entry);
+    const optWeapons = optionalWeaponsOf(unit);
+    const optHtml = optWeapons.length ? `
+      <div style="margin-top:4px;">
+        ${optWeapons.map(w=>{
+          const cost = parseOptionalCost(w.n);
+          const checked = (entry.extras||[]).includes(w.n);
+          return `<label style="display:block; font-size:10.5px; color:var(--dim);"><input type="checkbox" class="e-opt" value="${w.n}" ${checked?'checked':''}> ${w.n} (+${cost}pts)</label>`;
+        }).join('')}
+      </div>` : '';
     const el = document.createElement('div');
     el.className='roster-entry' + (unit.isBehemoth ? ' behe':'');
     el.innerHTML = `
@@ -924,10 +958,19 @@ function renderRoster(){
         ${unit.isBehemoth ? `<span title="Group Equivalent">GrpEq ${unit.groupEquivalent}</span>` : ''}
         <button class="re-remove">retirer</button>
       </div>
+      ${optHtml}
     `;
     el.querySelector('.e-size').addEventListener('change', e=>{ let v=parseInt(e.target.value,10); if(isNaN(v)||v<1)v=1; entry.squadSize=v; renderAll(); });
     el.querySelector('.e-group').addEventListener('change', e=>{ let v=parseInt(e.target.value,10); if(isNaN(v)||v<1)v=1; entry.groupId=v; renderAll(); });
     el.querySelector('.re-remove').addEventListener('click', ()=>{ roster = roster.filter(r=>r.rid!==entry.rid); renderAll(); });
+    el.querySelectorAll('.e-opt').forEach(chk=>{
+      chk.addEventListener('change', ()=>{
+        entry.extras = entry.extras || [];
+        if(chk.checked){ if(!entry.extras.includes(chk.value)) entry.extras.push(chk.value); }
+        else { entry.extras = entry.extras.filter(n=>n!==chk.value); }
+        renderAll();
+      });
+    });
     list.appendChild(el);
   });
 }
@@ -1026,15 +1069,17 @@ function exportCsv(){
     ];
     const emptyRow = baseRow.map(()=>'');
 
-	const filteredWeapons = u.weapons.filter(w => weaponMatchesVariant(w.n, v.name));
-		if(filteredWeapons.length===0){
-		  rows.push([...baseRow, '-', '-', '-', '-', '-', '-', '-', '-', '-']);
-		} else {
-		  filteredWeapons.forEach((w,i)=>{
-			const rowPrefix = i===0 ? baseRow : emptyRow;
-			rows.push([...rowPrefix, (i+1), w.n, w.arc, w.ma, w.r, w.att, w.ac, w.e, w.sp]);
-		  });
-		}
+    const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
+    const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
+    const allWeapons = [...filteredWeapons, ...extraWeapons];
+    if(allWeapons.length===0){
+      rows.push([...baseRow, '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+    } else {
+      allWeapons.forEach((w,i)=>{
+        const rowPrefix = i===0 ? baseRow : emptyRow;
+        rows.push([...rowPrefix, (i+1), w.n, w.arc, w.ma, w.r, w.att, w.ac, w.e, w.sp]);
+      });
+    }
   });
   rows.push([]);
   rows.push(['Total points', totalPoints()]);
@@ -1106,9 +1151,11 @@ function exportPdf(){
     const u = UNITS.find(uu=>uu.id===entry.unitId);
     const v = u.variants[entry.variantIdx];
     const cls = u.isBehemoth ? 'row-behe' : (u.faction==='PHR' ? 'row-phr' : 'row-res');
-    const filteredWeapons = u.weapons.filter(w => weaponMatchesVariant(w.n, v.name));
-    const weapons = filteredWeapons.length
-      ? filteredWeapons.map(w=>`<div class="pdf-wline"><b>${w.n}</b> — ${w.arc} / MA ${w.ma} / R ${w.r} / Att ${w.att} / Ac ${w.ac} / E ${w.e}${w.sp&&w.sp!=='-'?' / '+w.sp:''}</div>`).join('')
+const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
+    const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
+    const allWeapons = [...filteredWeapons, ...extraWeapons];
+    const weapons = allWeapons.length
+      ? allWeapons.map(w=>`<div class="pdf-wline"><b>${w.n}</b> — ${w.arc} / MA ${w.ma} / R ${w.r} / Att ${w.att} / Ac ${w.ac} / E ${w.e}${w.sp&&w.sp!=='-'?' / '+w.sp:''}</div>`).join('')
       : '<div class="pdf-wline" style="font-style:italic;">Sans armement</div>';
     return `<tr class="${cls}">
       <td>${u.category}${u.isBehemoth?' ⚙':''}</td>
