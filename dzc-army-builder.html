@@ -198,6 +198,23 @@ function weaponLine(w){
   return `${w.n} — ${w.arc} / MA ${w.ma} / R ${w.r} / Att ${w.att} / Ac ${w.ac} / E ${w.e}${w.sp && w.sp!=='-' ? ' / ['+w.sp+']' : ''}`;
 }
 
+function weaponMatchesVariant(weaponName, variantName){
+  const m = weaponName.match(/\(([^)]+)\)\s*$/);
+  if(!m) return true; // pas de parenthèse = arme générique, toujours affichée
+  const inside = m[1];
+  return inside.split(',').map(s=>s.trim())
+    .some(part => part.toLowerCase() === variantName.toLowerCase() || variantName.toLowerCase().includes(part.toLowerCase()));
+}
+
+function weaponTableHtml(u, variantName){
+  const filtered = u.weapons.filter(w => weaponMatchesVariant(w.n, variantName));
+  if(filtered.length===0) return '<div class="unit-stats" style="font-style:italic;">Sans armement</div>';
+  return `<div class="weapon-table">
+    <div class="weapon-row hdr"><span>Arme</span><span>Arc</span><span>MA</span><span>R</span><span>Att</span><span>Ac</span><span>E</span><span>Spécial</span></div>
+    ${filtered.map(w=>`<div class="weapon-row"><span>${w.n}</span><span>${w.arc}</span><span>${w.ma}</span><span>${w.r}</span><span>${w.att}</span><span>${w.ac}</span><span>${w.e}</span><span>${w.sp}</span></div>`).join('')}
+  </div>`;
+}
+
 /* ---------------- GLOSSARY ---------------- */
 const GLOSSARY = [
 ["Ac","Précision (jet requis pour toucher, avant modificateurs)."],
@@ -836,11 +853,7 @@ function renderUnitCard(u){
   if(u.isBehemoth) flags.push(`<span class="flag behe">[BEHEMOTH · Power ${u.power} · Grp.Eq ${u.groupEquivalent}]</span>`);
   const squadTxt = u.squadMin===null ? 'Qté libre' : `${u.squadMin}-${u.squadMax} / escouade`;
 
-  const weaponsHtml = u.weapons.length ? `
-    <div class="weapon-table">
-      <div class="weapon-row hdr"><span>Arme</span><span>Arc</span><span>MA</span><span>R</span><span>Att</span><span>Ac</span><span>E</span><span>Spécial</span></div>
-      ${u.weapons.map(w=>`<div class="weapon-row"><span>${w.n}</span><span>${w.arc}</span><span>${w.ma}</span><span>${w.r}</span><span>${w.att}</span><span>${w.ac}</span><span>${w.e}</span><span>${w.sp}</span></div>`).join('')}
-    </div>` : '<div class="unit-stats" style="font-style:italic;">Sans armement</div>';
+  const weaponsHtml = `<div class="weapon-table-slot">${weaponTableHtml(u, u.variants[0].name)}</div>`;
 
   const gearHtml = u.gear ? `<div class="gear-line">Gear: ${u.gear.join(' · ')}</div>` : '';
   const noteHtml = u.note ? `<div class="unit-stats" style="color:var(--amber);">${u.note}</div>` : '';
@@ -877,6 +890,12 @@ function renderUnitCard(u){
     roster.push({rid: nextRid++, unitId:u.id, variantIdx, squadSize, groupId: nextGroup++});
     renderAll();
   });
+  
+  el.querySelector('.ctl-variant').addEventListener('change', (e)=>{
+    const variantName = u.variants[parseInt(e.target.value,10)].name;
+    el.querySelector('.weapon-table-slot').innerHTML = weaponTableHtml(u, variantName);
+  });
+  
   return el;
 }
 
@@ -1007,14 +1026,15 @@ function exportCsv(){
     ];
     const emptyRow = baseRow.map(()=>'');
 
-    if(u.weapons.length===0){
-      rows.push([...baseRow, '-', '-', '-', '-', '-', '-', '-', '-']);
-    } else {
-      u.weapons.forEach((w,i)=>{
-        const rowPrefix = i===0 ? baseRow : emptyRow;
-        rows.push([...rowPrefix, w.n, w.arc, w.ma, w.r, w.att, w.ac, w.e, w.sp]);
-      });
-    }
+	const filteredWeapons = u.weapons.filter(w => weaponMatchesVariant(w.n, v.name));
+		if(filteredWeapons.length===0){
+		  rows.push([...baseRow, '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+		} else {
+		  filteredWeapons.forEach((w,i)=>{
+			const rowPrefix = i===0 ? baseRow : emptyRow;
+			rows.push([...rowPrefix, (i+1), w.n, w.arc, w.ma, w.r, w.att, w.ac, w.e, w.sp]);
+		  });
+		}
   });
   rows.push([]);
   rows.push(['Total points', totalPoints()]);
@@ -1086,8 +1106,9 @@ function exportPdf(){
     const u = UNITS.find(uu=>uu.id===entry.unitId);
     const v = u.variants[entry.variantIdx];
     const cls = u.isBehemoth ? 'row-behe' : (u.faction==='PHR' ? 'row-phr' : 'row-res');
-    const weapons = u.weapons.length
-      ? u.weapons.map(w=>`<div class="pdf-wline"><b>${w.n}</b> — ${w.arc} / MA ${w.ma} / R ${w.r} / Att ${w.att} / Ac ${w.ac} / E ${w.e}${w.sp&&w.sp!=='-'?' / '+w.sp:''}</div>`).join('')
+    const filteredWeapons = u.weapons.filter(w => weaponMatchesVariant(w.n, v.name));
+    const weapons = filteredWeapons.length
+      ? filteredWeapons.map(w=>`<div class="pdf-wline"><b>${w.n}</b> — ${w.arc} / MA ${w.ma} / R ${w.r} / Att ${w.att} / Ac ${w.ac} / E ${w.e}${w.sp&&w.sp!=='-'?' / '+w.sp:''}</div>`).join('')
       : '<div class="pdf-wline" style="font-style:italic;">Sans armement</div>';
     return `<tr class="${cls}">
       <td>${u.category}${u.isBehemoth?' ⚙':''}</td>
