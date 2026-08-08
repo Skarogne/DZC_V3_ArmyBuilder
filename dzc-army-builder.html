@@ -160,19 +160,19 @@
 
   <div class="roster">
     <h2>Feuille de Roster</h2>
-    <div class="summary-grid" id="summaryGrid"></div>
+<div class="summary-grid" id="summaryGrid"></div>
+    <div class="export-row">
+      <button class="btn-primary" id="exportCsv">⇩ Exporter en CSV</button>
+      <button class="btn-primary" id="exportPdf" style="background:var(--behe); border-color:var(--behe);">⇩ Exporter en PDF</button>
+      <button class="btn-primary" id="exportJson">⇩ Exporter la liste (JSON)</button>
+      <button class="btn-ghost" id="importJsonBtn" style="border-color:var(--amber); color:var(--amber);">⇧ Importer une liste (JSON)</button>
+      <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
+      <button class="btn-danger" id="resetBtn">Vider le roster</button>
+    </div>
     <div id="rosterList"></div>
     <div id="groupSummary"></div>
     <div class="cat-breakdown" id="catBreakdown"></div>
     <div class="warnbox" id="warnBox"></div>
-	<div class="export-row">
-      <button class="btn-primary" id="exportCsv">⇩ Exporter en CSV</button>
-      <button class="btn-primary" id="exportPdf" style="background:var(--behe); border-color:var(--behe);">⇩ Exporter en PDF</button>
-      <button class="btn-danger" id="resetBtn">Vider le roster</button>
-	  <button class="btn-primary" id="exportJson">⇩ Exporter la liste (JSON)</button>
-      <button class="btn-ghost" id="importJsonBtn" style="border-color:var(--amber); color:var(--amber);">⇧ Importer une liste (JSON)</button>
-      <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
-    </div>
 
     <details class="glossary">
       <summary>Glossaire des règles spéciales (armes / unités / Behemoths)</summary>
@@ -231,10 +231,10 @@ function parseStats(u){
 
 function statsTableHtmlWeb(u){
   const p = parseStats(u);
-  const isInfantry = p.of !== '-' || p.df !== '-' || p.b !== '-';
-  return isInfantry
-    ? `<table class="stats-table"><tr><th>Mv</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr><tr><td>${p.mv}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr></table>`
-    : `<table class="stats-table"><tr><th>Mv</th><th>A</th><th>DP</th></tr><tr><td>${p.mv}</td><td>${p.a}</td><td>${p.dp}</td></tr></table>`;
+  return `<table class="stats-table">
+    <tr><th>Mv</th><th>A</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr>
+    <tr><td>${p.mv}</td><td>${p.a}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr>
+  </table>`;
 }
 
 function weaponTableHtml(u, variantName){
@@ -1228,7 +1228,11 @@ function exportPdf(){
   const tmap = transportLoadMap();
 
   const GROUP_PALETTE = ['#e8f3ff','#fff3e0','#e8f8ee','#f5e8ff','#fff9e0','#e0faf7','#ffe8ec','#eef0ff','#f0f7e0','#fbe8f6'];
-  const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
+const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
+    const hasAnySpecial = entries.some(e=>{
+      const u = UNITS.find(uu=>uu.id===e.unitId);
+      return u.special && u.special!=='—' && u.special!=='-';
+    });
     const load = tmap[gid] || {reqInf:0,capInf:0,reqVeh:0,capVeh:0};
     const overInf = load.reqInf > load.capInf;
     const overVeh = load.reqVeh > load.capVeh;
@@ -1248,11 +1252,10 @@ function exportPdf(){
       allWeapons.forEach(w=> extractGlossaryMatches(w.sp).forEach(m=>groupGlossary.set(m.term, m.def)));
 
 const p = parseStats(u);
-      const isInfantry = p.of !== '-' || p.df !== '-' || p.b !== '-';
-      const statsTable = isInfantry
-        ? `<table class="pdf-weapon-table"><tr><th>Mv</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr><tr><td>${p.mv}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr></table>`
-        : `<table class="pdf-weapon-table"><tr><th>Mv</th><th>A</th><th>DP</th></tr><tr><td>${p.mv}</td><td>${p.a}</td><td>${p.dp}</td></tr></table>`;
-
+      const statsTable = `<table class="pdf-weapon-table">
+        <tr><th>Mv</th><th>A</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr>
+        <tr><td>${p.mv}</td><td>${p.a}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr>
+      </table>`;
       const weapons = allWeapons.length
         ? `<table class="pdf-weapon-table">
             <tr><th>Arme</th><th>Arc</th><th>MA</th><th>R</th><th>Att</th><th>Ac</th><th>E</th><th>Spécial</th></tr>
@@ -1264,7 +1267,7 @@ return `<tr>
         <td class="col-cat">${u.category}${u.isBehemoth?' ⚙':''}<br><span class="dim">×${entry.squadSize} (${fmt(unitTotalPts(entry))} points)</span></td>
         <td class="col-unit"><b>${u.name}</b><br><span class="dim">${u.type} — ${v.name}</span></td>
         <td class="col-stats">${statsTable}</td>
-        <td class="col-special">${u.special}</td>
+${hasAnySpecial ? `<td class="col-special">${u.special}</td>` : ''}
         <td>${weapons}</td>
       </tr>`;
     }).join('');
@@ -1282,8 +1285,8 @@ return `<tr>
       <div class="pdf-group-head">Groupe ${gid} ${loadLine ? '— '+loadLine : ''}</div>
       <table>
         <tr>
-          <th class="col-cat">Cat.</th><th class="col-unit">Unité</th>
-          <th class="col-stats">Stats</th><th class="col-special">Spécial</th><th>Armement</th>
+<th class="col-cat">Cat.</th><th class="col-unit">Unité</th>
+          <th class="col-stats">Stats</th>${hasAnySpecial ? '<th class="col-special">Spécial</th>' : ''}<th>Armement</th>
         </tr>
         ${memberRows}
       </table>
@@ -1312,8 +1315,16 @@ return `<tr>
       .col-stats{ width:165px; white-space:nowrap; }
       .col-special{ width:60px; }
       .dim{ color:#777; font-size:9.5px; }
-      .pdf-weapon-table{ background:rgba(255,255,255,0.55); font-size:9px; width:100%; table-layout:auto; }
-      .pdf-weapon-table th, .pdf-weapon-table td{ border:1px solid #ddd; padding:2px 4px; }
+.pdf-weapon-table{ background:rgba(255,255,255,0.55); font-size:9px; width:100%; table-layout:fixed; }
+      .pdf-weapon-table th, .pdf-weapon-table td{ border:1px solid #ddd; padding:2px 4px; word-wrap:break-word; }
+      .pdf-weapon-table th:nth-child(1), .pdf-weapon-table td:nth-child(1){ width:22%; }
+      .pdf-weapon-table th:nth-child(2), .pdf-weapon-table td:nth-child(2){ width:7%; }
+      .pdf-weapon-table th:nth-child(3), .pdf-weapon-table td:nth-child(3){ width:8%; }
+      .pdf-weapon-table th:nth-child(4), .pdf-weapon-table td:nth-child(4){ width:10%; }
+      .pdf-weapon-table th:nth-child(5), .pdf-weapon-table td:nth-child(5){ width:7%; }
+      .pdf-weapon-table th:nth-child(6), .pdf-weapon-table td:nth-child(6){ width:7%; }
+      .pdf-weapon-table th:nth-child(7), .pdf-weapon-table td:nth-child(7){ width:6%; }
+      .pdf-weapon-table th:nth-child(8), .pdf-weapon-table td:nth-child(8){ width:33%; }
       .pdf-weapon-table th{ background:rgba(60,60,60,0.85); color:#fff; font-size:8.5px; }
       .pdf-group{ border-radius:6px; padding:10px; margin-bottom:16px; border:2px solid #bbb; }
       .pdf-group-head{ font-weight:bold; font-size:13px; margin-bottom:6px; }
