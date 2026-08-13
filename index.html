@@ -208,7 +208,7 @@ function weaponMatchesVariant(weaponName, variantName){
   const m = weaponName.match(/\(([^)]+)\)\s*$/);
   if(!m) return true; // pas de parenthèse = arme générique, toujours affichée
   const inside = m[1];
-  if (inside === 'All') return true; 
+  //if (inside === 'All') return true; 
   return inside.split(/[,/]/).map(s=>s.trim())
     .some(part => part.toLowerCase() === variantName.toLowerCase() || variantName.toLowerCase().includes(part.toLowerCase()));
 }
@@ -460,7 +460,7 @@ const UNITS = [
   weapons:[W('Nanomachine Surge','F/S/R','Full','9"',5,'2+','S8','Alt 1, Nanomachines, Seeker'), W('White Nanomachines','F/S/R','Full','9"',1,'2+',0,'Alt 1, Nanomachines, Repair 2: Vehicles')],
   variants:[{name:'Standard', pts:100}]},
 {id:'phr-advjetskimmer', faction:'PHR', name:'PHR Advanced Jetskimmer', category:'Support', squadMin:2, squadMax:4, rare:true, unique:false,
-  type:'Vehicle', mv:'8"', stats:'A5 DP1', special:'Ev2, Skimmer(All), Shield friendly Vehicles 3" 5+ (Aurora)',
+  type:'Vehicle', mv:'8"', stats:'A5 DP1', special:'Ev2, Skimmer, Shield friendly Vehicles 3" 5+ (Aurora)',
   weapons:[W('RXE-33 Molecular Agitator (Diana)','F/S/R','Full','18"',2,'2+',4,'Devastator 1, Focus 2'), W('Optical Disruption Beam (Aurora)','F/S/R','Full','24"',1,'2+',0,'Smoke')],
   variants:[{name:'Standard', pts:35}]},
 {id:'phr-artillerytank', faction:'PHR', name:'PHR Artillery Tank', category:'Support', squadMin:2, squadMax:4, rare:false, unique:false,
@@ -492,7 +492,7 @@ variants:[{name:'Thor', pts:50},{name:'Taranis', pts:50}]},
   weapons:[W('RX-11 Super Heavy Rail Cannon x2','F','4"','∞/24"',1,'3+',9,'Critical 1, Demo 1, Devastator 1, Precision 1'), W('RM-1 Stealth Missile Battery','F','8"','36/12"',2,'3+',3,'Pen 6+')],
   variants:[{name:'Standard', pts:170}]},
 {id:'phr-t2heavywalker', faction:'PHR', name:'Type-2 Heavy Battle Walker', category:'Heavy', squadMin:1, squadMax:6, rare:false, unique:false,
-  type:'Vehicle', mv:'2"', stats:'A7 DP2', special:'P5+(All), P3+, Command Centre, AWACS 12"(Zeus)',
+  type:'Vehicle', mv:'2"', stats:'A7 DP2', special:'P5+, P3+, Command Centre, AWACS 12"(Zeus)',
   weapons:[W('RX-20 Minigun','F/S','Full','36/12"',4,'3+','S3','-'), W('Dual RX-1 Railguns (Odin)','F/S','Full','∞/24"',2,'2+',7,'Demo 0'),
     W('Dual RXs-120 Smoothbores (Enyo)','F/S','Full','∞/12"',2,'2+',6,'Demo 2'), W('RX-1000 Sunspear Laser (Hyperion)','F/S','Full','∞',1,'2+',7,'Destroyer 5+'),
     W('RX-1 Railgun (Zeus)','F/S','Full','∞/24"',1,'2+',7,'Demo 0')],
@@ -511,7 +511,7 @@ variants:[{name:'Thor', pts:50},{name:'Taranis', pts:50}]},
     W('RX1-L Short Railgun x2 (L/R)','F/Sl,F/Sr','Full','∞/24"',1,'2+',6,'Demo 0')],
   variants:[{name:'Bellona', pts:155},{name:'Nemesis', pts:165}]},
 {id:'phr-frontierwalker', faction:'PHR', name:'Type-9 Frontier Walker', category:'Heavy', squadMin:1, squadMax:6, rare:true, unique:false,
-  type:'Vehicle', mv:'5"', stats:'A5 DP3', special:'Rapid Insertion 6"(All), P3+(Rashnu)',
+  type:'Vehicle', mv:'5"', stats:'A5 DP3', special:'Rapid Insertion 6", P3+(Rashnu)',
   weapons:[W('RX-20 Minigun Pair','F/S','Full','36/12"',8,'3+','S3','Strafe'), W('Hyperkinetic Hammer (Rashnu)','F/S','Full','CC',2,'2+',7,'Assault, Demo 1, Devastator 1'),
     W('RX-1 Railgun (Agas)','F/S','Full','∞/24"',1,'2+',7,'Demo 0'), W('RX-666 Flamethrower (Agas)','F/S','Full','8"',8,'3+','S2','Flame'),
     W('Beastslayer Blade (Agas)','F/S','Full','2"',4,'2+',5,'Assault, Ineffective: Zones, Strafe'), W('RXs-70 Styx Autocannons (Dahaka)','F/S','Full','36/18"',6,'3+',3,'Ignores Cover, Strafe'),
@@ -568,7 +568,7 @@ variants:[{name:'Thor', pts:50},{name:'Taranis', pts:50}]},
     W('MC-17 Guns (Columbus A)','F/S/R','Full','36/18"',2,'3+',2,'AA'), W('MF-666 Flamethrower (Columbus B)','F/S/R','Full','6"',6,'3+','S2','Flame')],
 variants:[{name:'Columbus A', pts:75},{name:'Columbus B', pts:75}]},
 {id:'phr-strikewalker', faction:'PHR', name:'Type-3 Strike Walker', category:'Vanguard', squadMin:1, squadMax:6, rare:false, unique:false,
-  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Jump 18", Rapid Insertion 8"(All), Command Centre, Ev1, Resilient(Hera)',
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Jump 18", Rapid Insertion 8", Command Centre, Ev1, Resilient(Hera)',
   weapons:[W('Twin RX-1L Short Railguns (Hera)','F/S','9"','∞/24"',2,'2+',6,'Demo 0'), W('RX-1L Short Railgun (Apollo A)','F/S','9"','∞/24"',1,'2+',6,'Demo 0'),
     W('RX-13 Cannon, Slugs (Apollo B)','F/S','6"','24/12"',2,'2+',4,'Alt-1'), W('RX-13 Cannon, Seeker Submunitions (Apollo B)','F/S','6"','24/12"',3,'3+','S1','Alt-1, Concussion, Seeker')],
   variants:[{name:'Apollo A', pts:35},{name:'Apollo B', pts:35},{name:'Hera', pts:65}]},
@@ -732,7 +732,7 @@ variants:[{name:'Columbus A', pts:75},{name:'Columbus B', pts:75}]},
 {id:'res-drill209', faction:'Resistance', name:'209 Splitting Drill', category:'Vanguard', squadMin:1, squadMax:1, rare:true, unique:false,
   type:'Vehicle', mv:'N/A', stats:'A7 DP8', special:'Subterranean Medium', weapons:[], variants:[{name:'Standard', pts:65}]},
 {id:'res-atvs', faction:'Resistance', name:'ATVs', category:'Vanguard', squadMin:2, squadMax:4, rare:false, unique:false,
-  type:'Infantry', mv:'9"', stats:'OF3 DF5+ B5+ DP3', special:'Bikes 1, Ev1, Infiltrate 18", UC(All), Scanner, Scout (Recon ATVs)',
+  type:'Infantry', mv:'9"', stats:'OF3 DF5+ B5+ DP3', special:'Bikes 1, Ev1, Infiltrate 18", UC, Scanner, Scout (Recon ATVs)',
   weapons:[W('Disruptor Array (Recon ATV)','F/S/R','Full','18"',1,'3+',0,'Drive-by, Jammer'), W('Grenade Launchers, Explosive (Attack ATV)','F/S','Full','9/6"',1,'3+',4,'Alt 1, Battery 1, Blast, Drive-by'), W('Grenade Launchers, Incendiary (Attack ATV)','F/S','Full','6"',1,'4+',4,'Alt 1, Concussion, Demo 0, Drive-by, Incendiary 3')],
   variants:[{name:'Recon ATVs', pts:25},{name:'Attack ATVs', pts:30}]},
 {id:'res-freeriders', faction:'Resistance', name:'Freeriders', category:'Vanguard', squadMin:2, squadMax:2, rare:false, unique:false,
@@ -835,7 +835,7 @@ variants:[{name:'Patton A', pts:25},{name:'Patton B', pts:25}]},
   weapons:[W('UM-101 Light Railguns','F','12"','∞/18"',2,'2+',5,'Demo 0'), W('UM-109 Airburst Missile Bank','F','12"','36/12"',3,'3+',3,'AA, Alt 1, Strafe'), W('UM-109 Penetrator Missile Bank','F','12"','36/12"',3,'3+',5,'Alt 1, Pen 6+, Strafe')],
   variants:[{name:'Standard', pts:75}]},
 {id:'ucm-armouredcommand', faction:'UCM', name:'UCM Armoured Command Vehicle', category:'Support', squadMin:1, squadMax:1, rare:true, unique:false,
-  type:'Vehicle', mv:'4"', stats:'A6 DP4', special:'Command Centre (All), Obscurer 4" (Panda)',
+  type:'Vehicle', mv:'4"', stats:'A6 DP4', special:'Command Centre , Obscurer 4" (Panda)',
   weapons:[W('Orbital Strike (Kodiak)','F/S/R','2"','∞',1,'3+',9,'Blast, Demo 2, Indirect'), W('UC-9 ECM Jammer (Panda)','F/S/R','Full','∞',1,'2+',0,'Jammer')],
   variants:[{name:'Kodiak', pts:120},{name:'Panda', pts:80}]},
 {id:'ucm-artilleryvehicle', faction:'UCM', name:'UCM Artillery Vehicle', category:'Support', squadMin:2, squadMax:4, rare:false, unique:false,
@@ -879,7 +879,7 @@ variants:[{name:'Patton A', pts:25},{name:'Patton B', pts:25}]},
     W('UM-701 Marksman Laser (Scimitar)','F','Full','∞',1,'2+',7,'Destroyer 6+, Precision 2'), W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-')],
   variants:[{name:'Gladius', pts:55},{name:'Scimitar', pts:55},{name:'Maul', pts:60}]},
 {id:'ucm-supergunship', faction:'UCM', name:'UCM Super Gunship', category:'Heavy', squadMin:1, squadMax:1, rare:true, unique:false,
-  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP9', special:'AWACS 18" (All), Command Centre, Scanner (Phoenix)',
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP9', special:'AWACS 18" , Command Centre, Scanner (Phoenix)',
   weapons:[W('Missile Bay','F','8"','36/9"',1,'3+',6,'Blast'), W('UM-903 Defence pods','F/S/R','8"','36/9"',2,'3+',2,'AA, Pen 6+'),
     W('UM-79 Tri-Minigun, Focused (L)','F/Sl','8"','24/18"',1,'3+',8,'Alt 1, Precision 1'), W('UM-79 Tri-Minigun, Spread (L)','F/Sl','8"','24/18"',12,'3+','S3','Alt 1, Precision 1, Strafe'),
     W('UM-79 Tri-Minigun, Focused (R)','F/Sr','8"','24/18"',1,'3+',8,'Alt 2, Precision 1'), W('UM-79 Tri-Minigun, Spread (R)','F/Sr','8"','24/18"',12,'3+','S3','Alt 2, Precision 1, Strafe'),
@@ -919,7 +919,7 @@ variants:[{name:'Patton A', pts:25},{name:'Patton B', pts:25}]},
   weapons:[W('MC-120 Punisher Cannons','F','3"','∞/18"',2,'3+',6,'Demo 0'), W('MM-111 Missile Pod','F','Full','36/9"',1,'3+',4,'Pen 6+'), W('MC-17 Guns (Columbus A)','F/S/R','Full','36/18"',2,'3+',2,'AA'), W('MF-666 Flamethrower (Columbus B)','F/S/R','Full','6"',6,'3+','S2','Flame')],
   variants:[{name:'Columbus A', pts:75},{name:'Columbus B', pts:75}]},
 {id:'ucm-troopbuggy', faction:'UCM', name:'UCM Troop Buggy', category:'Vanguard', squadMin:2, squadMax:4, rare:true, unique:false,
-  type:'Vehicle', mv:'9"', stats:'A4 DP1', special:'Delayed, Infiltrate 10" (All), Scout (Ferret)',
+  type:'Vehicle', mv:'9"', stats:'A4 DP1', special:'Delayed, Infiltrate 10" , Scout (Ferret)',
   weapons:[W('Twin UM-5 Gatling (Badger A)','F/S','Full','24/12"',5,'3+','S2','-'), W('UM-108 Missile (Badger B)','F/S','Full','36/9"',1,'3+',6,'L1, Demo 0')],
   variants:[{name:'Badger A', pts:10},{name:'Badger B', pts:10},{name:'Ferret', pts:15}]},
 {id:'ucm-wolverine', faction:'UCM', name:'Wolverine Buggy', category:'Vanguard', squadMin:4, squadMax:8, rare:false, unique:false,
@@ -1374,7 +1374,7 @@ function usedGlossaryTerms(){
     const u = UNITS.find(uu=>uu.id===entry.unitId);
     const v = u.variants[entry.variantIdx];
 	const filteredSpecial = filterSpecialByVariant(u.special, v.name);
-    bits.push(u.special);
+    bits.push(filteredSpecial);
     (u.gear||[]).forEach(g=>bits.push(g));
     const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
     const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
