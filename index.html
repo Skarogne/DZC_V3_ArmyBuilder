@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DZC // Roster Builder</title>
+<style>
+  :root{
+    --bg:#0d1012; --panel:#161a1d; --panel2:#1d2226; --line:#2a3136;
+    --text:#dfe6ea; --dim:#8b9aa3;
+    --amber:#e0a339; --amber-dim:#7a5b22;
+    --phr:#7fd4e8; --res:#d9713d;
+    --bad:#e15b5b; --good:#5bc98a; --behe:#b98cf0;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    --disp: "Arial Narrow", Oswald, Impact, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,Segoe UI,Roboto,sans-serif; -webkit-font-smoothing:antialiased;}
+  .topbar{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:14px 20px; background:linear-gradient(180deg,#14181b,#101315); border-bottom:2px solid var(--amber-dim); position:sticky; top:0; z-index:10;}
+  .brand{ font-family:var(--disp); font-weight:700; letter-spacing:3px; font-size:19px; text-transform:uppercase; color:var(--amber); display:flex; align-items:center; gap:10px;}
+  .brand .tag{ font-size:10px; letter-spacing:2px; color:var(--dim); font-family:var(--mono); font-weight:400;}
+  .field{ display:flex; flex-direction:column; gap:3px; }
+  .field label{ font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--dim); }
+  select, input[type=number], input[type=text]{ background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:4px; padding:6px 8px; font-size:13px; font-family:var(--mono);}
+  select:focus, input:focus{ outline:1px solid var(--amber); }
+  .spacer{flex:1;}
+  .stat-pill{ font-family:var(--mono); font-size:12px; padding:7px 12px; border-radius:5px; background:var(--panel2); border:1px solid var(--line); text-align:center; min-width:88px;}
+  .stat-pill b{ display:block; font-size:14px; font-family:var(--disp); letter-spacing:1px;}
+  .stat-pill.warn{ border-color:var(--bad); color:var(--bad); }
+  .stat-pill.ok{ border-color:var(--good); }
+
+  .layout{ display:grid; grid-template-columns:1fr 400px; gap:0; min-height:calc(100vh - 64px); }
+  @media (max-width:960px){ .layout{ grid-template-columns:1fr; } }
+
+  .catalog{ padding:16px 18px; overflow-y:auto; }
+  .catalog-controls{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .catalog-controls input[type=text]{ flex:1; min-width:160px; }
+
+  .cat-group{ margin-bottom:22px; }
+  .cat-group h3{ font-family:var(--disp); text-transform:uppercase; letter-spacing:2px; font-size:13px; color:var(--dim); border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:8px; display:flex; justify-content:space-between;}
+
+  .unit-card{ background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:6px; padding:10px 12px; margin-bottom:8px;}
+  .unit-card.phr{ border-left-color:var(--phr); }
+  .unit-card.res{ border-left-color:var(--res); }
+  .unit-card.behe{ border-left-color:var(--behe); background:#191420; }
+  .unit-img-wrap{ float:left; width:96px; height:96px; margin-right:12px; margin-bottom:4px; }
+  .unit-img-wrap img{ width:96px; height:96px; object-fit:contain; border-radius:5px; border:1px solid var(--line); display:block; }
+  .unit-img-placeholder{ width:96px; height:96px; border-radius:5px; border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:10px; color:var(--dim); text-align:center; padding:4px; }
+  .unit-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .unit-name{ font-weight:700; font-size:14px; }
+  .unit-tags{ font-size:10px; color:var(--dim); font-family:var(--mono); }
+  .unit-tags .flag{ color:var(--amber); }
+  .unit-tags .flag.behe{ color:var(--behe); }
+  .unit-stats{ font-family:var(--mono); font-size:11.5px; color:var(--dim); margin-top:4px; }
+.weapon-table{ clear:left; margin-top:6px; border-top:1px dashed var(--line); padding-top:6px; }
+.stats-table{ width:auto; border-collapse:collapse; margin-top:2px; font-family:var(--mono); font-size:11px; }
+  .stats-table th, .stats-table td{ border:1px solid var(--line); padding:2px 6px; text-align:center; white-space:nowrap; }
+  .stats-table th{ background:var(--panel2); color:var(--dim); font-weight:700; }
+  .weapon-row{ font-family:var(--mono); font-size:10.5px; color:#b7c2c8; padding:1px 0; display:grid; grid-template-columns: 1.4fr 0.5fr 0.55fr 0.7fr 0.35fr 0.35fr 0.35fr 1.6fr; gap:4px; }
+  .weapon-row.hdr{ color:var(--dim); font-weight:700; border-bottom:1px solid var(--line); padding-bottom:2px; margin-bottom:2px;}
+  .gear-line{ font-family:var(--mono); font-size:10.5px; color:var(--behe); margin-top:5px; }
+  .unit-controls{ display:flex; gap:8px; margin-top:8px; align-items:flex-end; flex-wrap:wrap; }
+  .unit-controls .field{ min-width:90px; }
+  button{ font-family:inherit; cursor:pointer; border-radius:4px; border:1px solid var(--line); background:var(--panel2); color:var(--text); padding:6px 12px; font-size:12px;}
+  button:hover{ border-color:var(--amber); color:var(--amber); }
+  .btn-add{ background:var(--amber-dim); border-color:var(--amber); color:#1a1400; font-weight:700; }
+  .btn-add:hover{ background:var(--amber); color:#1a1400; }
+  .btn-danger{ border-color:var(--bad); color:var(--bad); background:transparent; }
+  .btn-danger:hover{ background:var(--bad); color:#1a0000; }
+  .btn-primary{ background:var(--good); border-color:var(--good); color:#06210f; font-weight:700;}
+  .btn-primary:hover{ filter:brightness(1.1); color:#06210f; }
+  .btn-ghost{ background:transparent; }
+
+  .roster{ background:var(--panel); border-left:2px solid var(--line); padding:16px 18px; overflow-y:auto; }
+  .roster h2{ font-family:var(--disp); text-transform:uppercase; letter-spacing:2px; font-size:15px; margin:0 0 12px; }
+  .summary-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:16px; }
+  .roster-empty{ color:var(--dim); font-size:13px; font-style:italic; padding:20px 0; text-align:center; border:1px dashed var(--line); border-radius:6px;}
+
+  .roster-entry{ background:var(--panel2); border:1px solid var(--line); border-radius:6px; padding:8px 10px; margin-bottom:7px;}
+  .roster-entry.behe{ border-color:var(--behe); }
+  .re-top{ display:flex; justify-content:space-between; gap:8px; font-size:13px;}
+  .re-top .n{ font-weight:700; }
+  .re-top .p{ font-family:var(--mono); color:var(--amber); }
+  .re-sub{ font-size:11px; color:var(--dim); margin-top:2px; font-family:var(--mono); display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .re-sub input[type=number]{ width:52px; padding:2px 4px; font-size:11px;}
+  .re-sub .grp-input{ width:38px; }
+  .re-remove{ font-size:11px; color:var(--bad); background:none; border:none; cursor:pointer; padding:0 4px;}
+  .re-remove:hover{ text-decoration:underline; }
+
+  .warnbox{ margin-top:14px; }
+  .warn-item{ font-size:11.5px; padding:7px 9px; border-radius:5px; margin-bottom:6px; font-family:var(--mono);}
+  .warn-item.bad{ background:#2a1414; border:1px solid var(--bad); color:#ff9d9d; }
+  .warn-item.good{ background:#12241a; border:1px solid var(--good); color:#a8f0c6; }
+
+  .group-block{ background:var(--panel2); border:1px solid var(--line); border-radius:6px; padding:7px 10px; margin-bottom:8px; }
+  .group-block.ok{ border-left:3px solid var(--good); }
+  .group-block.bad{ border-left:3px solid var(--bad); }
+  .group-block h4{ margin:0 0 4px; font-family:var(--disp); letter-spacing:1px; font-size:12px; color:var(--amber); display:flex; justify-content:space-between; }
+  .group-block .gb-member{ font-size:11px; font-family:var(--mono); color:var(--dim); padding:1px 0; }
+  .group-block .gb-member.transport{ color:var(--phr); }
+  .group-block .gb-load{ font-size:10.5px; font-family:var(--mono); margin-top:4px; display:flex; gap:14px; }
+  .group-block .gb-load span.over{ color:var(--bad); font-weight:700; }
+
+  .cat-breakdown{ margin-top:12px; font-size:11.5px; }
+  .cat-breakdown div{ display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid var(--line); font-family:var(--mono);}
+  .cat-breakdown .over{ color:var(--bad); }
+
+  .export-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .export-row button{ flex:1 1 45%; padding:10px; font-size:11px; text-transform:uppercase; letter-spacing:1px;}
+
+  .footnote{ font-size:10.5px; color:var(--dim); margin-top:16px; line-height:1.5; border-top:1px solid var(--line); padding-top:10px;}
+
+  details.glossary{ margin-top:16px; border:1px solid var(--line); border-radius:6px; padding:8px 10px; }
+  details.glossary summary{ cursor:pointer; font-family:var(--disp); letter-spacing:1px; text-transform:uppercase; font-size:12px; color:var(--amber);}
+  .gloss-grid{ margin-top:8px; display:grid; grid-template-columns:1fr; gap:4px; max-height:260px; overflow-y:auto;}
+  .gloss-item{ font-size:11px; font-family:var(--mono); color:var(--dim); border-bottom:1px dotted var(--line); padding:3px 0;}
+  .gloss-item b{ color:var(--text); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">⛛ DZC ROSTER <span class="tag">V3.01 // BUILD TOOL</span></div>
+
+  <div class="field"><label>Faction</label>
+<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option></select>
+  </div>
+
+  <div class="field"><label>Taille de partie</label>
+    <select id="gameSizeSelect">
+      <option value="Skirmish">Skirmish (501-1000)</option>
+      <option value="Clash" selected>Clash (1001-2000)</option>
+      <option value="Battle">Battle (2001-3000)</option>
+      <option value="Reconquest">Reconquest (3001+)</option>
+    </select>
+  </div>
+
+  <div class="field"><label>Points visés</label>
+    <input type="number" id="targetPoints" value="1750" step="5" style="width:90px;">
+  </div>
+
+  <div class="spacer"></div>
+  <div class="stat-pill" id="pillPoints">0 / 0<b>PTS</b></div>
+  <div class="stat-pill" id="pillGroups">0 / 0<b>GROUPES</b></div>
+  <div class="stat-pill" id="pillStatus">—<b>STATUT</b></div>
+</div>
+
+<div class="layout">
+  <div class="catalog">
+    <div class="catalog-controls">
+      <input type="text" id="searchBox" placeholder="Rechercher une unité...">
+      <select id="catFilter">
+        <option value="">Toutes catégories</option>
+        <option>Standard</option><option>Vanguard</option><option>Heavy</option>
+        <option>Support</option><option>Transport</option><option>Behemoth</option>
+      </select>
+    </div>
+    <div id="catalogList"></div>
+  </div>
+
+  <div class="roster">
+    <h2>Feuille de Roster</h2>
+<div class="summary-grid" id="summaryGrid"></div>
+    <div class="export-row">
+      <button class="btn-primary" id="exportCsv">⇩ Exporter en CSV</button>
+      <button class="btn-primary" id="exportPdf" style="background:var(--behe); border-color:var(--behe);">⇩ Exporter en PDF</button>
+      <button class="btn-primary" id="exportJson">⇩ Exporter la liste (JSON)</button>
+      <button class="btn-ghost" id="importJsonBtn" style="border-color:var(--amber); color:var(--amber);">⇧ Importer une liste (JSON)</button>
+      <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
+      <button class="btn-danger" id="resetBtn">Vider le roster</button>
+    </div>
+    <div id="rosterList"></div>
+    <div id="groupSummary"></div>
+    <div class="cat-breakdown" id="catBreakdown"></div>
+    <div class="warnbox" id="warnBox"></div>
+
+    <details class="glossary">
+      <summary>Glossaire des règles spéciales (armes / unités / Behemoths)</summary>
+      <div class="gloss-grid" id="glossGrid"></div>
+    </details>
+
+    <div class="footnote">
+      Un « Groupe » = une escouade (et son transport dédié le cas échéant). Donnez le même n° de Groupe
+      à une escouade et à son transport pour qu'ils comptent comme un seul Groupe. Plafond de points par
+      Groupe : 25% du total visé (V3.01, 3.2). Les Behemoths comptent leur "Group Equivalent" en nombre
+      de Groupes consommés (limite max de Groupes) mais restent évalués comme 1 seul Groupe pour le
+      plafond de 25%. Colonnes Arc/MA/R/Att/Ac/E = Arc de tir / Move&Attack / Portée / Nb d'attaques /
+      Précision / Énergie, telles que publiées sur les stat cards officielles.
+      <br><br>
+      <b>Capacité de transport (V3) :</b> remplace les 0 dans le bloc <code>TRANSPORT_DATA</code> en
+      haut du script — <code>reqInf</code>/<code>reqVeh</code> pour ce qu'une unité prend comme place
+      (Infanterie ou Véhicule), <code>capInf</code>/<code>capVeh</code> pour ce qu'un transport offre.
+      Une unité transportée DOIT être dans le même n° de Groupe que son transport (mets le même
+      numéro dans le champ « Groupe » du roster) : le panneau « Groupe X » ci-dessus liste qui
+      transporte qui et signale en rouge tout dépassement Inf ou Véh. Le détail est repris dans l'export CSV.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- WEAPON HELPER ---------------- */
+function W(n,arc,ma,r,att,ac,e,sp){ return {n,arc,ma,r,att,ac,e,sp}; }
+function weaponLine(w){
+  return `${w.n} — ${w.arc} / MA ${w.ma} / R ${w.r} / Att ${w.att} / Ac ${w.ac} / E ${w.e}${w.sp && w.sp!=='-' ? ' / ['+w.sp+']' : ''}`;
+}
+
+function weaponMatchesVariant(weaponName, variantName){
+  const m = weaponName.match(/\(([^)]+)\)\s*$/);
+  if(!m) return true; // pas de parenthèse = arme générique, toujours affichée
+  const inside = m[1];
+  return inside.split(/[,/]/).map(s=>s.trim())
+    .some(part => part.toLowerCase() === variantName.toLowerCase() || variantName.toLowerCase().includes(part.toLowerCase()));
+}
+
+function parseStats(u){
+  const s = u.stats;
+  const mA = s.match(/A(\d+)/);
+  const mOF = s.match(/OF(\d+)/);
+  const mDF = s.match(/DF([A-Za-z0-9+]+)/);
+  const mB = s.match(/B\(?([A-Za-z0-9+]+)\)?/);
+  const mDP = s.match(/DP\s*([\d/]+)/);
+  return {
+    mv: u.mv,
+    a:  mA  ? mA[1]  : '-',
+    of: mOF ? mOF[1] : '-',
+    df: mDF ? mDF[1] : '-',
+    b:  mB  ? mB[1]  : '-',
+    dp: mDP ? mDP[1] : '-'
+  };
+}
+
+function statsTableHtmlWeb(u){
+  const p = parseStats(u);
+  return `<table class="stats-table">
+    <tr><th>Mv</th><th>A</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr>
+    <tr><td>${p.mv}</td><td>${p.a}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr>
+  </table>`;
+}
+
+function weaponTableHtml(u, variantName){
+  const filtered = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, variantName));
+  if(filtered.length===0) return '<div class="unit-stats" style="font-style:italic;">Sans armement</div>';
+  return `<div class="weapon-table">
+    <div class="weapon-row hdr"><span>Arme</span><span>Arc</span><span>MA</span><span>R</span><span>Att</span><span>Ac</span><span>E</span><span>Spécial</span></div>
+    ${filtered.map(w=>`<div class="weapon-row"><span>${w.n}</span><span>${w.arc}</span><span>${w.ma}</span><span>${w.r}</span><span>${w.att}</span><span>${w.ac}</span><span>${w.e}</span><span>${w.sp}</span></div>`).join('')}
+  </div>`;
+}
+
+function parseOptionalCost(weaponName){
+  const m = weaponName.match(/\(\+\s*(\d+)\s*pts\*?\)/i);
+  return m ? parseInt(m[1],10) : null;
+}
+function isOptionalWeapon(w){ return parseOptionalCost(w.n) !== null; }
+function optionalWeaponsOf(u){ return u.weapons.filter(isOptionalWeapon); }
+
+
+
+/* ---------------- GLOSSARY ---------------- */
+const GLOSSARY = [
+["Ac","Précision (jet requis pour toucher, avant modificateurs)."],
+["Att","Nombre d'attaques (tirs) de l'arme."],
+["E","Énergie de l'arme, comparée à l'Armure (A) de la cible via la table de dégâts."],
+["MA (Move & Attack)","Distance max. que l'unité peut parcourir tout en utilisant cette arme dans la même activation."],
+["R","Portée. Deux valeurs séparées par / : la 2e s'applique contre Véhicules/Aéronefs (contre-mesures actives)."],
+["A / DF","Armure (Véhicules/Aéronefs) ou Défense (Infanterie) — sert à bloquer les dégâts."],
+["OF","Offense — pool de dés en combat rapproché (CQB) pour l'Infanterie."],
+["B (Bravery)","Bravoure — seuil de test moral ; 'A' = réussite automatique."],
+["DP","Points de Dégâts (vie) de l'unité."],
+["Ev X","Contre-mesures d'Évasion : les attaquants subissent -X Ac contre cette unité."],
+["P X+ / Passive CM","Contre-mesures passives : sauvegarde sur X+ contre les dégâts (pénalisée à E9, ignorée à E10+)."],
+["S (avant l'E, ex: S2)","Arme à Énergie 'Small Arms' — ne blesse l'infanterie qu'en 1 DP automatique par touche, doit combiner 5 attaques pour endommager Véhicules/Aéronefs."],
+["Demo X","Dégâts supplémentaires automatiques infligés en plus contre les Zones (bâtiments/aires)."],
+["Devastator X","Ajoute X dégâts supplémentaires à chaque touche réussie contre le type de cible visé."],
+["Destroyer X+","Touche = critique automatique si le jet de dégâts atteint X+, sans jet normal."],
+["Critical X","Modifie le nombre de dégâts supplémentaires infligés par un Critique."],
+["Focus X","Peut sacrifier des tirs touchés pour ajouter +X à l'Énergie d'un tir restant."],
+["Pen X+","Touche automatiquement sur un jet de dégâts de X+ quel que soit l'Énergie/l'Armure."],
+["AA / AA-S / AA-R","Peut cibler les Aéronefs (Anti-Aircraft). Seules ces armes peuvent viser des Aéronefs en vol."],
+["Strafe","Peut répartir librement ses attaques entre plusieurs cibles proches les unes des autres."],
+["Blast","Utilise un gabarit qui touche toutes les unités sous le template."],
+["Indirect","Peut tirer sans ligne de vue directe (souvent via une unité Scout), généralement avec malus."],
+["Ignores Cover","Ignore les effets de couverture (Obscured) de la cible."],
+["Ineffective: Zones","Cette arme ne peut pas endommager les Zones (bâtiments/aires)."],
+["Articulated","Peut mesurer la ligne de vue depuis un point plus élevé (tourelle repliable)."],
+["Alt X","Arme à tirs alternatifs : les armes partageant le même X ne peuvent tirer qu'un seul profil par Round."],
+["L X (Limited)","Munitions limitées : ne peut être tirée que X fois par partie."],
+["Overcharge X","Effet de surcharge, généralement lié à une pénalité ou un bonus temporaire (voir texte d'unité)."],
+["Precision X","Modifie/atténue un effet aléatoire (ex: Systems Damage) de X."],
+["T X","Bonus de suivi/verrouillage contre certaines cibles (valeur contextuelle propre à l'arme — vérifier le rulebook exact)."],
+["Seeker","Arme guidée bénéficiant d'un bonus de précision contre certaines cibles désignées."],
+["Concussion","Inflige un statut de perturbation (Concussed) à la cible touchée."],
+["Suppress","Inflige un statut de Suppression limitant les actions de la cible."],
+["Smoke","Génère un statut/zone de fumée gênant la visée."],
+["Jammer","Perturbe les capacités de commandement/visée ennemies à proximité."],
+["Needs Spotter","Nécessite qu'une autre unité amie ait un repérage/visée sur la cible pour pouvoir attaquer."],
+["Repair X: [type]","Restaure X Points de Dégâts au type d'unité indiqué en fin d'activation."],
+["Nanomachines","Arme avec Indirect + Ineffective:Zones automatiques ; ne peut viser les Aéronefs ni attaquer en étant Sited."],
+["Supercruise","L'unité peut se déclarer 'Supercruise' en début d'activation : ses armes et celles la visant subissent -1Ac jusqu'à la fin du Round."],
+["Dissipate X","Réduit un effet ou une accumulation de X (contexte spécifique à l'arme)."],
+["Incendiary X","Inflige des dégâts/effets de feu supplémentaires liés à X."],
+["Battery X","Nombre de tirs en série que l'arme peut effectuer en une salve."],
+["Drive-by","Peut attaquer même après un mouvement complet, typique des véhicules légers/motos."],
+["Assault","Permet l'attaque en Corps-à-Corps/CQB avec cette arme."],
+["Ram","Après un mouvement complet, l'unité peut charger : elle perd 1 DP sur 4+ après l'attaque."],
+["SelfDestruct","L'unité peut se sacrifier pour infliger des dégâts (souvent en fin de vie ou sur commande)."],
+["Command Centre","Un Commandant peut être assigné à cette unité comme s'il avait la catégorie Command."],
+["Obscurer X\"","Les unités amies dans ce rayon bénéficient d'un bonus de dissimulation (Obscured)."],
+["Scanner","Peut réaliser une action spéciale de reconnaissance/detection."],
+["Surveyor","Peut aider à la recherche/l'analyse du terrain ou des Objects."],
+["Scout","Unité de reconnaissance ; permet notamment de servir de point de ligne de vue pour Indirect."],
+["AWACS X\"","Fournit un bonus de soutien (souvent en précision/anti-air) aux unités amies dans ce rayon."],
+["Hardy X+","Réduit les effets de certains résultats négatifs (contexte selon l'unité)."],
+["Jump X\"","Peut se déplacer en ignorant certains obstacles/terrain jusqu'à X\", souvent lié à Rapid Insertion."],
+["Lethal","Bonus offensif en combat rapproché (CQB)."],
+["Rapid Insertion X\"","Peut débarquer d'un Aéronef n'ayant pas atterri, dans les conditions et à la distance indiquées."],
+["Infiltrate X\"","Peut être déployée directement sur le terrain à X\" du bord de table, même hors zone de déploiement normale."],
+["Agile X","Sauvegarde supplémentaire en CQB (façon 'esquive')."],
+["FS X (Fortified/Firing Solution)","Bonus contextuel à l'unité d'infanterie (voir texte spécifique de l'unité)."],
+["Fast Mover","Doit se déplacer chaque activation, vitesse min/max, peut voler haut, entre généralement en Réserve."],
+["Resilient","Réduit ou évite certains effets de Critique/dégâts spéciaux."],
+["Large","Ne peut pas être Obscured/Hull-Down ; gabarit imposant."],
+["Wide X\"","Double (ou étend selon X) la distance de cohérence de l'unité."],
+["UC","Peut toujours utiliser sa 1ère valeur de portée même contre des contre-mesures actives."],
+["Bikes X","Traitée comme Véhicule (Armure X) hors des Zones, redevient Infanterie dedans."],
+["Aegis X\"","Bonus défensif aux unités amies à portée (souvent contre certains types de tirs)."],
+["Bloodthirsty","Ne peut fuir/quitter une Zone contenant des ennemis ; malus en recherche d'Objects."],
+["Terror","Inflige un effet de peur/malus moral aux ennemis engagés au contact."],
+["Living Weapons","Les armes de l'unité sont liées à ses caractéristiques biologiques (contexte K9/créatures)."],
+["Dogs","Trait des unités canines (Resistance) lié au Corps-à-Corps."],
+["Breachers X","Bonus pour forcer l'entrée dans les Zones/structures fortifiées."],
+["Demo Charges X+","Bonus aux dégâts de démolition contre les Zones."],
+["Overwatch","Peut réagir aux mouvements ennemis à proximité par une attaque hors séquence."],
+["Firing Ports","Le Transport gagne les armes (hors CC) d'une escouade embarquée qui ne débarque pas ce Round."],
+["Flexible Capacity","Ce Transport peut être pris avec seulement la moitié de sa capacité remplie."],
+["Subterranean Small/Medium","Unité 'foreuse' permettant à des escouades de commencer la partie en Holding et d'émerger en jeu."],
+["Directed","Unité non achetable seule ; accompagne automatiquement un Behemoth possédant le Gear Director."],
+["Integrated Gate","Le Behemoth fonctionne comme une Porte Auxiliaire (Gate) Shaltari/PHR pour l'embarquement."],
+["Lithe","Le centre du Behemoth compte comme n'importe quelle autre partie de lui-même sur les Zones."],
+["Walker X\"xY\"","Gabarit cylindrique (rayon X, hauteur Y) utilisé pour mesurer portée/ligne de vue/placement du Behemoth."],
+["Power","Nombre de Power Tokens (PT) générés en début de Round, dépensés pour activer le Behemoth plusieurs fois."],
+["Group Equivalent","Nombre de Groupes 'consommés' par un Behemoth dans la limite totale de Groupes de l'armée."],
+["AS X (Anti-Systems)","Peut modifier de ±X le jet de la table Systems Damage infligée à un Behemoth touché."],
+["Huge Blast","Gabarit Blast de 8\" de diamètre au lieu de 5\"."],
+["Integral","Nécessite 2 résultats 'Weapon Destroyed' pour être neutralisée ; ne peut tirer qu'en Volley."],
+["LT X\" (Limited Traverse)","Ne peut pas attaquer une unité non-Behemoth à moins de X\"."],
+["Linked X","Les armes partageant le même X comptent comme une seule arme pour les actions et le coût en PT."],
+["Macro","Inflige automatiquement 2 DP par touche aux non-Behemoths (sans jet), ignore les contre-mesures passives, tue l'infanterie instantanément."],
+["Secondary","Peut tirer en plus d'une autre arme à la fin de n'importe quelle Action du Behemoth."],
+["Capacitors: X","Peut recevoir un bonus temporaire via le Gear 'Weapons Capacitors' du Behemoth."],
+["Disrupt","Ajoute un jet de Systems Damage supplémentaire non modifiable si l'arme blesse un Behemoth."],
+["Razorworm Pod / Particle","Effets spécifiques au profil d'arme concerné — se référer au texte de l'unité."]
+];
+
+/* ---------------- IMAGES ------------------------------ */
+const UNIT_IMAGES = {
+  'phr-angelos': 'phr-angelos.png', 'phr-immortals': 'phr-immortals.png', 'phr-proteus': 'phr-proteus.png', 'phr-t1walker': 'phr-t1walker.png',
+  'phr-hecate': 'phr-hecate.png', 'phr-luna': 'phr-luna.png', 'phr-medusa': 'phr-medusa.png', 'phr-advjetskimmer': 'phr-advjetskimmer.png',
+  'phr-artillerytank': 'phr-artillerytank.png', 'phr-siren': 'phr-siren.png', 'phr-supjetskimmer': 'phr-supjetskimmer.png', 'phr-tritonx': 'phr-tritonx.png',
+  'phr-t3emwalker': 'phr-t3emwalker.png', 'phr-tiamat': 'phr-tiamat.png', 'phr-t2heavywalker': 'phr-t2heavywalker.png', 'phr-battlescorpion': 'phr-battlescorpion.png',
+  'phr-commandscorpion': 'phr-commandscorpion.png', 'phr-frontierwalker': 'phr-frontierwalker.png', 'phr-lokheira': 'phr-lokheira.png', 'phr-type7grandwalker': 'phr-type7grandwalker.png',
+  'phr-type6grandwalker': 'phr-type6grandwalker.png', 'phr-mercuryscout': 'phr-mercuryscout.png', 'phr-longreach': 'phr-longreach.png', 'phr-airsuperiority': 'phr-airsuperiority.png',
+  'phr-columbuswalker': 'phr-columbuswalker.png', 'phr-strikewalker': 'phr-strikewalker.png', 'phr-scoutwalker': 'phr-scoutwalker.png', 'phr-valkyrie': 'phr-valkyrie.png',
+  'phr-juno': 'phr-juno.png', 'phr-neptune': 'phr-neptune.png', 'phr-njord': 'phr-njord.png', 'phr-poseidon': 'phr-poseidon.png',
+  'phr-tritonlightdrop': 'phr-tritonlightdrop.png', 'phr-tritonlighttroop': 'phr-tritonlighttroop.png', 'phr-atlasquad': 'phr-atlasquad.png',
+  'res-mcclellan': 'res-mcclellan.png', 'res-commandhover': 'res-commandhover.png', 'res-fighters': 'res-fighters.png', 'res-mbt': 'res-mbt.png',
+  'res-technical': 'res-technical.png', 'res-wagon': 'res-wagon.png', 'res-artillerywagon': 'res-artillerywagon.png', 'res-attackheli': 'res-attackheli.png',
+  'res-berserkers': 'res-berserkers.png', 'res-lifthawkgun': 'res-lifthawkgun.png', 'res-mechloader': 'res-mechloader.png', 'res-bombbus': 'res-bombbus.png',
+  'res-repairtechnical': 'res-repairtechnical.png', 'res-sentry': 'res-sentry.png', 'res-strikehawk': 'res-strikehawk.png', 'res-atilla': 'res-atilla.png',
+  'res-carryhawk': 'res-carryhawk.png', 'res-hellhog': 'res-hellhog.png', 'res-occupation': 'res-occupation.png', 'res-ordnancebus': 'res-ordnancebus.png',
+  'res-superheavy': 'res-superheavy.png', 'res-thunderstorm': 'res-thunderstorm.png', 'res-explorator': 'res-explorator.png', 'res-miningengine': 'res-miningengine.png',
+  'res-drill109': 'res-drill109.png', 'res-drill209': 'res-drill209.png', 'res-atvs': 'res-atvs.png', 'res-freeriders': 'res-freeriders.png',
+  'res-k9pack': 'res-k9pack.png', 'res-columbuswalker': 'res-columbuswalker.png', 'res-sappers': 'res-sappers.png', 'res-tempest': 'res-tempest.png',
+  'res-theropod': 'res-theropod.png', 'res-battlebus': 'res-battlebus.png', 'res-jackson': 'res-jackson.png', 'res-k9technical': 'res-k9technical.png',
+  'res-kraken': 'res-kraken.png', 'res-leviathan': 'res-leviathan.png', 'res-lifthawkdrop': 'res-lifthawkdrop.png', 'res-lifthawktroop': 'res-lifthawktroop.png',
+  'res-patton': 'res-patton.png', 'res-swifthawk': 'res-swifthawk.png'
+
+};
+
+/* ---------------- TRANSPORT: Requirement / Capacity par type (V3, à remplir toi-même) ----------------
+   reqInf / reqVeh = place prise PAR UNE unité (de ce type) quand elle embarque (0 = n'a pas ce besoin)
+   capInf / capVeh = place OFFERTE PAR UNE unité si elle sert de transport pour ce type (0 = n'offre pas cette capacité)
+   Règle V3 : requirement <= capacity du transporteur, SÉPARÉMENT pour Infanterie et Véhicule
+   (un transport à capacité Véhicule ne peut pas embarquer de l'Infanterie et inversement).
+   Une unité peut cumuler requirement ET capacity (ex: IFV qui transporte de l'infanterie tout en
+   étant lui-même transportable par un plus gros Dropship).
+   Ces valeurs sont multipliées par la taille d'escouade de l'entrée dans le roster.
+------------------------------------------------------------- */
+const TRANSPORT_DATA = {};
+Object.keys(UNIT_IMAGES).forEach(id => { TRANSPORT_DATA[id] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0, exclusive:false, reqEither:false}; });
+TRANSPORT_DATA['phr-immortals'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['phr-juno'] = {reqInf:0, reqVeh:1, capInf:2, capVeh:0, reqEither:false};
+TRANSPORT_DATA['phr-t1walker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['phr-neptune'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:2, reqEither:false};
+TRANSPORT_DATA['phr-advjetskimmer'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['phr-t2heavywalker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['phr-t3emwalker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['phr-atlasquad'] = {reqInf:0, reqVeh:2, capInf:4, capVeh:0, reqEither:false};
+TRANSPORT_DATA['phr-lokheira'] = {reqInf:0, reqVeh:2, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['phr-longreach'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+
+TRANSPORT_DATA['res-commandhover'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['res-fighters'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['res-mbt'] = {reqInf:0, reqVeh:3, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['res-wagon'] = {reqInf:0, reqVeh:2, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['res-lifthawkdrop'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:6, reqEither:false};
+TRANSPORT_DATA['res-jackson'] = {reqInf:0, reqVeh:2, capInf:2, capVeh:0, reqEither:false};
+TRANSPORT_DATA['res-kraken'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:6, reqEither:false};
+TRANSPORT_DATA['res-attackheli'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['res-atilla'] = {reqInf:3, reqVeh:3, capInf:0, capVeh:0, reqEither:true}
+TRANSPORT_DATA['res-tempest'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['res-superheavy'] = {reqInf:0, reqVeh:6, capInf:0, capVeh:0, reqEither:false};
+TRANSPORT_DATA['res-berserkers'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+
+
+/* ---------------- DATA: UNITS ---------------- */
+const UNITS = [
+// ===== PHR — Standard =====
+{id:'phr-angelos', faction:'PHR', name:'Angelos Jetskimmer', category:'Standard', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Ev1, Skimmer',
+  weapons:[W('RXs-120 Smoothbore (A1)','F/S/R','Full','∞/12"',1,'2+',6,'Demo 2'), W('RX-666 Flamethrower (A2)','F/S','Full','8"',8,'3+','S2','Flame')],
+  variants:[{name:'Standard', pts:30}]},
+{id:'phr-immortals', faction:'PHR', name:'Immortals', category:'Standard', squadMin:2, squadMax:2, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF8 DF4+ B4+ DP5', special:'—',
+  weapons:[W('RXp-57 Assault Rifles','F/S/R','1"','36/9"',8,'3+','S1','-'), W('RXp-14 Longreach Rifle','F/S/R','0"','∞/24"',1,'2+',2,'Ignores Cover, Ineffective: Zones, Pen 6+')],
+  variants:[{name:'Standard', pts:35}]},
+{id:'phr-proteus', faction:'PHR', name:'Proteus Mobile Command Post', category:'Standard', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A4 DP3', special:'Command Centre, Obscurer 6"',
+  weapons:[W('Disruption Pulse','F/S/R','Full','∞',1,'5+',0,'Jammer, Precision 3')],
+  variants:[{name:'Standard', pts:75}]},
+{id:'phr-t1walker', faction:'PHR', name:'Type-1 Battle Walker', category:'Standard', squadMin:1, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A6 DP2', special:'—',
+  weapons:[W('RX-20 Minigun','F/S','Full','36/12"',4,'3+','S3','-'), W('RX-1 Railgun w/ Targeter (Ares)','F/S','Full','∞/24"',1,'2+',7,'Precision 1, Demo 0'),
+    W('RX-1R Rail Repeater (Phobos)','F/S','Full','∞/24"',3,'2+',3,'AA'), W('RX-666 Flamethrower (Menchit)','F/S','Full','8"',8,'3+','S2','Flame'),
+    W('RXs-70 Styx Autocannons (Styx)','F/S','Full','36/18"',6,'3+',3,'Ignores Cover, Strafe'), W('Twin RX-20 Miniguns (Menchit,Styx)','F/S','Full','36/12"',8,'3+','S3','-'),
+    W('RM-4 Foeslayer Missiles (+5pts*)','F/S','Full','48/12"',2,'2+',5,'Demo 1, Devastator 1, L1')],
+  note:'*Menchit/Styx peuvent remplacer Twin RX-20 Miniguns par RM-4 Foeslayer Missiles.',
+  variants:[{name:'Ares', pts:35},{name:'Styx', pts:35},{name:'Menchit', pts:40},{name:'Phobos', pts:60}]},
+
+// ===== PHR — Support =====
+{id:'phr-hecate', faction:'PHR', name:'Hecate Target Support Craft', category:'Support', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A4 DP3', special:'Scanner, Surveyor, Scout',
+  weapons:[W('RXs-90 Huntsman Cluster','F','8"','∞/18"',4,'2+',4,'-'), W('Multi-Spectra Package','F','Full','∞',1,'2+',0,'Jammer')],
+  variants:[{name:'Standard', pts:65}]},
+{id:'phr-luna', faction:'PHR', name:'Luna Gunship', category:'Support', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A4 DP3', special:'—',
+  weapons:[W('RXs-90 Huntsman Cluster','F','8"','∞/18"',4,'2+',4,'-'), W('Twin RXE-1200 Starglaives','F','4"','∞',2,'3+',8,'Demo 1, Devastator 1, Overcharge 1')],
+  variants:[{name:'Standard', pts:150}]},
+{id:'phr-medusa', faction:'PHR', name:'Medusa', category:'Support', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Infantry', mv:'9"', stats:'OF8 DF3+ B2+ DP10', special:'Ev4, Hardy4+, Jump9", Lethal, Skimmer',
+  weapons:[W('Nanomachine Surge','F/S/R','Full','9"',5,'2+','S8','Alt 1, Nanomachines, Seeker'), W('White Nanomachines','F/S/R','Full','9"',1,'2+',0,'Alt 1, Nanomachines, Repair 2: Vehicles')],
+  variants:[{name:'Standard', pts:100}]},
+{id:'phr-advjetskimmer', faction:'PHR', name:'PHR Advanced Jetskimmer', category:'Support', squadMin:2, squadMax:4, rare:true, unique:false,
+  type:'Vehicle', mv:'8"', stats:'A5 DP1', special:'Ev2, Skimmer(All), Shield friendly Vehicles 3" 5+ (Aurora)',
+  weapons:[W('RXE-33 Molecular Agitator (Diana)','F/S/R','Full','18"',2,'2+',4,'Devastator 1, Focus 2'), W('Optical Disruption Beam (Aurora)','F/S/R','Full','24"',1,'2+',0,'Smoke')],
+  variants:[{name:'Standard', pts:35}]},
+{id:'phr-artillerytank', faction:'PHR', name:'PHR Artillery Tank', category:'Support', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A4 DP2', special:'—',
+  weapons:[W('RXs-60B Mjolnir Bombard (Thor)','F/S/R','0"','24"',1,'3+',7,'Blast, Indirect'), W('RM-2 Constellation Missile, Penetrator (Taranis)','F/S','0"','∞/18"',1,'2+',8,'Alt 1, Demo 3, Destroyer 4+, Indirect'),
+    W('RM-2 Constellation Missile, Airburst (Taranis)','F/S','0"','∞/18"',1,'2+',2,'Alt 1, Blast, Indirect')],
+variants:[{name:'Thor', pts:50},{name:'Taranis', pts:50}]},
+{id:'phr-siren', faction:'PHR', name:'Siren Corps', category:'Support', squadMin:2, squadMax:2, rare:false, unique:false,
+  type:'Infantry', mv:'3"', stats:'OF3 DF4+ B3+ DP3', special:'Agile 4, Breachers 1, FS5, Lethal, Rapid Insertion 6"',
+  weapons:[], variants:[{name:'Standard', pts:50}]},
+{id:'phr-supjetskimmer', faction:'PHR', name:'Support Jetskimmer', category:'Support', squadMin:2, squadMax:2, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Ev1, Skimmer',
+  weapons:[W('Aether Hive Nanomachines (Phaethon)','F/S/R','Full','18"',5,'2+','S6','Nanomachines'), W('RM-5 Galaxy Missile Launcher x2 (Helios)','F/S/R','Full','36/12"',1,'3+',2,'AA, Indirect, Pen 5+, T4')],
+  variants:[{name:'Phaethon', pts:45},{name:'Helios', pts:55}]},
+{id:'phr-tritonx', faction:'PHR', name:'Triton X Gunship', category:'Support', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (30mm)', mv:'24"', stats:'A3 DP1', special:'Ev1',
+  weapons:[W('RM-7 Skyhammer Missiles','F/S/R','12"','36/12"',1,'3+',7,'Demo 0, Indirect, L2, Needs Spotter'), W('X Hive Nanomachines','F/S/R','12"','18"',5,'2+','S6','Alt 1, Nanomachines'),
+    W('X Hive White Nanomachines','F/S/R','12"','18"',1,'2+',0,'Alt 1, Nanomachines, Repair 1: Vehicles, Repair D6: Medusa/Seeker')],
+  variants:[{name:'Standard', pts:45}]},
+{id:'phr-t3emwalker', faction:'PHR', name:'Type-3 EM Walker', category:'Support', squadMin:1, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Obscurer 3"',
+  weapons:[W('RX-1L Short Railgun (Erebos A)','F/S','Full','∞/24"',1,'2+',6,'Demo 0'), W('RX-13 Cannon, Slugs (Erebos B)','F/S','Full','36/12"',2,'2+',4,'Alt-1'),
+    W('RX-13 Cannon, Seeker Submunitions (Erebos B)','F/S','Full','36/12"',4,'2+','S1','Alt-1, Concussion, Seeker')],
+  variants:[{name:'Erebos A', pts:40},{name:'Erebos B', pts:40}]},
+
+// ===== PHR — Heavy =====
+{id:'phr-tiamat', faction:'PHR', name:'Tiamat Ordnance Ship', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP6', special:'—',
+  weapons:[W('RX-11 Super Heavy Rail Cannon x2','F','4"','∞/24"',1,'3+',9,'Critical 1, Demo 1, Devastator 1, Precision 1'), W('RM-1 Stealth Missile Battery','F','8"','36/12"',2,'3+',3,'Pen 6+')],
+  variants:[{name:'Standard', pts:170}]},
+{id:'phr-t2heavywalker', faction:'PHR', name:'Type-2 Heavy Battle Walker', category:'Heavy', squadMin:1, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'2"', stats:'A7 DP2', special:'P5+(All), P3+, Command Centre, AWACS 12"(Zeus)',
+  weapons:[W('RX-20 Minigun','F/S','Full','36/12"',4,'3+','S3','-'), W('Dual RX-1 Railguns (Odin)','F/S','Full','∞/24"',2,'2+',7,'Demo 0'),
+    W('Dual RXs-120 Smoothbores (Enyo)','F/S','Full','∞/12"',2,'2+',6,'Demo 2'), W('RX-1000 Sunspear Laser (Hyperion)','F/S','Full','∞',1,'2+',7,'Destroyer 5+'),
+    W('RX-1 Railgun (Zeus)','F/S','Full','∞/24"',1,'2+',7,'Demo 0')],
+  variants:[{name:'Hyperion', pts:55},{name:'Odin', pts:65},{name:'Enyo', pts:70},{name:'Zeus', pts:70}]},
+{id:'phr-battlescorpion', faction:'PHR', name:'Type-4 Battle Scorpion', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A6 DP8', special:'Large, Resilient',
+  weapons:[W('RX-11R Super-Heavy Rail Repeater (Hades)','F/S','Full','∞/36"',3,'2+',8,'Articulated, Demo 0, Strafe'),
+    W('Nanomachine Swarm (Persephone)','F/S/R','Full','24"',15,'2+','S6','Alt 2, Nanomachines, Strafe'), W('White Nanomachines (Persephone)','F/S/R','Full','9"',2,'2+',0,'Alt 2, Nanomachines, Repair 1: Vehicles'),
+    W('Nanomachine Swarm','F/S/R','Full','24"',15,'2+','S6','Alt 1, Nanomachines, Strafe'), W('White Nanomachines','F/S/R','Full','9"',2,'2+',0,'Alt 1, Nanomachines, Repair 1: Vehicles'),
+    W('RX-30 Heavy Minigun (L)','F/Sl','Full','48/18"',4,'2+','S4','-'), W('RX-30 Heavy Minigun (R)','F/Sr','Full','48/18"',4,'2+','S4','-')],
+  variants:[{name:'Persephone', pts:170},{name:'Hades', pts:180}]},
+{id:'phr-commandscorpion', faction:'PHR', name:'Type-4 Command Scorpion', category:'Heavy', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A6 DP8', special:'Command Centre, Large, Resilient',
+  weapons:[W('RX-2000 Nemesis Laser (Nemesis)','F/S','Full','∞',1,'2+',8,'Articulated, Demo 1, Destroyer 5+, Devastator 2'),
+    W('RXs-300 Vanquisher Cannon (Bellona)','F/S','Full','∞/18"',1,'2+',9,'Articulated, Demo D3+3, Devastator 2'),
+    W('RX1-L Short Railgun x2 (L/R)','F/Sl,F/Sr','Full','∞/24"',1,'2+',6,'Demo 0')],
+  variants:[{name:'Bellona', pts:155},{name:'Nemesis', pts:165}]},
+{id:'phr-frontierwalker', faction:'PHR', name:'Type-9 Frontier Walker', category:'Heavy', squadMin:1, squadMax:6, rare:true, unique:false,
+  type:'Vehicle', mv:'5"', stats:'A5 DP3', special:'Rapid Insertion 6"(All), P3+(Rashnu)',
+  weapons:[W('RX-20 Minigun Pair','F/S','Full','36/12"',8,'3+','S3','Strafe'), W('Hyperkinetic Hammer (Rashnu)','F/S','Full','CC',2,'2+',7,'Assault, Demo 1, Devastator 1'),
+    W('RX-1 Railgun (Agas)','F/S','Full','∞/24"',1,'2+',7,'Demo 0'), W('RX-666 Flamethrower (Agas)','F/S','Full','8"',8,'3+','S2','Flame'),
+    W('Beastslayer Blade (Agas)','F/S','Full','2"',4,'2+',5,'Assault, Ineffective: Zones, Strafe'), W('RXs-70 Styx Autocannons (Dahaka)','F/S','Full','36/18"',6,'3+',3,'Ignores Cover, Strafe'),
+    W('RM-4 Foeslayer Missiles (Dahaka)','F/S','Full','48/12"',2,'3+',5,'Demo 1, Devastator 1, L1'), W('Electro Gladius (Dahaka)','F/S','Full','CC',1,'3+',8,'Assault, Destroyer 5+'),
+    W('Twin RXs-120 Smoothbores (Mithra)','F/S','Full','∞/12"',2,'2+',6,'Demo 2'), W('Twin RX-1000 Sunspear Lasers (Mithra)','F/S','0"','∞',2,'2+',7,'Destroyer 5+')],
+  variants:[{name:'Rashnu', pts:70},{name:'Agas', pts:70},{name:'Dahaka', pts:70},{name:'Mithra', pts:95}]},
+{id:'phr-lokheira', faction:'PHR', name:'Type-11 Lokheira Quad Walker', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A6 DP4', special:'P5+',
+  weapons:[W('Twin RX-1L Short Railguns','F','Full','∞/24"',2,'2+',6,'Demo 0'), W('Twin RX-1R Rail Repeaters','F/S','Full','∞/24"',6,'2+',3,'AA, Strafe'), W('RX-20 Minigun Pair','F','Full','36/12"',8,'3+','S3','Strafe')],
+  variants:[{name:'Standard', pts:125}]},
+
+// ===== PHR — Behemoths (Heavy, Group Equivalent) =====
+{id:'phr-type7grandwalker', faction:'PHR', name:'Type 7 Grand Walker', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false, isBehemoth:true,
+  type:'Behemoth', mv:'5"', stats:'A9, DP 12/18/24', special:'Walker 3"x5"', power:8, groupEquivalent:5,
+  gear:['3PT: Redundancy','1PT: Target Lock','3PT: Weapons Capacitors (Tethys)','1PT: Healing System D3 (Tethys)'],
+  weapons:[W('R7X-1 Railgun, left (Chronus)','F','6"','∞/24"',1,'4+',10,'AS 2, Devastator D3+1, Demo 2D3, LT 6", Macro'),
+    W('R7X-1 Railgun, right (Chronus)','F','6"','∞/24"',1,'4+',10,'AS 2, Devastator D3+1, Demo 2D3, LT 6", Macro'),
+    W('R7M-1 Stealth Missile Cluster, left (Chronus)','F','Full','36/12"',12,'3+',3,'Pen 6+, Secondary, Strafe'),
+    W('R7M-1 Stealth Missile Cluster, right (Chronus)','F','Full','36/12"',12,'3+',3,'Pen 6+, Secondary, Strafe'),
+    W('R7X-2 Sunglaive, focused, left (Tethys)','F','6"','∞',1,'2+',9,'Alt 1, AS 4, Critical 1, Demo 1, Devastator 1, LT 6", Macro, Capacitors: gains Pen 2+'),
+    W('R7X-2 Sunglaive, wide, left (Tethys)','F','Full','∞',1,'2+',6,'Alt 1, Blast, LT 6", Macro, Strafe, Capacitors: +1 Att'),
+    W('R7X-2 Sunglaive, focused, right (Tethys)','F','6"','∞',1,'2+',9,'Alt 2, AS 4, Critical 1, Demo 1, Devastator 1, LT 6", Macro, Capacitors: gains Pen 2+'),
+    W('R7X-2 Sunglaive, wide, right (Tethys)','F','Full','∞',2,'2+',6,'Alt 2, Blast, LT 6", Macro, Strafe, Capacitors: +1 Att'),
+    W('Nanomachine Plague (Tethys)','F/S/R','Full','24"',30,'2+','S6','Secondary, Strafe, Nanomachines'),
+    W('Nova Missile','F','5"','∞/18"',1,'2+',8,'Blast, Critical D6-2, Devastator D6-2, L3, Macro, Pen 3+'),
+    W('Twin RX-30 Heavy Miniguns','F/Sl','Full','48/18"',8,'2+','S4','Secondary'),
+    W('Dual R7X-5 Rotary Cannons (+0pts)','F','Full','36/18"',10,'3+',5,'Secondary, Strafe — OU (remplace):'),
+    W('Dual R7X-66 Incinerators (+0pts)','F','9"','9"',6,'2+',4,'Concussion, Demo 2, Flame, Strafe, Macro')],
+  variants:[{name:'Chronus', pts:930},{name:'Tethys', pts:985}]},
+{id:'phr-type6grandwalker', faction:'PHR', name:'Type 6 Grand Walker', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false, isBehemoth:true,
+  type:'Behemoth', mv:'5"', stats:'A8, DP 8/14', special:'Walker 2"x2"', power:5, groupEquivalent:3,
+  gear:['3PT: Redundancy','1PT: Target Lock (Alcyoneus)','1PT: Scrambler +2 (Porphyrion)','2PT: Director 2:4 Venus Drones (Porphyrion, Group Equivalent devient 8)'],
+  weapons:[W('Dual R6X-1 Railguns (Alcyoneus)','F','5"','∞/24"',2,'3+',9,'AS 2, Demo 1, Devastator 1, LT 6", Macro'),
+    W('Nova L Missile','F','5"','∞/18"',1,'2+',8,'Blast, Critical D3-1, Devastator D3-1, L3, Macro, Pen 4+'),
+    W('Triple RX-1 Railguns','F/S','Full','∞/24"',3,'2+',7,'Demo 0')],
+  note:'Porphyrion : le Gear Director 2:4 inclut automatiquement 2 escouades de Venus Drone (Vehicle, Mv8", A5, DP1, Directed/Ev1/Skimmer — Twin RX-1L Short Railguns et R6X-13 Fusion Mine [L1, Pen 4+]) ; ces unités ne s\'achètent pas séparément.',
+  variants:[{name:'Alcyoneus', pts:420},{name:'Porphyrion', pts:435}]},
+
+// ===== PHR — Vanguard =====
+{id:'phr-mercuryscout', faction:'PHR', name:'Mercury Scout Drone', category:'Vanguard', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Aircraft (20mm)', mv:'6"', stats:'A1 DP1', special:'AWACS 9", Scout, Surveyor', weapons:[], variants:[{name:'Standard', pts:20}]},
+{id:'phr-longreach', faction:'PHR', name:'Longreach Snipers', category:'Vanguard', squadMin:2, squadMax:2, rare:true, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF5 DF4+ B4+ DP5', special:'Ev2, Infiltrate 12", Scout',
+  weapons:[W('RXp-14 Longreach Rifles','F/S/R','0"','∞/24"',5,'2+',2,'Ignores Cover, Ineffective: Zones, Pen 6+, Strafe')],
+  variants:[{name:'Standard', pts:40}]},
+{id:'phr-airsuperiority', faction:'PHR', name:'PHR Air Superiority fighter', category:'Vanguard', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'24-48"', stats:'A3 DP2', special:'Ev2, Fast Mover, Supercruise',
+  weapons:[W('Twin RX-1R Rail Repeaters','F','Full','∞/24"',6,'3+',3,'AA, T1'), W('RM-1 Stealth Missile Battery','F','Full','36/12"',2,'3+',3,'Pen 6+'),
+    W('RN-2 Cloudspear Cruise Missile (Athena)','F','Full','∞/12"',1,'2+',8,'Demo 3, Devastator 1, L2'), W('RN-1 Shooting Star Missiles (Minerva)','F','Full','24"/12"',4,'3+',3,'Ignores Cover, Pen 6+')],
+  variants:[{name:'Standard', pts:110}]},
+{id:'phr-columbuswalker', faction:'PHR', name:'PHR Columbus Battlewalker', category:'Vanguard', squadMin:1, squadMax:3, rare:true, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A5 DP3', special:'Infiltrate 18"',
+  weapons:[W('MC-120 Punisher Cannons','F','3"','∞/18"',2,'3+',6,'Demo 0'), W('MM-111 Missile Pod','F','Full','36/9"',1,'3+',4,'Pen 6+'),
+    W('MC-17 Guns (Columbus A)','F/S/R','Full','36/18"',2,'3+',2,'AA'), W('MF-666 Flamethrower (Columbus B)','F/S/R','Full','6"',6,'3+','S2','Flame')],
+variants:[{name:'Columbus A', pts:75},{name:'Columbus B', pts:75}]},
+{id:'phr-strikewalker', faction:'PHR', name:'Type-3 Strike Walker', category:'Vanguard', squadMin:1, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Jump 18", Rapid Insertion 8"(All), Command Centre, Ev1, Resilient(Hera)',
+  weapons:[W('Twin RX-1L Short Railguns (Hera)','F/S','9"','∞/24"',2,'2+',6,'Demo 0'), W('RX-1L Short Railgun (Apollo A)','F/S','9"','∞/24"',1,'2+',6,'Demo 0'),
+    W('RX-13 Cannon, Slugs (Apollo B)','F/S','6"','24/12"',2,'2+',4,'Alt-1'), W('RX-13 Cannon, Seeker Submunitions (Apollo B)','F/S','6"','24/12"',3,'3+','S1','Alt-1, Concussion, Seeker')],
+  variants:[{name:'Apollo A', pts:35},{name:'Apollo B', pts:35},{name:'Hera', pts:65}]},
+{id:'phr-scoutwalker', faction:'PHR', name:'Type-S Scout Walker', category:'Vanguard', squadMin:2, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP1', special:'Scout',
+  weapons:[W('RX-20 Minigun','F','Full','36/12"',4,'3+','S3','-'), W('RM-1AA Stealth Missiles (Janus)','F','Full','36/12"',1,'3+',3,'AA, Pen 6+'),
+    W('Electromagnetic Disruptor (Hermes)','F/S/R','Full','12"',1,'2+',0,'Assault, Concussion, Ignores Cover, Jammer')],
+  variants:[{name:'Janus', pts:15},{name:'Hermes', pts:25}]},
+{id:'phr-valkyrie', faction:'PHR', name:'Valkyrie Assault Troops', category:'Vanguard', squadMin:2, squadMax:2, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF5 DF5+ B4+ DP5', special:'Agile 1, Ev2, FS2, Jump 9", Rapid Insertion 6"',
+  weapons:[W('RXp-9 SMGs','F/S/R','Full','18/9"',10,'2+','S1','-')], variants:[{name:'Standard', pts:45}]},
+
+// ===== PHR — Transport =====
+{id:'phr-juno', faction:'PHR', name:'Juno IFVs', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Surveyor',
+  weapons:[W('RXs-90 Huntsman Cannon (Juno A1)','F/S/R','Full','∞/18"',1,'2+',4,'-'), W('Twin RX-20 Miniguns (Juno A2)','F/S/R','Full','36/12"',8,'3+','S3','-')],
+  variants:[{name:'Juno A2', pts:15},{name:'Juno A1', pts:20}]},
+{id:'phr-neptune', faction:'PHR', name:'Neptune Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP3', special:'—',
+  weapons:[W('RM-1 Stealth Missile Battery','F','8"','36/12"',2,'3+',3,'Pen 6+')], variants:[{name:'Standard', pts:35}]},
+{id:'phr-njord', faction:'PHR', name:'Njord Assault Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP6', special:'Large',
+  weapons:[W('RM-1H Heavy Stealth Missile Battery (L)','F/Sl','8"','36/12"',2,'3+',6,'Demo 0'), W('RM-1H Heavy Stealth Missile Battery (R)','F/Sr','8"','36/12"',2,'3+',6,'Demo 0'), W('RM-1 Stealth Missile Battery','F','8"','36/12"',2,'3+',3,'Pen 6+')],
+  variants:[{name:'Standard', pts:100}]},
+{id:'phr-poseidon', faction:'PHR', name:'Poseidon Heavy Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP6', special:'Large',
+  weapons:[W('RM-1 Stealth Missile Battery','F','8"','36/12"',2,'3+',3,'Pen 6+')], variants:[{name:'Standard', pts:70}]},
+{id:'phr-tritonlightdrop', faction:'PHR', name:'Triton Light Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'24"', stats:'A3 DP1', special:'—',
+  weapons:[W('RM-1 Stealth Missile Battery (+10pts)','F','12"','36/12"',2,'3+',3,'Pen 6+'), W('Twin RX-20 Miniguns (+5pts*)','F/S','Full','36/18"',8,'3+','S3','-'),
+    W('RM-7 Skyhammer Missiles (+15pts*)','F/S/R','12"','36/12"',1,'3+',7,'Demo 0, Indirect, L2, Needs Spotter')],
+  note:'*Une seule de ces options peut être prise.', variants:[{name:'Standard', pts:15}]},
+{id:'phr-tritonlighttroop', faction:'PHR', name:'Triton Light Troopship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'24"', stats:'A3 DP1', special:'—',
+  weapons:[W('RM-1 Stealth Missile Battery (+10pts)','F','12"','36/12"',2,'3+',3,'Pen 6+'), W('Twin RX-20 Miniguns (+5pts*)','F/S','Full','36/18"',8,'3+','S3','-'),
+    W('RM-7 Skyhammer Missiles (+15pts*)','F/S/R','12"','36/12"',1,'3+',7,'Demo 0, Indirect, L2, Needs Spotter')],
+  note:'*Une seule de ces options peut être prise.', variants:[{name:'Standard', pts:30}]},
+{id:'phr-atlasquad', faction:'PHR', name:'Type-11 Atlas Quad Walker', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A6 DP4', special:'P5+, Surveyor',
+  weapons:[W('Twin RX-1L Railguns','F','Full','∞/24"',2,'2+',6,'Demo 0'), W('RX-20 Minigun Pair','F','Full','36/12"',8,'3+','S3','Strafe')], variants:[{name:'Standard', pts:70}]},
+
+// ===== Resistance — Standard =====
+{id:'res-mcclellan', faction:'Resistance', name:'McClellan Command Bunker', category:'Standard', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Vehicle', mv:'N/A', stats:'A8 DP4', special:'AWACS 18", Command Centre',
+  weapons:[W('Jamming Beam','F/S/R','0"','∞',1,'3+',0,'Jammer')], variants:[{name:'Standard', pts:50}]},
+{id:'res-commandhover', faction:'Resistance', name:'Resistance Command Hovercraft', category:'Standard', squadMin:1, squadMax:2, rare:true, unique:false,
+  type:'Vehicle', mv:'10"', stats:'A5 DP3', special:'AWACS 6", Command Centre, Ev1, Skimmer, Strike',
+  weapons:[W('MM-8 Multi Missiles (Hydra)','F','Full','24/9"',6,'3+',4,'Pen 5+, Demo 0'), W('MC-180 Vengeance Cannon (Circe)','F/S','5"','∞/18"',1,'2+',7,'Critical 1, Demo 1'), W('MF-1 Flamethrower (Circe)','F/S','Full','6"',6,'3+','S2','Flame')],
+  variants:[{name:'Hydra', pts:65},{name:'Circe', pts:75}]},
+{id:'res-fighters', faction:'Resistance', name:'Resistance Fighters', category:'Standard', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF5 DF5+ B3+ DP5', special:'—',
+  weapons:[W('Assault Rifles','F/S/R','Full','24/9"',5,'3+','S1','Alt-1'), W('Homemade RPGs','F/S/R','0"','18/6"',5,'3+',3,'Alt-1, Focus 1, L1, Pen 6+')],
+  variants:[{name:'Standard', pts:25}]},
+{id:'res-mbt', faction:'Resistance', name:'Resistance Main Battle Tank', category:'Standard', squadMin:1, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A7 DP2', special:'Aegis 6", Scanner(Constantine)',
+  weapons:[W('MC-90 Cannon','F','Full','∞/18"',1,'2+',5,'-'), W('MG-3 Machine Gun','F/S/R','Full','24/12"',3,'3+','S1','-'), W('MC-120 Punisher Cannon (Hannibal)','F/S/R','Full','∞/18"',1,'2+',6,'Demo 0'),
+    W('MS-7 Hammer Bombard (Mehmed)','F/S/R','Full','12"',1,'2+',7,'Demo 3'), W('MX-202 Shock Bombard (Saladin)','F/S/R','Full','18"',1,'2+',2,'Indirect, Ineffective: Zones, Overcharge 5, Suppress'),
+    W('MR-32 Rail Cannon (Zhukov)','F/S/R','Full','∞/24"',1,'2+',4,'AA, Critical 1, Devastator 1')],
+  variants:[{name:'Constantine', pts:35},{name:'Hannibal', pts:45},{name:'Mehmed', pts:45},{name:'Saladin', pts:45},{name:'Zhukov', pts:60}]},
+{id:'res-technical', faction:'Resistance', name:'Resistance Technical', category:'Standard', squadMin:6, squadMax:12, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A2 DP1', special:'Ev1, UC',
+  weapons:[W('Rocket Launcher (Rocket Technical)','F/S','Full','18/6"',1,'2+',3,'Focus 2, Pen 6+'), W('Heavy Machine Gun (Gun Technical)','F/S','6"','36/12"',2,'3+',2,'AA')],
+  variants:[{name:'Standard', pts:10}]},
+{id:'res-wagon', faction:'Resistance', name:'Resistance Wagon', category:'Standard', squadMin:3, squadMax:9, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A3 DP2', special:'Resilient, UC',
+  weapons:[W('Ram','F','Full','CC',1,'2+',4,'Demo 0, Ram'), W('Twin Autocannons (Gun Wagon)','F/S/R','Full','36/18"',2,'2+',2,'AA'), W('Flamethrower (Flame Wagon)','F/S/R','Full','6"',4,'3+','S2','Flame')],
+  variants:[{name:'Gun Wagon', pts:25},{name:'Flame Wagon', pts:20}]},
+
+// ===== Resistance — Support =====
+{id:'res-artillerywagon', faction:'Resistance', name:'Artillery Wagon', category:'Support', squadMin:3, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A3 DP2', special:'Resilient, UC',
+  weapons:[W('Ram','F','Full','CC',1,'2+',4,'Demo 0, Ram'), W('Golgotha Missile (Thunder Wagon)','F/S/R','0"','∞/24"',1,'3+',10,'Demo 2, Devastator 2, Indirect, L1'), W('Rocket Rack (Storm Wagon)','F/S/R','0"','∞/36"',1,'3+',3,'Battery 1, Blast, Indirect, Pen 6+')],
+  variants:[{name:'Standard', pts:20}]},
+{id:'res-attackheli', faction:'Resistance', name:'Attack Helicopter', category:'Support', squadMin:1, squadMax:2, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'16"', stats:'A3 DP2', special:'Aegis 3"(Hurricane)',
+  weapons:[W('MG-12 Gatling','F','Full','36/12"',10,'3+','S1','-'), W('MC-25 Azrael Chainguns (Typhoon)','F','Full','48/18"',4,'3+',5,'Focus 1, Strafe'),
+    W('ML-18 Wyrmfire Lasers (Hurricane)','F','2"','∞',4,'2+',1,'AA-S, Pen 6+, T2'), W('MM-2 Hornet Missiles (Cyclone)','F','8"','36/24"',1,'3+',3,'Blast, Indirect, Pen 6+'), W('MM-70 Beowulf Missile (Cyclone)','F/S','8"','36/18"',2,'3+',6,'Demo 0, Strafe')],
+  variants:[{name:'Typhoon', pts:60},{name:'Cyclone', pts:60},{name:'Hurricane', pts:65}]},
+{id:'res-berserkers', faction:'Resistance', name:'Berserkers', category:'Support', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Infantry', mv:'3"', stats:'OF8 DF6+ B(A) DP5', special:'Bloodthirsty, Lethal, Terror',
+  weapons:[W('Assorted Nasties','F/S/R','Full','CC',10,'3+','S0','Assault')], variants:[{name:'Standard', pts:35}]},
+{id:'res-lifthawkgun', faction:'Resistance', name:'Lifthawk Gunship', category:'Support', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP4', special:'—',
+  weapons:[W('Goliath Bomb','F/S/R','8"','GB',1,'5+',9,'Alt 1, Blast, Demo 7, Devastator 1, L1'), W('MM-3 Missile Pod','F','8"','36/6"',1,'3+',5,'-'), W('MG-6 Twin Heavy Machineguns','F','Full','36/12"',5,'3+','S2','-'),
+    W('Frag Barrel (Barrel Bomber)','F/S/R','8"','GB',1,'3+',6,'Alt 1, Blast, L2'), W('MC-20 Chaingun Pair, extended feed (Sky Terror)','F/S','8"','36"/18"',20,'3+','S5','Ignores Cover, Strafe'), W('Twin Autocannons (+10pts)','F/S/R','8"','36/18"',2,'3+',2,'AA')],
+  variants:[{name:'Barrel Bomber', pts:70},{name:'Sky Terror', pts:85}]},
+{id:'res-mechloader', faction:'Resistance', name:'Mech Loader', category:'Support', squadMin:1, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A4 DP2', special:'UC',
+  weapons:[W('HMG','F/S','Full','36/12"',5,'4+','S3','Assault, Concussion, Ignores Cover, Precision 1'), W('Power Grabber','F/S','Full','CC',3,'2+',4,'Assault, Pen 6+')],
+  variants:[{name:'Standard', pts:20}]},
+{id:'res-bombbus', faction:'Resistance', name:'Remote Bomb Bus', category:'Support', squadMin:1, squadMax:2, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A3 DP4', special:'UC, Wide 6"',
+  weapons:[W('Rigged Explosives','F/S/R','Full','4"',1,'2+',8,'Demo 3, Devastator 2, SelfDestruct')], variants:[{name:'Standard', pts:25}]},
+{id:'res-repairtechnical', faction:'Resistance', name:'Repair Technical', category:'Support', squadMin:3, squadMax:6, rare:true, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A2 DP1', special:'UC, Ev1',
+  weapons:[W('Repair Clamps','F/S/R','4"','CC',1,'2+',0,'Repair 1: Vehicles')], variants:[{name:'Standard', pts:15}]},
+{id:'res-sentry', faction:'Resistance', name:'Resistance Sentry Unit', category:'Support', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'N/A', stats:'A3 DP1', special:'—',
+  weapons:[W('MM-1 Wasp Missile Hive (Sentinel)','F/S/R','Full','24/9"',4,'2+',3,'AA-R, Assault'), W('MC-32 Quad Short Autocannons (Guardian)','F/S/R','Full','36/18"',4,'2+',5,'Assault, Overwatch')],
+  variants:[{name:'Standard', pts:15}]},
+{id:'res-strikehawk', faction:'Resistance', name:'Strikehawk Tilt-Rotor', category:'Support', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'20"', stats:'A3 DP5', special:'—',
+  weapons:[W('MM-4 Missile Pod (+10pts)','F','10"','36/6"',2,'3+',3,'AA-S, Pen 6+, T1'), W('MM-3 Missile Boxes (+25pts*)','F','5"','36/9"',6,'3+',5,'Pen 6+, Strafe'), W('MC-30 Heavy Gatlings (+35pts*)','F','5"','36/18"',20,'3+','S6','Ignores Cover, Strafe')],
+  note:'*Peut remplacer 2 de capacité de transport par MM-3 Missile Boxes ou MC-30 Heavy Gatlings.', variants:[{name:'Standard', pts:55}]},
+
+// ===== Resistance — Heavy =====
+{id:'res-atilla', faction:'Resistance', name:'Atilla Trackwalker', category:'Heavy', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Surveyor',
+  weapons:[W('MD-1 Spider Drone Launcher','F','Full','12/6"',4,'2+','S1','Seeker'), W('Welding Clamps (Atilla A)','F/S/R','Full','CC',2,'2+',7,'Assault, Demo 1'), W('MC-45 Anti-Material Cannons (Atilla B)','F/S','Full','∞/24"',2,'2+',4,'Articulated, Pen 6+')],
+  variants:[{name:'Atilla A', pts:35},{name:'Atilla B', pts:35}]},
+{id:'res-carryhawk', faction:'Resistance', name:'Carryhawk Tilt-Rotor', category:'Heavy', squadMin:1, squadMax:2, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'20"', stats:'A3 DP5', special:'—',
+  weapons:[W('MM-4 Missile Pod (+10pts)','F','10"','36/6"',2,'3+',3,'AA-S, Pen 6+, T1'), W('MM-3 Missile Boxes (+25pts*)','F','5"','36/9"',6,'3+',5,'Pen 6+, Strafe'), W('MC-30 Heavy Gatlings (+35pts*)','F','5"','36/18"',20,'3+','S6','Ignores Cover, Strafe')],
+  note:'*Peut remplacer 2 de capacité de transport par MM-3 Missile Boxes ou MC-30 Heavy Gatlings.', variants:[{name:'Standard', pts:45}]},
+{id:'res-hellhog', faction:'Resistance', name:'Hellhog Jumpjet', category:'Heavy', squadMin:1, squadMax:2, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'6-30"', stats:'A3 DP3', special:'Ev1, Fast Mover',
+  weapons:[W('FC-75 Satan Chainguns','F','15"','36/18"',8,'3+',3,'Focus 2, Strafe'), W('FM-12 Cobra Missile x2','F','15"','∞/12"',1,'2+',4,'AA, Critical-1, L1, T2'), W('FM-4 Asp Missile Pods (+20pts)','F','15"','36/9"',1,'2+',4,'Blast, Pen 6+')],
+  variants:[{name:'Standard', pts:110}]},
+{id:'res-occupation', faction:'Resistance', name:'Occupation Veterans', category:'Heavy', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF4 DF4+ B3+ DP5', special:'Agile 1, FS2',
+  weapons:[W('Overcharged Plasma Rifles, fire at will','F/S/R','Full','15"',5,'2+','S4','Alt 1'), W('Overcharged Plasma Rifles, volley','F/S/R','Full','15"',1,'2+',7,'Alt 1')],
+  variants:[{name:'Standard', pts:40}]},
+{id:'res-ordnancebus', faction:'Resistance', name:'Ordnance Bus', category:'Heavy', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A3 DP4', special:'UC',
+  weapons:[W('MC-88 Flak Cannon, Airburst (Gun Bus A)','F/S','0"','36/18"',1,'2+',4,'AA-S, Alt 1, Blast'), W('MC-88 Flak Cannon, Slug (Gun Bus A)','F/S','0"','36/18"',1,'3+',6,'Alt 1, Demo 0'),
+    W('Multi-Spectra Projector, Beam (Gun Bus B)','F/S','0"','24"',1,'2+',1,'Alt 1, Concussion, Ignores Cover, Jammer, Pen 5+'), W('Multi-Spectra Projector, Oscilate (Gun Bus B)','F/S','0"','24"',2,'2+','S1','Alt 1, Flame'), W('Ram (+5pts)','F','Full','CC',1,'2+',4,'Demo 0, Ram')],
+  variants:[{name:'Gun Bus A', pts:35},{name:'Gun Bus B', pts:35}]},
+{id:'res-superheavy', faction:'Resistance', name:'Resistance Super Heavy Tank', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'2"', stats:'A7 DP5', special:'Command Centre',
+  weapons:[W('MC-20 Chaingun (L/R)','F/Sl,F/Sr','Full','36/18"',5,'3+','S5','Ignores Cover'), W('MC-220 Equaliser Cannon (Alexander)','F/S/R','Full','∞/24"',1,'3+',8,'Demo 3, Devastator 3, Precision 1'),
+    W('MF-13 Giga-Flamethrower (Genghis)','F/S/R','Full','9"',20,'3+','S4','Concussion, Flame, Strafe'), W('MX-907 Thermal Ram (Belisarius)','F/S/R','Full','3"',1,'2+',10,'Assault, Demo D6, Destroyer 5+, Devastator 3, Dissipate 1'),
+    W('MM-7 Maelstrom Launcher (Alexander/Belisarius/Genghis)','F/S/R','Full','18/9"',1,'2+',4,'Blast, L1, Pen 5+'), W('MC-42 Banisher Gatling Cannons (Napoleon)','F/S/R','Full','36/18"',20,'3+','S7','Ignores Cover, Precision 1, Strafe'),
+    W('MM-15 Sidearm Missiles (+0pts*)','F/S','Full','36/9"',2,'2+',7,'Critical 1, Demo 0, L1, Pen 5+, Strafe')],
+  note:'*Peut remplacer les 2 MC-20 Chaingun par des MM-15 Sidearm Missiles.',
+  variants:[{name:'Alexander', pts:100},{name:'Genghis', pts:100},{name:'Belisarius', pts:120},{name:'Napoleon', pts:130}]},
+{id:'res-thunderstorm', faction:'Resistance', name:'Thunderstorm Heavy Hovercraft', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'10"', stats:'A4 DP12', special:'Command Centre, Large, Skimmer, Strike',
+  weapons:[W('Overcharged Plasma Cannon x4','F/S/R','5"','18"',1,'2+',8,'Demo 1')], variants:[{name:'Standard', pts:190}]},
+
+// ===== Resistance — Behemoths (Heavy, Group Equivalent) =====
+{id:'res-explorator', faction:'Resistance', name:'Explorator', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false, isBehemoth:true,
+  type:'Behemoth', mv:'5"', stats:'A9, DP 10/20/30', special:'Walker 4"x5"', power:6, groupEquivalent:4,
+  gear:['1PT: Target Lock','1PT: Redundancy','0PT: Decoys'],
+  weapons:[W('Golgotha 800mm Naval Defence Gun (Juggernaut)','F','5"','∞/36"',1,'3+',9,'Huge Blast, Critical D3+1, Devastator D6+1, Demo 2D6, Integral, LT 10", Macro'),
+    W('Gilgamesh Missile x5 (Colossus)','F/S/R','5"','∞/24"',1,'3+',8,'L2, Blast, Devastator 1, Indirect, Needs Spotter, Integral, Linked 1, LT 10", Macro'),
+    W('Beowulf AAV Pod x4, front/rear L/R (Colossus)','F/S/R','Full','36"',3,'3+',5,'AA-S, Secondary'),
+    W('Quad MC-25 Azrael Chainguns','F','Full','48/18"',8,'3+',5,'Secondary, Strafe, Focus 1'),
+    W('Logging Claws','F','Full','CC','D6+2','2+',10,'Critical 1, Secondary')],
+  variants:[{name:'Juggernaut', pts:920},{name:'Colossus', pts:985}]},
+{id:'res-miningengine', faction:'Resistance', name:'Mining Engine', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false, isBehemoth:true,
+  type:'Behemoth', mv:'5"', stats:'A8, DP 8/14', special:'—', power:4, groupEquivalent:3,
+  gear:['1PT: Target Lock','0PT: Decoys'],
+  weapons:[W('Mining Laser (Avernus)','F','5"','∞',1,'2+',8,'AS 3, Critical D3, Demo 1, Destroyer 3+, Devastator D3, Integral, Macro'),
+    W('Vent Repeater (Cerberus)','F','5"','24"',2,'3+',9,'Critical 1, Demo 2, Integral, Macro, Capacitors: +D6 Att (cette arme prend D3-1 DP quand elle attaque)'),
+    W('Twin MC-37 Autocannons, left','F/Sl','Full','36/18"',4,'3+',3,'Ignores Cover, Secondary'), W('Twin MC-37 Autocannons, right','F/Sr','Full','36/18"',4,'3+',3,'Ignores Cover, Secondary')],
+  variants:[{name:'Avernus', pts:380},{name:'Cerberus', pts:410}]},
+
+// ===== Resistance — Vanguard =====
+{id:'res-drill109', faction:'Resistance', name:'109 Splitting Drill', category:'Vanguard', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Vehicle', mv:'N/A', stats:'A7 DP5', special:'Subterranean Small', weapons:[], variants:[{name:'Standard', pts:30}]},
+{id:'res-drill209', faction:'Resistance', name:'209 Splitting Drill', category:'Vanguard', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Vehicle', mv:'N/A', stats:'A7 DP8', special:'Subterranean Medium', weapons:[], variants:[{name:'Standard', pts:65}]},
+{id:'res-atvs', faction:'Resistance', name:'ATVs', category:'Vanguard', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Infantry', mv:'9"', stats:'OF3 DF5+ B5+ DP3', special:'Bikes 1, Ev1, Infiltrate 18", UC(All), Scanner, Scout(Recon ATVs)',
+  weapons:[W('Disruptor Array (Recon ATV)','F/S/R','Full','18"',1,'3+',0,'Drive-by, Jammer'), W('Grenade Launchers, Explosive (Attack ATV)','F/S','Full','9/6"',1,'3+',4,'Alt 1, Battery 1, Blast, Drive-by'), W('Grenade Launchers, Incendiary (Attack ATV)','F/S','Full','6"',1,'4+',4,'Alt 1, Concussion, Demo 0, Drive-by, Incendiary 3')],
+  variants:[{name:'Recon ATVs', pts:25},{name:'Attack ATVs', pts:30}]},
+{id:'res-freeriders', faction:'Resistance', name:'Freeriders', category:'Vanguard', squadMin:2, squadMax:2, rare:false, unique:false,
+  type:'Infantry', mv:'12"', stats:'OF3 DF5+ B3+ DP3', special:'Bikes 0, Ev2, Infiltrate 3", Scout, UC',
+  weapons:[W('Machine Guns','F/S/R','Full','24/12"',3,'3+','S1','-'), W('Sticky Mines','F/S/R','Full','2"',3,'3+',5,'Drive-By, Strafe')], variants:[{name:'Standard', pts:40}]},
+{id:'res-k9pack', faction:'Resistance', name:'K9 Pack', category:'Vanguard', squadMin:1, squadMax:3, rare:true, unique:false,
+  type:'Infantry', mv:'4"', stats:'OF0 DF6+ B3+ DP3', special:'Agile 1, Dogs, FS2, Living Weapons',
+  weapons:[W('Bites','F/S/R','Full','CC',3,'2+','S0','Assault')], variants:[{name:'Standard', pts:15}]},
+{id:'res-columbuswalker', faction:'Resistance', name:'Resistance Columbus Battlewalker', category:'Vanguard', squadMin:1, squadMax:3, rare:true, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A5 DP3', special:'Infiltrate 18"',
+  weapons:[W('MC-120 Punisher Cannons','F','3"','∞/18"',2,'3+',6,'Demo 0'), W('MM-111 Missile Pod','F','Full','36/9"',1,'3+',4,'Pen 6+'), W('MC-17 Guns (Columbus A)','F/S/R','Full','36/18"',2,'3+',2,'AA'), W('MF-666 Flamethrower (Columbus B)','F/S/R','Full','6"',6,'3+','S2','Flame')],
+variants:[{name:'Columbus A', pts:75},{name:'Columbus B', pts:75}]},
+{id:'res-sappers', faction:'Resistance', name:'Sappers', category:'Vanguard', squadMin:1, squadMax:2, rare:true, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF3 DF5+ B5+ DP3', special:'Breachers D3+3, Demo Charges 2+, Infiltrate 18"',
+  weapons:[W('Trigger IED','F/S/R','0"','∞',1,'4+',7,'Demo 3')], variants:[{name:'Standard', pts:35}]},
+{id:'res-tempest', faction:'Resistance', name:'Tempest Interceptor', category:'Vanguard', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'24-36"', stats:'A3 DP2', special:'Ev1, Fast Mover',
+  weapons:[W('FC-28 Hailstorm Cannons','F','Full','∞/18"',6,'4+',3,'AA, Strafe, T2')], variants:[{name:'Standard', pts:70}]},
+{id:'res-theropod', faction:'Resistance', name:'Theropod Walker', category:'Vanguard', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Vehicle', mv:'8"', stats:'A6 DP4', special:'Ev2, Infiltrate 12", Scout',
+  weapons:[W('Industrial Cutting Claws','F','Full','CC',4,'2+',6,'Assault, Demo 1'), W('MC-25 Azrael Chainguns (Pizzaro)','F','Full','48/18"',4,'3+',5,'Focus 1, Strafe'), W('MM-97 Deforestation Missiles (Cortez)','F','Full','24/18"',2,'4+',3,'Demo 3, Incendiary 2')],
+  variants:[{name:'Pizzaro', pts:90},{name:'Cortez', pts:95}]},
+
+// ===== Resistance — Transport =====
+{id:'res-battlebus', faction:'Resistance', name:'Battle Bus', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A3 DP4', special:'Firing Ports, Flexible Capacity, UC',
+  weapons:[W('Rocket launchers (Rocket Bus)','F/S','Full','18/6"',3,'2+',3,'Focus 2, Pen 6+'), W('Heavy Machineguns (Gun Bus)','F/S','Full','36/12"',6,'3+',2,'AA'), W('Ram (+5pts)','F','Full','CC',1,'2+',4,'Demo 0, Ram')],
+  variants:[{name:'Bus', pts:15},{name:'Rocket Bus', pts:25},{name:'Gun Bus', pts:35}]},
+{id:'res-jackson', faction:'Resistance', name:'Jackson Halftrack', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A6 DP1', special:'Surveyor',
+  weapons:[W('MD-1 Spider Drone Launcher','F','Full','12/6"',4,'2+','S1','Seeker'), W('MM-15 Sidearm Missile (+5pts)','F','Full','36/9"',1,'2+',7,'Critical 1, Demo 0, L1, Pen 5+')],
+  variants:[{name:'Standard', pts:20}]},
+{id:'res-k9technical', faction:'Resistance', name:'K9 Technical', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A2 DP1', special:'Ev1, UC',
+  weapons:[W('Smoke Hand Grenade','F/S','3"','3"',1,'3+',0,'Smoke')], variants:[{name:'Standard', pts:0}]},
+{id:'res-kraken', faction:'Resistance', name:'Kraken Hovercraft', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'10"', stats:'A5 DP4', special:'Ev1, Skimmer, Strike',
+  weapons:[W('MC-90 Cannon','F','Full','48/18"',1,'3+',5,'-')], variants:[{name:'Standard', pts:35}]},
+{id:'res-leviathan', faction:'Resistance', name:'Leviathan Heavy Hovercraft', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'10"', stats:'A4 DP9', special:'Flexible Capacity, Large, Skimmer, Strike',
+  weapons:[W('Multiple Rocket Racks (Rocket Leviathan)','F/S/R','5"','∞/36"',1,'2+',6,'Blast, Indirect, Pen 6+'), W('Twin Autocannons x4 (Gun Leviathan)','F/S/R','5"','36/18"',2,'3+',2,'AA')],
+  variants:[{name:'Rocket Leviathan', pts:90},{name:'Gun Leviathan', pts:120}]},
+{id:'res-lifthawkdrop', faction:'Resistance', name:'Lifthawk Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP4', special:'—',
+  weapons:[W('MM-3 Missile Pod','F','8"','36/6"',1,'3+',5,'-'), W('MG-6 Twin Heavy Machineguns','F','Full','36/12"',5,'3+','S2','-'), W('Twin Autocannons (+15pts)','F/S/R','8"','36/18"',2,'3+',2,'AA')],
+  variants:[{name:'Standard', pts:40}]},
+{id:'res-lifthawktroop', faction:'Resistance', name:'Lifthawk Troopship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP4', special:'—',
+  weapons:[W('MM-3 Missile Pod x2','F','8"','36/6"',1,'3+',5,'-'), W('MG-6 Twin Heavy Machineguns x2','F','Full','36/12"',5,'3+','S2','-'), W('Flamethrower (+10pts)','F','8"','6"',4,'3+','S2','Flame'), W('MC-20 Chaingun Pair (+10pts*)','F/S','8"','36/18"',10,'3+','S5','Ignores Cover, Strafe')],
+  note:'*Peut remplacer un MM-3 + un MG-6 par un MC-20 Chaingun Pair.', variants:[{name:'Standard', pts:60}]},
+{id:'res-patton', faction:'Resistance', name:'Patton IFV', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'—',
+  weapons:[W('MM-5 Grenade Salvo','F','Full','18/6"',4,'3+',2,'Concussion, L1, Pen 6+'), W('MR-41 Liberator Railgun (Patton A)','F/S/R','Full','∞/24"',1,'2+',5,'Demo 0'), W('MC-37 Autocannons (Patton B)','F/S/R','Full','36/18"',4,'3+',3,'Ignores Cover')],
+variants:[{name:'Patton A', pts:25},{name:'Patton B', pts:25}]},
+{id:'res-swifthawk', faction:'Resistance', name:'Swifthawk Tilt-Jet / Squall Helicopter', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'20"', stats:'A2 DP2', special:'—',
+  weapons:[W('MM-3 Missile Pod','F','10"','36/6"',1,'3+',5,'-'), W('MG-12 Gatling','F','10"','36/12"',10,'3+','S1','-')], variants:[{name:'Standard', pts:35}]},
+  
+  // ===== UCM — Standard =====
+{id:'ucm-legionnaireweapon', faction:'UCM', name:'Legionnaire Weapon Team', category:'Standard', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF3 DF5+ B5+ DP6', special:'—',
+  weapons:[W('UM-13 Flak Cannons (Flak Team)','F/S/R','0"','36/18"',3,'3+',2,'AA'), W('UM-19 Mortars (Mortar Team)','F/S/R','0"','24"',1,'4+',2,'Battery 2, Blast, Concussion, Indirect, Pen 6+')],
+  variants:[{name:'Standard', pts:25}]},
+{id:'ucm-legionnaires', faction:'UCM', name:'Legionnaires', category:'Standard', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF5 DF5+ B5+ DP5', special:'—',
+  weapons:[W('UM-3 Assault Rifles','F/S/R','Full','36/9"',5,'3+','S1','-'), W('UM-105 Missile Launcher','F/S/R','0"','36/9"',1,'3+',5,'Demo 0')],
+  variants:[{name:'Standard', pts:20}]},
+{id:'ucm-polecat', faction:'UCM', name:'Polecat Buggy', category:'Standard', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A4 DP1', special:'—',
+  weapons:[W('UM-2 Aggressor Cannon (Polecat A)','F/S','Full','36/18"',3,'3+',3,'Pen 6+'), W('UM-7 Nemesis Miniguns (Polecat B)','F/S','Full','16/8"',6,'3+','S5','Ignores Cover'), W('UM-703 Laser (Polecat C)','F/S','Full','∞',1,'3+',2,'Assault, Focus 2, T2')],
+  variants:[{name:'Standard', pts:25}]},
+{id:'ucm-heavybuggy', faction:'UCM', name:'UCM Heavy Buggy', category:'Standard', squadMin:1, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A4 DP3', special:'AWACS 12", Command Centre, Surveyor (Fox)',
+  weapons:[W('Anti-Armour Missile (Wolf)','F','Full','36/12"',1,'3+',6,'Alt 1, Demo 0, Devastator 2'), W('Airburst Missile (Wolf)','F','Full','18"',3,'3+',2,'AA-S, Alt 1, Indirect'),
+    W('UM-55 Requiter Organ Gun (Jackal)','F','Full','12"',1,'3+',5,'Blast, Ignores Cover, T2'), W('UC-19 Hose, reinforce (Dingo)','F','Full','6"',2,'2+',0,'Alt-1, Repair 2: Zones'), W('UC-19 Hose, encapsulate (Dingo)','F','Full','6"',8,'3+','S6','Alt-1, Ignores Cover')],
+  variants:[{name:'Wolf', pts:50},{name:'Jackal', pts:45},{name:'Dingo', pts:45},{name:'Fox', pts:40}]},
+{id:'ucm-lightbattletank', faction:'UCM', name:'UCM Light Battle Tank', category:'Standard', squadMin:2, squadMax:9, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A6 DP1', special:'—',
+  weapons:[W('UM-88 Cannons (Katana)','F/S/R','Full','48/18"',2,'2+',5,'Alt 1'), W('UM-666 Flamethrower (Fireblade)','F/S/R','Full','6"',6,'3+','S3','Alt 1, Flame'),
+    W('UM-449 Tesla Coils, Strike (Wakizashi)','F/S/R','Full','6"',2,'2+',5,'Alt 1, Ineffective: Zones, Overcharge 2'), W('UM-449 Tesla Coils, Storm (Wakizashi)','F/S/R','Full','6"',2,'2+',3,'AA, Alt 1, Ineffective: Zones, Vehicles'), W('Smoke Launchers','F/S/R','Full','6"',1,'A',0,'Alt 1, Assault, Smoke')],
+  variants:[{name:'Standard', pts:35}]},
+{id:'ucm-mainbattletank', faction:'UCM', name:'UCM Main Battle Tank', category:'Standard', squadMin:2, squadMax:9, rare:false, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A7 DP1', special:'Command Centre, Scanner (Greave)',
+  weapons:[W('UM-100 Avenger Railgun (Sabre)','F/S/R','Full','∞/24"',1,'2+',6,'Articulated, Demo 0, T1'), W('UM-702 Laser (Tachi)','F/S/R','Full','∞',1,'2+',4,'Articulated, Assault, Overcharge 2, T2'),
+    W('UM-28 Gatling, focused (Rapier)','F/S/R','Full','36/18"',3,'3+',3,'AA, Alt 1, Articulated'), W('UM-28 Gatling, spread (Rapier)','F/S/R','Full','24/12"',8,'3+','S1','Alt 1, Articulated'), W('UM-18 Machinegun','F/S','Full','24/12"',3,'3+','S3','-')],
+  variants:[{name:'Sabre', pts:35},{name:'Greave', pts:35},{name:'Tachi', pts:40},{name:'Rapier', pts:40}]},
+
+// ===== UCM — Support =====
+{id:'ucm-falcon', faction:'UCM', name:'Falcon Gunship', category:'Support', squadMin:1, squadMax:4, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'24"', stats:'A2 DP1', special:'Ev2',
+  weapons:[W('UM-28 Gatlings, harmonised (Falcon-A)','F','12"','36/18"',1,'3+',7,'Alt 1, Demo 0, Precision 1'), W('UM-28 Gatlings, spread (Falcon-A)','F','12"','36/18"',15,'3+','S3','Alt 1, Strafe'),
+    W('UM-109 Airburst Missiles (Falcon-B)','F','12"','36/12"',2,'3+',3,'AA, Alt 1, Strafe'), W('UM-109 Penetrator Missiles (Falcon-B)','F','12"','36/12"',2,'3+',5,'Alt 1, Pen 6+, Strafe'), W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-')],
+  variants:[{name:'Standard', pts:40}]},
+{id:'ucm-ferrumdronebase', faction:'UCM', name:'Ferrum Drone Base', category:'Support', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A5 DP7', special:'Command Centre, Drone Base 4: Starsprites',
+  weapons:[W('UM-903 Defence pods','F/S/R','Full','36/9"',2,'3+',2,'AA, Pen 6+'), W('Twin UM-5 Gatling (L)','F/Sl','Full','24/12"',5,'3+','S2','-'), W('Twin UM-5 Gatling (R)','F/Sr','Full','24/12"',5,'3+','S2','-')],
+  variants:[{name:'Standard', pts:155}]},
+{id:'ucm-osprey', faction:'UCM', name:'Osprey Gunship', category:'Support', squadMin:1, squadMax:2, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'24"', stats:'A2 DP2', special:'—',
+  weapons:[W('UM-101 Light Railguns','F','12"','∞/18"',2,'2+',5,'Demo 0'), W('UM-109 Airburst Missile Bank','F','12"','36/12"',3,'3+',3,'AA, Alt 1, Strafe'), W('UM-109 Penetrator Missile Bank','F','12"','36/12"',3,'3+',5,'Alt 1, Pen 6+, Strafe')],
+  variants:[{name:'Standard', pts:75}]},
+{id:'ucm-armouredcommand', faction:'UCM', name:'UCM Armoured Command Vehicle', category:'Support', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A6 DP4', special:'Command Centre (All), Obscurer 4" (Panda)',
+  weapons:[W('Orbital Strike (Kodiak)','F/S/R','2"','∞',1,'3+',9,'Blast, Demo 2, Indirect'), W('UC-9 ECM Jammer (Panda)','F/S/R','Full','∞',1,'2+',0,'Jammer')],
+  variants:[{name:'Kodiak', pts:120},{name:'Panda', pts:80}]},
+{id:'ucm-artilleryvehicle', faction:'UCM', name:'UCM Artillery Vehicle', category:'Support', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'—',
+  weapons:[W('UM-92 Heavy Mortar (Grizzly A)','F','3"','24"',1,'3+',4,'Blast, Demo 2, Indirect'), W('UMX-9 Plasma Mortar (Grizzly B)','F','3"','18"',1,'3+',7,'Demo 1, Devastator 1, Indirect'),
+    W('Microsprite Drones (Cuprum Drone Launcher)','F/S/R','3"','∞','D3','2+',4,'Ignores Cover, Indirect, Needs Spotter, T2')],
+  variants:[{name:'Standard', pts:40}]},
+{id:'ucm-howitzer', faction:'UCM', name:'UCM Howitzer', category:'Support', squadMin:1, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'N/A', stats:'A4 DP1', special:'AWACS 6" (Scutum)',
+  weapons:[W('UM-31 Anti-Armour Round (Longbow)','F','0"','∞/24"',1,'3+',6,'Alt 1, Demo 1, Indirect'), W('UM-31 Smoke Round (Longbow)','F','0"','24"',1,'A',0,'Alt 1, Indirect, Smoke'),
+    W('UM-701B Marksman Laser (Crossbow)','F','0"','∞',1,'2+',7,'Destroyer 6+, Precision 1'), W('UMR-6 Ballistic Missile (Pilum)','F','0"','∞/36"',1,'2+',8,'Blast, Demo 2, Devastator 2, Indirect, L1'),
+    W('UM-371 Organ Gun (Scorpio)','F','0"','24/12"',12,'4+',2,'AA-R, L2'), W('UM-59 Organ-Gun (Ballista)','F','0"','36/18"',5,'4+',5,'L2, Strafe'), W('UM-004 Jammer (Scutum)','F','0"','∞',1,'2+',0,'Jammer')],
+  variants:[{name:'Standard', pts:25}]},
+
+// ===== UCM — Heavy =====
+{id:'ucm-dominionbomber', faction:'UCM', name:'Dominion Heavy Bomber', category:'Heavy', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'9-24"', stats:'A3 DP5', special:'Fast Mover',
+  weapons:[W('Quad Autocannons','F','Full','36/18"',8,'3+',5,'Strafe'), W('UF-80 Missiles','F','Full','12"',2,'3+',7,'Blast, Ignores Cover, Strafe'), W('Twin Tailgun','R','Full','36/18"',2,'2+',2,'AA'), W('Titanbane Bomb','F','Full','GB',1,'2+',10,'Demo 2, Devastator 3')],
+  variants:[{name:'Standard', pts:200}]},
+{id:'ucm-eagle', faction:'UCM', name:'Eagle Heavy Gunship', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A2 DP3', special:'Scanner (Eagle C)',
+  weapons:[W('UM-200 Heavy Railguns','F','9"','∞/24"',2,'3+',8,'Critical 1, Demo 0, Precision 1'), W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-'),
+    W('UM-909 Missile Block (Eagle A) (L)','F/Sl','9"','36/6"',2,'3+',4,'Pen 6+'), W('UM-909 Missile Block (Eagle A) (R)','F/Sr','9"','36/6"',2,'3+',4,'Pen 6+'), W('UM-117 Cannons (Eagle B)','F/S','9"','48/18"',2,'2+',5,'Demo 0')],
+  variants:[{name:'Eagle A', pts:90},{name:'Eagle B', pts:100},{name:'Eagle C', pts:100}]},
+{id:'ucm-flail', faction:'UCM', name:'Flail Heavy Tank', category:'Heavy', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A7 DP2', special:'Wide 5"',
+  weapons:[W('UM-77 Tesla Array','F/S/R','Full','4"',1,'2+',8,'Field, Ineffective: Zones'), W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-')],
+  variants:[{name:'Standard', pts:35}]},
+{id:'ucm-hazardsuits', faction:'UCM', name:'Hazard Suits', category:'Heavy', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF3 DF3+ B4+ DP3', special:'Hardy 2+, Strong',
+  weapons:[W('UM-10 Compact Railguns','F/S/R','1"','∞/24"',1,'2+',6,'Precision 1')],
+  variants:[{name:'Standard', pts:35}]},
+{id:'ucm-seraphim', faction:'UCM', name:'Seraphim Bomber', category:'Heavy', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'18-28"', stats:'A4 DP2', special:'Ev2, Fast Mover',
+  weapons:[W('UF-2 Heavenfire, focused','F','Full','GB',1,'2+',8,'Alt 1, Demo 0'), W('UF-2 Heavenfire, spread','F','Full','GB',6,'2+','S1','Alt 1, Flame'),
+    W('UF-85 Bunker Busters (Seraphim A)','F','Full','GB',2,'5+',6,'Demo 4, Devastator 2, L2'), W('UF-80 Missiles (Seraphim B)','F','Full','12"',2,'3+',7,'Blast, Ignores Cover, Strafe')],
+  variants:[{name:'Standard', pts:80}]},
+{id:'ucm-heavytank', faction:'UCM', name:'UCM Heavy Tank', category:'Heavy', squadMin:2, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A7 DP2', special:'—',
+  weapons:[W('UM-100L Long Avenger Railguns (Gladius)','F/S/R','Full','∞/24"',2,'2+',6,'Articulated, Demo 0, Devastator 1'), W('UM-91 Accelerated Mortar (Maul)','F/S/R','Full','24"',1,'3+',5,'Blast, Demo 2, Indirect'),
+    W('UM-701 Marksman Laser (Scimitar)','F','Full','∞',1,'2+',7,'Destroyer 6+, Precision 2'), W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-')],
+  variants:[{name:'Gladius', pts:55},{name:'Scimitar', pts:55},{name:'Maul', pts:60}]},
+{id:'ucm-supergunship', faction:'UCM', name:'UCM Super Gunship', category:'Heavy', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'16"', stats:'A3 DP9', special:'AWACS 18" (All), Command Centre, Scanner (Phoenix)',
+  weapons:[W('Missile Bay','F','8"','36/9"',1,'3+',6,'Blast'), W('UM-903 Defence pods','F/S/R','8"','36/9"',2,'3+',2,'AA, Pen 6+'),
+    W('UM-79 Tri-Minigun, Focused (L)','F/Sl','8"','24/18"',1,'3+',8,'Alt 1, Precision 1'), W('UM-79 Tri-Minigun, Spread (L)','F/Sl','8"','24/18"',12,'3+','S3','Alt 1, Precision 1, Strafe'),
+    W('UM-79 Tri-Minigun, Focused (R)','F/Sr','8"','24/18"',1,'3+',8,'Alt 2, Precision 1'), W('UM-79 Tri-Minigun, Spread (R)','F/Sr','8"','24/18"',12,'3+','S3','Alt 2, Precision 1, Strafe'),
+    W('UM-79 Tri-Minigun, Focused (Roc)','F','8"','24/18"',1,'3+',8,'Alt 3, Precision 1'), W('UM-79 Tri-Minigun, Spread (Roc)','F','8"','24/18"',12,'3+','S3','Alt 3, Precision 1, Strafe'), W('UM-111 HV Missile Pods (Roc)','F','8"','36/9"',4,'3+',4,'Strafe, Pen 6+')],
+  variants:[{name:'Phoenix', pts:190},{name:'Roc', pts:200}]},
+{id:'ucm-superheavytank', faction:'UCM', name:'UCM Super-Heavy Tank', category:'Heavy', squadMin:1, squadMax:3, rare:false, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A7 DP4', special:'—',
+  weapons:[W('UM-300 Mythslayer Railgun (Broadsword)','F/S/R','Full','∞/36"',1,'3+',9,'Critical 1, Demo 0, Devastator 3, Precision 2'), W('UMX-90 Therma-Lance (Machete)','F/S/R','Full','12"',1,'2+',10,'Demo 0, Destroyer 4+, Devastator 4'),
+    W('UM-207 Demolition Cannon (Cutlass)','F/S/R','Full','24/18"',1,'3+',6,'Demo 6, Devastator 2'), W('UM-209 Long Cannon (Claymore)','F/S/R','Full','36/24"',2,'2+',6,'Concussion, Critical 2, Demo 2, Devastator 1'), W('UM-79 Rotary Cannon (Cutlass, Claymore)','F/S/R','Full','36/18"',5,'2+','S4','Assault')],
+  variants:[{name:'Machete', pts:85},{name:'Cutlass', pts:85},{name:'Claymore', pts:85},{name:'Broadsword', pts:90}]},
+
+// ===== UCM — Vanguard =====
+{id:'ucm-archangel', faction:'UCM', name:'Archangel', category:'Vanguard', squadMin:1, squadMax:2, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'18-36"', stats:'A2 DP1', special:'Ev3, Fast Mover',
+  weapons:[W('UF-50 Cannons (Archangel Interceptor)','F','Full','∞/12"',2,'3+',3,'AA, T2'), W('UF-81 Incendiaries (Archangel FighterBomber)','F','Full','18/6"',2,'3+',4,'Incendiary 3'),
+    W('Twin UF-5 Gatling (Archangel FighterBomber)','F','Full','24/12"',5,'3+','S2','AA'), W('UM-115 Missile Spread (+10pts)','F/S/R','Full','24/12"',1,'2+',6,'L1, Blast, Demo 1')],
+  variants:[{name:'Archangel Interceptor', pts:40},{name:'Archangel Fighter-Bomber', pts:45}]},
+{id:'ucm-harrier', faction:'UCM', name:'Harrier Gunship', category:'Vanguard', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A2 DP2', special:'Ev1',
+  weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-'), W('UM-117 Cannons','F/S','Full','48/18"',2,'2+',5,'Demo 0'), W('UM-117 Cannons (Harrier A)','F/S','Full','48/18"',2,'2+',5,'Demo 0'),
+    W('UM-909 Missile Block (Harrier B) (L)','F/Sl','9"','36/6"',2,'3+',4,'Pen 6+'), W('UM-909 Missile Block (Harrier B) (R)','F/Sr','9"','36/6"',2,'3+',4,'Pen 6+'), W('UM-903 Defence pods (+5pts)','F/S/R','9"','36/9"',2,'3+',2,'AA, Pen 6+')],
+  note:'Peut retirer un UM-117 Cannons pour gagner Scanner et Scout.', variants:[{name:'Standard', pts:80}]},
+{id:'ucm-praetoriansnipers', faction:'UCM', name:'Praetorian Snipers', category:'Vanguard', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF4 DF4+ B3+ DP3', special:'Ev2, FS1, Infiltrate 18", Scout',
+  weapons:[W('UM-3S Sniper Rifles','F/S/R','0"','∞/24"',6,'2+','S3','Pen 6+, Precision 2')],
+  variants:[{name:'Standard', pts:35}]},
+{id:'ucm-praetorianspecops', faction:'UCM', name:'Praetorian Spec-Ops', category:'Vanguard', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'3"', stats:'OF5 DF4+ B3+ DP5', special:'Breachers D3, FS3, Rapid Insertion 4"',
+  weapons:[W('UM-3K Carbines','F/S/R','Full','12/6"',10,'2+','S1','-')],
+  variants:[{name:'Standard', pts:40}]},
+{id:'ucm-starsprite', faction:'UCM', name:'Starsprite', category:'Vanguard', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (20mm)', mv:'30"', stats:'A1 DP1', special:'Remote Drone, Scout',
+  weapons:[W('Golden Arrow Missile','F','15"','24/6"',1,'3+',2,'AA-S, Focus 3')],
+  variants:[{name:'Standard', pts:0}]},
+{id:'ucm-columbuswalker', faction:'UCM', name:'UCM Columbus Battlewalker', category:'Vanguard', squadMin:1, squadMax:3, rare:true, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A5 DP3', special:'Infiltrate 18"',
+  weapons:[W('MC-120 Punisher Cannons','F','3"','∞/18"',2,'3+',6,'Demo 0'), W('MM-111 Missile Pod','F','Full','36/9"',1,'3+',4,'Pen 6+'), W('MC-17 Guns (Columbus A)','F/S/R','Full','36/18"',2,'3+',2,'AA'), W('MF-666 Flamethrower (Columbus B)','F/S/R','Full','6"',6,'3+','S2','Flame')],
+  variants:[{name:'Columbus A', pts:75},{name:'Columbus B', pts:75}]},
+{id:'ucm-troopbuggy', faction:'UCM', name:'UCM Troop Buggy', category:'Vanguard', squadMin:2, squadMax:4, rare:true, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A4 DP1', special:'Delayed, Infiltrate 10" (All), Scout (Ferret)',
+  weapons:[W('Twin UM-5 Gatling (Badger A)','F/S','Full','24/12"',5,'3+','S2','-'), W('UM-108 Missile (Badger B)','F/S','Full','36/9"',1,'3+',6,'L1, Demo 0')],
+  variants:[{name:'Badger A', pts:10},{name:'Badger B', pts:10},{name:'Ferret', pts:15}]},
+{id:'ucm-wolverine', faction:'UCM', name:'Wolverine Buggy', category:'Vanguard', squadMin:4, squadMax:8, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A3 DP1', special:'Scout',
+  weapons:[W('UM-303 Minigun (Wolverine A)','F/S/R','Full','36/18"',8,'3+','S2','AA'), W('UM-105B Missile Launcher (Wolverine B)','F/S/R','Full','36/9"',1,'3+',5,'Demo 0'),
+    W('UM-66 Flamethrower (Wolverine C)','F/S/R','Full','3"',3,'3+','S3','Flame'), W('UM-18 Mortar, Explosive (Wolverine D)','F/S/R','Full','24/12"',2,'4+',3,'Alt 1, Indirect, Pen 6+'), W('UM-18 Mortar, Smoke (Wolverine D)','F/S/R','Full','24"',1,'A',0,'Alt 1, Indirect, Smoke')],
+  variants:[{name:'Standard', pts:15}]},
+
+// ===== UCM — Transport =====
+{id:'ucm-albatross', faction:'UCM', name:'Albatross Heavy Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A2 DP6', special:'—',
+  weapons:[W('Twin UM-5 Gatling (F)','F/S','Full','24/12"',5,'3+','S2','-'), W('Twin UM-5 Gatling (L)','F/Sl','Full','24/12"',5,'3+','S2','-'), W('Twin UM-5 Gatling (R)','F/Sr','Full','24/12"',5,'3+','S2','-')],
+  variants:[{name:'Standard', pts:50}]},
+{id:'ucm-bear', faction:'UCM', name:'Bear APC', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Surveyor',
+  weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-')], variants:[{name:'Standard', pts:10}]},
+{id:'ucm-condor', faction:'UCM', name:'Condor Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A2 DP3', special:'—',
+  weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-'), W('UM-111 Missile Pod (+10pts)','F','9"','36/6"',1,'3+',4,'Pen 6+')],
+  variants:[{name:'Standard', pts:20}]},
+{id:'ucm-crow', faction:'UCM', name:'Crow Dropship', category:'Transport', squadMin:null, squadMax:null, rare:true, unique:false,
+  type:'Aircraft (30mm)', mv:'24"', stats:'A2 DP1', special:'Strike',
+  weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-'), W('UMX-211 EM Missiles','F','12"','36/9"',2,'3+',4,'Ineffective: Zones, Jammer')],
+  variants:[{name:'Standard', pts:25}]},
+{id:'ucm-ravenlight', faction:'UCM', name:'Raven Light Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'24"', stats:'A2 DP1', special:'—',
+  weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-')], variants:[{name:'Standard', pts:15}]},
+{id:'ucm-raventroop', faction:'UCM', name:'Raven Light Troopship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'24"', stats:'A2 DP1', special:'—',
+  weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-')], variants:[{name:'Standard', pts:30}]},
+{id:'ucm-vulturedrop', faction:'UCM', name:'Vulture Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A2 DP2', special:'Flat Out 6"',
+  weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-'), W('UM-903 Defence pods (+5pts)','F/S/R','9"','36/9"',2,'3+',2,'AA, Pen 6+')],
+  variants:[{name:'Standard', pts:30}]},
+{id:'ucm-vulturetroop', faction:'UCM', name:'Vulture Troopship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A2 DP2', special:'Flat Out 6", Surveyor',
+  weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-'), W('UM-903 Defence pods (+5pts)','F/S/R','9"','36/9"',2,'3+',2,'AA, Pen 6+')],
+  variants:[{name:'Standard', pts:40}]},
+];
+
+const GAME_SIZES = {
+  Skirmish:  {min:501, max:1000, groups:9,  rareMax:1},
+  Clash:     {min:1001, max:2000, groups:12, rareMax:2},
+  Battle:    {min:2001, max:3000, groups:16, rareMax:3},
+  Reconquest:{min:3001, max:99999, groups:20, rareMax:3}
+};
+
+/* ---------------- STATE ---------------- */
+let roster = [];
+let nextRid = 1;
+let nextGroup = 1;
+
+const $ = sel => document.querySelector(sel);
+const factionSelect = $('#factionSelect');
+const gameSizeSelect = $('#gameSizeSelect');
+const targetPointsInput = $('#targetPoints');
+const searchBox = $('#searchBox');
+const catFilter = $('#catFilter');
+
+function fmt(n){ return n.toLocaleString('fr-FR'); }
+function currentGameSizeCfg(){ return GAME_SIZES[gameSizeSelect.value]; }
+
+/* group "weight" toward Groups-cap: Behemoth uses its Group Equivalent, others 1 */
+function groupWeight(groupId){
+  const entries = roster.filter(r=>r.groupId===groupId);
+  let weight = 1;
+  entries.forEach(e=>{
+    const u = UNITS.find(uu=>uu.id===e.unitId);
+    if(u.isBehemoth) weight = Math.max(weight, u.groupEquivalent||1);
+  });
+  return weight;
+}
+function reservedGroupsCount(){
+  const groups = new Set(roster.map(r=>r.groupId));
+  let total=0; groups.forEach(g=>total+=groupWeight(g));
+  return total;
+}
+
+function unitTotalPts(entry){
+  const unit = UNITS.find(u=>u.id===entry.unitId);
+  const variant = unit.variants[entry.variantIdx];
+  const qty = entry.squadSize || 1;
+  const extrasCost = (entry.extras||[]).reduce((s,name)=>{
+    const w = unit.weapons.find(ww=>ww.n===name);
+    return s + (w ? (parseOptionalCost(w.n)||0) : 0);
+  }, 0);
+  return (variant.pts + extrasCost) * qty;
+}
+function groupPointsMap(){
+  const map = {};
+  roster.forEach(r=>{ map[r.groupId] = (map[r.groupId]||0) + unitTotalPts(r); });
+  return map;
+}
+function categoryPointsMap(){
+  const map = {Standard:0, Vanguard:0, Heavy:0, Support:0, Transport:0};
+  roster.forEach(r=>{ const unit = UNITS.find(u=>u.id===r.unitId); map[unit.category] += unitTotalPts(r); });
+  return map;
+}
+function totalPoints(){ return roster.reduce((s,r)=>s+unitTotalPts(r),0); }
+
+/* Transport load per group, séparé Infanterie / Véhicule : reqX doit être <= capX */
+function transportLoadMap(){
+  const map = {};
+  roster.forEach(r=>{
+    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+    if(!map[r.groupId]) map[r.groupId] = {reqInf:0, capInf:0, reqVeh:0, capVeh:0};
+    if(td.reqEither){
+      // ne compte qu'un seul type selon le mode choisi pour cette entrée
+      if(r.transportMode==='veh') map[r.groupId].reqVeh += (td.reqVeh||0) * r.squadSize;
+      else map[r.groupId].reqInf += (td.reqInf||0) * r.squadSize;
+    } else {
+      map[r.groupId].reqInf += (td.reqInf||0) * r.squadSize;
+      map[r.groupId].reqVeh += (td.reqVeh||0) * r.squadSize;
+    }
+    map[r.groupId].capInf += (td.capInf||0) * r.squadSize;
+    map[r.groupId].capVeh += (td.capVeh||0) * r.squadSize;
+  });
+  return map;
+}
+
+/* ---------------- RENDER CATALOG ---------------- */
+function renderCatalog(){
+  const faction = factionSelect.value;
+  const search = searchBox.value.trim().toLowerCase();
+  const catFilterVal = catFilter.value;
+  const list = $('#catalogList');
+  list.innerHTML='';
+
+  if(catFilterVal==='Behemoth'){
+    const items = UNITS.filter(u=>u.faction===faction && u.isBehemoth && (!search || u.name.toLowerCase().includes(search)));
+    const wrap = document.createElement('div');
+    wrap.className='cat-group';
+    wrap.innerHTML = `<h3>Behemoths <span>${items.length}</span></h3>`;
+    items.forEach(u=>wrap.appendChild(renderUnitCard(u)));
+    list.appendChild(wrap);
+    return;
+  }
+
+  const cats = ['Standard','Vanguard','Heavy','Support','Transport'];
+  cats.forEach(cat=>{
+    if(catFilterVal && catFilterVal!==cat) return;
+    const items = UNITS.filter(u=>u.faction===faction && u.category===cat && (!search || u.name.toLowerCase().includes(search)));
+    if(items.length===0) return;
+    const wrap = document.createElement('div');
+    wrap.className='cat-group';
+    wrap.innerHTML = `<h3>${cat} <span>${items.length}</span></h3>`;
+    items.forEach(u=>wrap.appendChild(renderUnitCard(u)));
+    list.appendChild(wrap);
+  });
+}
+
+function renderUnitCard(u){
+  const el = document.createElement('div');
+  el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':'res'));
+  const flags = [];
+  if(u.rare) flags.push('<span class="flag">[RARE]</span>');
+  if(u.unique) flags.push('<span class="flag">[UNIQUE]</span>');
+  if(u.isBehemoth) flags.push(`<span class="flag behe">[BEHEMOTH · Power ${u.power} · Grp.Eq ${u.groupEquivalent}]</span>`);
+  const squadTxt = u.squadMin===null ? 'Qté libre' : `${u.squadMin}-${u.squadMax} / escouade`;
+
+  const weaponsHtml = `<div class="weapon-table-slot">${weaponTableHtml(u, u.variants[0].name)}</div>`;
+
+	
+  const optWeapons = optionalWeaponsOf(u);
+  const optHtml = optWeapons.length ? `
+    <div class="field" style="min-width:220px;">
+      <label>Options d'armement</label>
+      ${optWeapons.map(w=>`<label style="display:block; font-size:11px; font-weight:400; color:var(--text);">
+        <input type="checkbox" class="ctl-opt" value="${w.n}"> ${w.n} — +${parseOptionalCost(w.n)}pts
+      </label>`).join('')}
+    </div>` : '';
+	
+  const gearHtml = u.gear ? `<div class="gear-line">Gear: ${u.gear.join(' · ')}</div>` : '';
+  const noteHtml = u.note ? `<div class="unit-stats" style="color:var(--amber);">${u.note}</div>` : '';
+  const imgPath = UNIT_IMAGES[u.id];
+  const imgHtml = imgPath
+    ? `<div class="unit-img-wrap"><img src="${imgPath}" alt="${u.name}" onerror="this.parentElement.innerHTML='<div class=&quot;unit-img-placeholder&quot;>image introuvable</div>'"></div>`
+    : `<div class="unit-img-wrap"><div class="unit-img-placeholder">${u.type.split(' ')[0]}</div></div>`;
+
+  el.innerHTML = `
+    ${imgHtml}
+    <div class="unit-head">
+      <div class="unit-name">${u.name}</div>
+      <div class="unit-tags">${u.type} ${flags.join(' ')}</div>
+    </div>
+<div class="unit-stats">${squadTxt}</div>
+    ${statsTableHtmlWeb(u)}
+    <div class="unit-stats">${u.special}</div>
+    ${weaponsHtml}
+    ${gearHtml}
+    ${noteHtml}
+    <div class="unit-controls">
+      <div class="field"><label>Loadout</label>
+        <select class="ctl-variant">${u.variants.map((v,i)=>`<option value="${i}">${v.name} — ${v.pts}pts</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>${u.squadMin===null?'Nombre':'Taille escouade'}</label>
+        <input type="number" class="ctl-size" min="${u.squadMin===null?1:u.squadMin}" max="${u.squadMin===null?20:u.squadMax}" value="${u.squadMin===null?1:u.squadMin}" style="width:60px;">
+      </div>
+	  ${optHtml}
+      <button class="btn-add">+ Ajouter</button>
+    </div>
+  `;
+el.querySelector('.btn-add').addEventListener('click', ()=>{
+    const variantIdx = parseInt(el.querySelector('.ctl-variant').value,10);
+    let squadSize = parseInt(el.querySelector('.ctl-size').value,10);
+    if(isNaN(squadSize) || squadSize<1) squadSize=1;
+    const extras = Array.from(el.querySelectorAll('.ctl-opt:checked')).map(c=>c.value);
+    const td0 = TRANSPORT_DATA[u.id];
+    roster.push({rid: nextRid++, unitId:u.id, variantIdx, squadSize, groupId: nextGroup++, extras, transportMode: (td0 && td0.reqEither) ? 'inf' : null});
+    renderAll();
+  });
+  
+  el.querySelector('.ctl-variant').addEventListener('change', (e)=>{
+    const variantName = u.variants[parseInt(e.target.value,10)].name;
+    el.querySelector('.weapon-table-slot').innerHTML = weaponTableHtml(u, variantName);
+  });
+  
+  return el;
+}
+
+/* ---------------- RENDER ROSTER ---------------- */
+function renderRoster(){
+  const list = $('#rosterList');
+  list.innerHTML='';
+  if(roster.length===0){
+    list.innerHTML = '<div class="roster-empty">Aucune unité ajoutée. Choisissez une unité dans le catalogue à gauche.</div>';
+    return;
+  }
+  roster.forEach(entry=>{
+const unit = UNITS.find(u=>u.id===entry.unitId);
+    const variant = unit.variants[entry.variantIdx];
+    const pts = unitTotalPts(entry);
+    const optWeapons = optionalWeaponsOf(unit);
+    const optHtml = optWeapons.length ? `
+      <div style="margin-top:4px;">
+        ${optWeapons.map(w=>{
+          const cost = parseOptionalCost(w.n);
+          const checked = (entry.extras||[]).includes(w.n);
+          return `<label style="display:block; font-size:10.5px; color:var(--dim);"><input type="checkbox" class="e-opt" value="${w.n}" ${checked?'checked':''}> ${w.n} (+${cost}pts)</label>`;
+        }).join('')}
+      </div>` : '';
+    const el = document.createElement('div');
+    el.className='roster-entry' + (unit.isBehemoth ? ' behe':'');
+    el.innerHTML = `
+      <div class="re-top">
+        <span class="n">${unit.name} <span style="color:var(--dim); font-weight:400;">(${variant.name})</span>${unit.isBehemoth?' <span style="color:var(--behe);">⚙</span>':''}</span>
+        <span class="p">${fmt(pts)} pts</span>
+      </div>
+      <div class="re-sub">
+        <span>×</span><input type="number" class="e-size" min="1" value="${entry.squadSize}">
+        <span>Groupe</span><input type="number" class="e-group grp-input" min="1" value="${entry.groupId}">
+        ${unit.isBehemoth ? `<span title="Group Equivalent">GrpEq ${unit.groupEquivalent}</span>` : ''}
+        <button class="re-remove">retirer</button>
+      </div>
+      ${optHtml}
+    `;
+    el.querySelector('.e-size').addEventListener('change', e=>{ let v=parseInt(e.target.value,10); if(isNaN(v)||v<1)v=1; entry.squadSize=v; renderAll(); });
+    el.querySelector('.e-group').addEventListener('change', e=>{ let v=parseInt(e.target.value,10); if(isNaN(v)||v<1)v=1; entry.groupId=v; renderAll(); });
+    el.querySelector('.re-remove').addEventListener('click', ()=>{ roster = roster.filter(r=>r.rid!==entry.rid); renderAll(); });
+    el.querySelectorAll('.e-opt').forEach(chk=>{
+      chk.addEventListener('change', ()=>{
+        entry.extras = entry.extras || [];
+        if(chk.checked){ if(!entry.extras.includes(chk.value)) entry.extras.push(chk.value); }
+        else { entry.extras = entry.extras.filter(n=>n!==chk.value); }
+        renderAll();
+      });
+    });
+	const td = TRANSPORT_DATA[entry.unitId];
+    if(td && td.reqEither){
+      const modeSel = document.createElement('select');
+      modeSel.style.cssText = 'width:auto; font-size:10px; margin-left:6px;';
+      modeSel.innerHTML = `<option value="inf" ${entry.transportMode==='inf'?'selected':''}>Compte comme Infanterie</option><option value="veh" ${entry.transportMode==='veh'?'selected':''}>Compte comme Véhicule</option>`;
+      modeSel.addEventListener('change', e=>{ entry.transportMode = e.target.value; renderAll(); });
+      el.querySelector('.re-sub').appendChild(modeSel);
+    }
+    list.appendChild(el);
+  });
+}
+
+/* ---------------- RENDER SUMMARY / VALIDATION ---------------- */
+function renderSummary(){
+  const cfg = currentGameSizeCfg();
+  const target = parseInt(targetPointsInput.value,10) || cfg.max;
+  const total = totalPoints();
+  const groupsUsed = reservedGroupsCount();
+
+  $('#pillPoints').innerHTML = `${fmt(total)} / ${fmt(target)}<b>PTS</b>`;
+  $('#pillPoints').className = 'stat-pill ' + (total>target ? 'warn' : (total>0?'ok':''));
+  $('#pillGroups').innerHTML = `${groupsUsed} / ${cfg.groups}<b>GROUPES</b>`;
+  $('#pillGroups').className = 'stat-pill ' + (groupsUsed>cfg.groups ? 'warn' : (groupsUsed>0?'ok':''));
+
+  const warnings = computeWarnings(target, cfg, total, groupsUsed);
+  const badCount = warnings.filter(w=>w.type==='bad').length;
+  $('#pillStatus').innerHTML = (badCount===0 && roster.length>0) ? `LÉGALE<b>STATUT</b>` : (roster.length===0 ? `VIDE<b>STATUT</b>` : `${badCount} ERREUR${badCount>1?'S':''}<b>STATUT</b>`);
+  $('#pillStatus').className = 'stat-pill ' + (roster.length===0 ? '' : (badCount===0?'ok':'warn'));
+
+  $('#summaryGrid').innerHTML = `
+    <div class="stat-pill">${fmt(total)}<b>Total pts</b></div>
+    <div class="stat-pill">${roster.length}<b>Entrées</b></div>
+    <div class="stat-pill">${groupsUsed}<b>Groupes</b></div>
+    <div class="stat-pill">${fmt(Math.floor(target/4))}<b>Max / Groupe (25%)</b></div>
+  `;
+
+  const catMap = categoryPointsMap();
+  const standardPts = catMap.Standard;
+  $('#catBreakdown').innerHTML = ['Standard','Vanguard','Heavy','Support','Transport'].map(cat=>{
+    const val = catMap[cat];
+    const overCap = (cat!=='Standard' && cat!=='Transport' && val>standardPts);
+    return `<div class="${overCap?'over':''}"><span>${cat}</span><span>${fmt(val)} pts${overCap?' ⚠ > Standard':''}</span></div>`;
+  }).join('');
+
+  $('#warnBox').innerHTML = warnings.map(w=>`<div class="warn-item ${w.type}">${w.type==='bad'?'⚠':'✓'} ${w.msg}</div>`).join('');
+}
+
+function computeWarnings(target, cfg, total, groupsUsed){
+  const warnings = [];
+  if(total>target) warnings.push({type:'bad', msg:`Dépassement de points : ${fmt(total-target)} pts au-dessus de l'objectif (${fmt(target)} pts).`});
+  if(groupsUsed>cfg.groups) warnings.push({type:'bad', msg:`Trop de Groupes : ${groupsUsed} utilisés (Behemoths comptés via Group Equivalent) pour un maximum de ${cfg.groups} en ${gameSizeSelect.value}.`});
+
+  const catMap = categoryPointsMap();
+  ['Vanguard','Heavy','Support'].forEach(cat=>{
+    if(catMap[cat] > catMap.Standard) warnings.push({type:'bad', msg:`Catégorie ${cat} (${fmt(catMap[cat])} pts) dépasse les points de Standard (${fmt(catMap.Standard)} pts).`});
+  });
+  if(catMap.Standard===0 && roster.length>0) warnings.push({type:'bad', msg:`Aucune unité Standard dans le roster.`});
+
+  const gmap = groupPointsMap();
+  const cap = target/4;
+  Object.entries(gmap).forEach(([gid,pts])=>{
+    if(pts>cap) warnings.push({type:'bad', msg:`Groupe ${gid} : ${fmt(pts)} pts dépasse le plafond de 25% (${fmt(Math.floor(cap))} pts).`});
+  });
+
+  const rareCounts = {}; const uniqueCounts = {};
+  roster.forEach(r=>{ const u = UNITS.find(uu=>uu.id===r.unitId); if(u.rare) rareCounts[u.name]=(rareCounts[u.name]||0)+1; if(u.unique) uniqueCounts[u.name]=(uniqueCounts[u.name]||0)+1; });
+  Object.entries(rareCounts).forEach(([name,count])=>{ if(count>cfg.rareMax) warnings.push({type:'bad', msg:`"${name}" (Rare) : ${count} pris, max ${cfg.rareMax} en ${gameSizeSelect.value}.`}); });
+  Object.entries(uniqueCounts).forEach(([name,count])=>{ if(count>1) warnings.push({type:'bad', msg:`"${name}" (Unique) : ${count} pris, max 1.`}); });
+
+  roster.forEach(r=>{
+    const u = UNITS.find(uu=>uu.id===r.unitId);
+    if(u.squadMin!==null && (r.squadSize<u.squadMin || r.squadSize>u.squadMax)) warnings.push({type:'bad', msg:`${u.name} : taille d'escouade ${r.squadSize} hors bornes (${u.squadMin}-${u.squadMax}).`});
+    if(u.isBehemoth && r.squadSize!==1) warnings.push({type:'bad', msg:`${u.name} : un Behemoth a toujours Squad Size 1.`});
+  });
+
+  if(warnings.length===0 && roster.length>0) warnings.push({type:'good', msg:'Roster conforme aux règles de construction V3.01 (points, Groupes, catégories, Rare/Unique, Behemoths).'});
+
+  // transport capacity per group, séparé Infanterie / Véhicule (only flags groups where TRANSPORT_DATA a été rempli)
+  const tmap = transportLoadMap();
+  Object.entries(tmap).forEach(([gid,load])=>{
+    if(load.reqInf>load.capInf) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Infanterie ${load.reqInf}/${load.capInf} — dépasse la capacité Infanterie du transport.`});
+    if(load.reqVeh>load.capVeh) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Véhicule ${load.reqVeh}/${load.capVeh} — dépasse la capacité Véhicule du transport.`});
+  });
+
+  return warnings;
+}
+
+/* ---------------- GLOSSARY RENDER ---------------- */
+function renderGlossary(){
+  $('#glossGrid').innerHTML = GLOSSARY.map(([k,v])=>`<div class="gloss-item"><b>${k}</b> — ${v}</div>`).join('');
+}
+
+/* ---------------- CSV EXPORT ---------------- */
+function exportCsv(){
+	const rows = [['Faction','Categorie','Behemoth','Unite','Loadout','Taille escouade','Pts/unite','Pts total entree','Groupe','Rare','Unique','Type','Mv','Stats','Regles speciales unite','Gear','ReqInf','CapInf','ReqVeh','CapVeh','Arme_Nom','Arme_Arc','Arme_MA','Arme_R','Arme_Att','Arme_Ac','Arme_E','Arme_Special']];
+	roster.forEach(entry=>{
+    const u = UNITS.find(uu=>uu.id===entry.unitId);
+    const v = u.variants[entry.variantIdx];
+    const td = TRANSPORT_DATA[entry.unitId] || {reqInf:0,reqVeh:0,capInf:0,capVeh:0};
+    const baseRow = [
+      u.faction, u.category, u.isBehemoth?'Oui':'Non', u.name, v.name, entry.squadSize, v.pts, unitTotalPts(entry), entry.groupId,
+      u.rare?'Oui':'Non', u.unique?'Oui':'Non', u.type, u.mv, u.stats, u.special, (u.gear||[]).join(' | '),
+      td.reqInf, td.capInf, td.reqVeh, td.capVeh
+    ];
+    const emptyRow = baseRow.map(()=>'');
+
+    const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
+    const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
+    const allWeapons = [...filteredWeapons, ...extraWeapons];
+    if(allWeapons.length===0){
+      rows.push([...baseRow, '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+    } else {
+      allWeapons.forEach((w,i)=>{
+        const rowPrefix = i===0 ? baseRow : emptyRow;
+        rows.push([...rowPrefix, (i+1), w.n, w.arc, w.ma, w.r, w.att, w.ac, w.e, w.sp]);
+      });
+    }
+  });
+  rows.push([]);
+  rows.push(['Total points', totalPoints()]);
+  rows.push(['Groupes utilises', reservedGroupsCount()]);
+  rows.push(['Taille de partie', gameSizeSelect.value]);
+  rows.push(['Points vises', targetPointsInput.value]);
+  rows.push([]);
+  rows.push(['--- CHARGE DE TRANSPORT PAR GROUPE ---']);
+  rows.push(['Groupe','Req Inf','Cap Inf','Req Veh','Cap Veh','Statut']);
+  const tmap = transportLoadMap();
+  Object.entries(tmap).forEach(([gid,load])=>{
+    const ok = load.reqInf<=load.capInf && load.reqVeh<=load.capVeh;
+    rows.push([gid, load.reqInf, load.capInf, load.reqVeh, load.capVeh, ok?'OK':'DEPASSEMENT']);
+  });
+  rows.push([]);
+  rows.push(['--- GLOSSAIRE DES REGLES SPECIALES ---']);
+  rows.push(['Terme','Definition']);
+  GLOSSARY.forEach(([k,v])=>rows.push([k,v]));
+
+  const csv = rows.map(r=>r.map(c=>{
+    const s = String(c ?? '');
+    return /[",;\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  }).join(';')).join('\n');
+
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `dzc-roster-${factionSelect.value}-${gameSizeSelect.value}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---------------- GROUP SUMMARY (qui transporte qui) ---------------- */
+function renderGroupSummary(){
+  const box = $('#groupSummary');
+  if(roster.length===0){ box.innerHTML=''; return; }
+  const groups = {};
+  roster.forEach(r=>{ (groups[r.groupId] = groups[r.groupId]||[]).push(r); });
+  const tmap = transportLoadMap();
+
+  box.innerHTML = Object.entries(groups).map(([gid, entries])=>{
+    const load = tmap[gid] || {reqInf:0,capInf:0,reqVeh:0,capVeh:0};
+    const overInf = load.reqInf > load.capInf;
+    const overVeh = load.reqVeh > load.capVeh;
+    const status = (overInf||overVeh) ? 'bad' : 'ok';
+    const members = entries.map(e=>{
+      const u = UNITS.find(uu=>uu.id===e.unitId);
+      const td = TRANSPORT_DATA[e.unitId] || {reqInf:0,reqVeh:0,capInf:0,capVeh:0};
+      const isTransport = (td.capInf>0 || td.capVeh>0);
+      const tag = isTransport ? ' 🚛 transporteur' : ((td.reqInf>0||td.reqVeh>0) ? ' 📦 embarque' : '');
+      return `<div class="gb-member${isTransport?' transport':''}">${u.name} ×${e.squadSize}${tag}</div>`;
+    }).join('');
+    const loadHtml = (load.capInf||load.reqInf||load.capVeh||load.reqVeh) ? `
+      <div class="gb-load">
+        <span class="${overInf?'over':''}">Inf ${load.reqInf}/${load.capInf}</span>
+        <span class="${overVeh?'over':''}">Véh ${load.reqVeh}/${load.capVeh}</span>
+      </div>` : '';
+    return `<div class="group-block ${status}"><h4>Groupe ${gid}</h4>${members}${loadHtml}</div>`;
+  }).join('');
+}
+
+/* ---------------- PDF EXPORT (via impression navigateur) ---------------- */
+function usedGlossaryTerms(){
+  const bits = [];
+  roster.forEach(entry=>{
+    const u = UNITS.find(uu=>uu.id===entry.unitId);
+    const v = u.variants[entry.variantIdx];
+    bits.push(u.special);
+    (u.gear||[]).forEach(g=>bits.push(g));
+    const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
+    const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
+    [...filteredWeapons, ...extraWeapons].forEach(w=>bits.push(w.sp));
+  });
+  const blob = bits.join(' ; ').toLowerCase();
+  return GLOSSARY.filter(([term])=>{
+    const key = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
+    return key.length>=2 && blob.includes(key);
+  });
+}
+
+function explainSpecialString(spStr){
+  if(!spStr || spStr==='-') return '';
+  const parts = spStr.split(',').map(s=>s.trim()).filter(Boolean);
+  const explained = parts.map(part=>{
+    const keyGuess = part.replace(/[0-9+":.\-]/g,' ').trim().split(/\s+/)[0].toLowerCase();
+    const match = GLOSSARY.find(([term])=>{
+      const termKey = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
+      return termKey === keyGuess;
+    });
+    return match ? `<b>${part}</b> : ${match[1]}` : `<b>${part}</b>`;
+  });
+  return explained.join('<br>');
+}
+
+function extractGlossaryMatches(str){
+  if(!str || str==='-' || str==='—') return [];
+  return str.split(',').map(s=>s.trim()).filter(Boolean).map(part=>{
+    const keyGuess = part.replace(/[0-9+":.\-]/g,' ').trim().split(/\s+/)[0].toLowerCase();
+    const match = GLOSSARY.find(([term])=>{
+      const termKey = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
+      return termKey === keyGuess;
+    });
+    return match ? {term:match[0], def:match[1]} : null;
+  }).filter(Boolean);
+}
+
+function exportPdf(){
+  const cfg = currentGameSizeCfg();
+  const target = parseInt(targetPointsInput.value,10) || cfg.max;
+  const total = totalPoints();
+
+  const groups = {};
+  roster.forEach(r=>{ (groups[r.groupId] = groups[r.groupId]||[]).push(r); });
+  const tmap = transportLoadMap();
+
+  const GROUP_PALETTE = ['#e8f3ff','#fff3e0','#e8f8ee','#f5e8ff','#fff9e0','#e0faf7','#ffe8ec','#eef0ff','#f0f7e0','#fbe8f6'];
+const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
+    const hasAnySpecial = entries.some(e=>{
+      const u = UNITS.find(uu=>uu.id===e.unitId);
+      return u.special && u.special!=='—' && u.special!=='-';
+    });
+    const load = tmap[gid] || {reqInf:0,capInf:0,reqVeh:0,capVeh:0};
+    const overInf = load.reqInf > load.capInf;
+    const overVeh = load.reqVeh > load.capVeh;
+    const bgColor = GROUP_PALETTE[idx % GROUP_PALETTE.length];
+    const borderColor = (overInf||overVeh) ? '#d33' : '#bbb';
+
+    const groupGlossary = new Map(); // term -> def, dédupliqué pour tout le groupe
+
+    const memberRows = entries.map(entry=>{
+      const u = UNITS.find(uu=>uu.id===entry.unitId);
+      const v = u.variants[entry.variantIdx];
+      const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
+      const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
+      const allWeapons = [...filteredWeapons, ...extraWeapons];
+
+      extractGlossaryMatches(u.special).forEach(m=>groupGlossary.set(m.term, m.def));
+      allWeapons.forEach(w=> extractGlossaryMatches(w.sp).forEach(m=>groupGlossary.set(m.term, m.def)));
+
+const p = parseStats(u);
+const statsTable = `<table class="pdf-stats-table">
+        <tr><th>Mv</th><th>A</th><th>OF</th><th>DF</th><th>B</th><th>DP</th></tr>
+        <tr><td>${p.mv}</td><td>${p.a}</td><td>${p.of}</td><td>${p.df}</td><td>${p.b}</td><td>${p.dp}</td></tr>
+      </table>`;
+      const weapons = allWeapons.length
+        ? `<table class="pdf-weapon-table">
+            <tr><th>Arme</th><th>Arc</th><th>MA</th><th>R</th><th>Att</th><th>Ac</th><th>E</th><th>Spécial</th></tr>
+            ${allWeapons.map(w=>`<tr><td>${w.n}</td><td>${w.arc}</td><td>${w.ma}</td><td>${w.r}</td><td>${w.att}</td><td>${w.ac}</td><td>${w.e}</td><td>${w.sp}</td></tr>`).join('')}
+          </table>`
+        : '<span style="font-style:italic;">Sans armement</span>';
+
+return `<tr>
+        <td class="col-cat">${u.category}${u.isBehemoth?' ⚙':''}<br><span class="dim">×${entry.squadSize} (${fmt(unitTotalPts(entry))} points)</span></td>
+        <td class="col-unit"><b>${u.name}</b><br><span class="dim">${u.type} — ${v.name}</span></td>
+        <td class="col-stats">${statsTable}</td>
+${hasAnySpecial ? `<td class="col-special">${u.special}</td>` : ''}
+        <td>${weapons}</td>
+      </tr>`;
+    }).join('');
+
+    const loadLine = (load.capInf||load.reqInf||load.capVeh||load.reqVeh)
+      ? `<span>Inf ${load.reqInf}/${load.capInf}</span> · <span>Véh ${load.reqVeh}/${load.capVeh}</span>` : '';
+
+    const glossaryHtml = groupGlossary.size ? `
+      <table class="pdf-group-glossary">
+        <tr><th colspan="2">Définitions des règles spéciales de ce Groupe</th></tr>
+        ${Array.from(groupGlossary.entries()).map(([term,def])=>`<tr><td class="gt">${term}</td><td>${def}</td></tr>`).join('')}
+      </table>` : '';
+
+    return `<div class="pdf-group" style="background:${bgColor}; border-color:${borderColor};">
+      <div class="pdf-group-head">Groupe ${gid} ${loadLine ? '— '+loadLine : ''}</div>
+      <table>
+        <tr>
+<th class="col-cat">Cat.</th><th class="col-unit">Unité</th>
+          <th class="col-stats">Stats</th>${hasAnySpecial ? '<th class="col-special">Spécial</th>' : ''}<th>Armement</th>
+        </tr>
+        ${memberRows}
+      </table>
+      ${glossaryHtml}
+    </div>`;
+  }).join('');
+
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>DZC Roster - ${factionSelect.value} - ${gameSizeSelect.value}</title>
+    <style>
+      @page { margin: 8mm; }
+      @media print {
+        body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+        .pdf-group{ break-inside: avoid; page-break-inside: avoid; }
+      }
+      .pdf-group{ break-inside: avoid; page-break-inside: avoid; }
+      body{ font-family:Arial, sans-serif; padding:20px; color:#1a1a1a; }
+      h1{ font-size:20px; margin-bottom:2px; }
+      .meta{ font-size:12px; color:#555; margin-bottom:18px; }
+      table{ width:100%; border-collapse:collapse; font-size:10.5px; margin-top:4px; table-layout:fixed; }
+      td, th{ border:1px solid #ccc; padding:4px 6px; vertical-align:top; text-align:left; word-wrap:break-word; }
+      th{ background:#222; color:#fff; }
+      .col-cat{ width:80px; }
+      .col-unit{ width:110px; }
+      .col-stats{ width:165px; white-space:nowrap; }
+      .col-special{ width:60px; }
+      .dim{ color:#777; font-size:9.5px; }
+.pdf-stats-table{ background:rgba(255,255,255,0.55); font-size:9px; width:auto; table-layout:auto; border-collapse:collapse; }
+      .pdf-weapon-table{ background:rgba(255,255,255,0.55); font-size:9px; width:100%; table-layout:fixed; border-collapse:collapse; }
+      .pdf-weapon-table th, .pdf-weapon-table td,
+      .pdf-stats-table th, .pdf-stats-table td{ border:1px solid #ddd; padding:2px 6px; white-space:normal; overflow-wrap:break-word; }
+      .pdf-stats-table th, .pdf-stats-table td{ white-space:nowrap; }
+      .pdf-weapon-table th, .pdf-stats-table th{ background:rgba(60,60,60,0.85); color:#fff; font-size:8.5px; }
+      .pdf-weapon-table th:nth-child(1), .pdf-weapon-table td:nth-child(1){ width:22%; }
+      .pdf-weapon-table th:nth-child(2), .pdf-weapon-table td:nth-child(2){ width:6%; }
+      .pdf-weapon-table th:nth-child(3), .pdf-weapon-table td:nth-child(3){ width:6%; }
+      .pdf-weapon-table th:nth-child(4), .pdf-weapon-table td:nth-child(4){ width:9%; }
+      .pdf-weapon-table th:nth-child(5), .pdf-weapon-table td:nth-child(5){ width:4%; }
+      .pdf-weapon-table th:nth-child(6), .pdf-weapon-table td:nth-child(6){ width:4%; }
+      .pdf-weapon-table th:nth-child(7), .pdf-weapon-table td:nth-child(7){ width:4%; }
+      .pdf-weapon-table th:nth-child(8), .pdf-weapon-table td:nth-child(8){ width:45%; }
+      .pdf-group{ border-radius:6px; padding:10px; margin-bottom:16px; border:2px solid #bbb; }
+      .pdf-group-head{ font-weight:bold; font-size:13px; margin-bottom:6px; }
+      .pdf-group-glossary{ margin-top:8px; table-layout:auto; font-size:9.5px; }
+      .pdf-group-glossary th{ background:#444; }
+      .pdf-group-glossary .gt{ width:130px; font-weight:bold; background:rgba(255,255,255,0.4); }
+	  .pdf-group table{ width:100%; table-layout:fixed; }
+.printbtn{ margin-bottom:16px; padding:8px 16px; }
+      @media print { .printbtn{ display:none; } }
+    </style></head>
+    <body>
+      <button class="printbtn" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
+      <h1>DZC Roster — ${factionSelect.value}</h1>
+      <div class="meta">${gameSizeSelect.value} · ${fmt(total)} / ${fmt(target)} pts · ${reservedGroupsCount()} / ${cfg.groups} Groupes</div>
+      ${groupBlocksHtml}
+    </body></html>
+  `);
+  win.document.close();
+}
+
+/* ---------------- JSON EXPORT / IMPORT (sauvegarde de la liste) ---------------- */
+function exportRosterJson(){
+  const data = {
+    version: 'dzc-roster-v1',
+    faction: factionSelect.value,
+    gameSize: gameSizeSelect.value,
+    targetPoints: targetPointsInput.value,
+    nextRid, nextGroup,
+    roster
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `dzc-roster-${factionSelect.value}-${gameSizeSelect.value}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importRosterJson(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(data.version !== 'dzc-roster-v1') { alert('Fichier de liste non reconnu.'); return; }
+      // vérifie que chaque unité importée existe toujours dans le catalogue actuel
+      const validRoster = (data.roster||[]).filter(r => UNITS.some(u=>u.id===r.unitId));
+      if(validRoster.length !== (data.roster||[]).length){
+        alert('Attention : certaines unités du fichier importé ne correspondent plus au catalogue actuel et ont été ignorées.');
+      }
+      factionSelect.value = data.faction || factionSelect.value;
+      gameSizeSelect.value = data.gameSize || gameSizeSelect.value;
+      targetPointsInput.value = data.targetPoints || targetPointsInput.value;
+      roster = validRoster;
+      nextRid = data.nextRid || (Math.max(0, ...roster.map(r=>r.rid)) + 1);
+      nextGroup = data.nextGroup || (Math.max(0, ...roster.map(r=>r.groupId)) + 1);
+      renderAll();
+    } catch(err){
+      alert('Impossible de lire ce fichier JSON : ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+
+/* ---------------- WIRE UP ---------------- */
+function renderAll(){ renderCatalog(); renderRoster(); renderGroupSummary(); renderSummary(); }
+
+factionSelect.addEventListener('change', ()=>{
+  if(roster.length>0 && !confirm('Changer de faction va vider le roster actuel. Continuer ?')){
+    factionSelect.value = roster[0] ? UNITS.find(u=>u.id===roster[0].unitId).faction : factionSelect.value;
+    return;
+  }
+  roster = []; nextGroup=1; renderAll();
+});
+gameSizeSelect.addEventListener('change', ()=>{
+  const cfg = currentGameSizeCfg();
+  targetPointsInput.value = cfg===GAME_SIZES.Reconquest ? 3500 : Math.round((cfg.min+cfg.max)/2/5)*5;
+  renderAll();
+});
+targetPointsInput.addEventListener('input', renderSummary);
+searchBox.addEventListener('input', renderCatalog);
+catFilter.addEventListener('change', renderCatalog);
+$('#exportCsv').addEventListener('click', exportCsv);
+$('#exportPdf').addEventListener('click', exportPdf);
+$('#resetBtn').addEventListener('click', ()=>{ if(roster.length===0 || confirm('Vider tout le roster ?')){ roster=[]; nextGroup=1; renderAll(); } });
+$('#exportJson').addEventListener('click', exportRosterJson);
+$('#importJsonBtn').addEventListener('click', ()=> $('#importJsonFile').click());
+$('#importJsonFile').addEventListener('change', (e)=>{
+  if(e.target.files[0]) importRosterJson(e.target.files[0]);
+  e.target.value = ''; // permet de réimporter le même fichier plusieurs fois
+});
+
+renderGlossary();
+renderAll();
+</script>
+</body>
+</html>
