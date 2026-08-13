@@ -1450,11 +1450,11 @@ function renderGroupSummary(){
     }).join('');
     const loadHtml = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe) ? `
       <div class="gb-load">
-        <span class="${overInf ? 'over' : (equalInf ? 'equal' : '')}">Inf ${load.reqInf}/${load.capInf}</span>
-        <span class="${overVehLourd ? 'over' : (equalVehLourd ? 'equal' : '')}">Véh Lourd ${load.reqVehLourd}/${load.capVehLourd}</span>
-		<span class="${overVeh ? 'over' : (equalVeh ? 'equal' : '')}">Véh Std ${load.reqVeh}/${load.capVeh}</span>
-		<span class="${overVehLeg ? 'over' : (equalVehLeg ? 'equal' : '')}">Véh Lég ${load.reqVehLeg}/${load.capVehLeg}</span>
-		<span class="${overSpe ? 'over' : (equalSpe ? 'equal' : '')}">Spé ${load.reqSpe}/${load.capSpe}</span>
+        <span class="${overInf ? 'over' : (equalInf ? 'equal' : '')}">🟩Inf ${load.reqInf}/${load.capInf}</span>
+        <span class="${overVehLourd ? 'over' : (equalVehLourd ? 'equal' : '')}">🔺Véh Lourd ${load.reqVehLourd}/${load.capVehLourd}</span>
+		<span class="${overVeh ? 'over' : (equalVeh ? 'equal' : '')}">🔶Véh Std ${load.reqVeh}/${load.capVeh}</span>
+		<span class="${overVehLeg ? 'over' : (equalVehLeg ? 'equal' : '')}">🔵Véh Lég ${load.reqVehLeg}/${load.capVehLeg}</span>
+		<span class="${overSpe ? 'over' : (equalSpe ? 'equal' : '')}">▼Spé ${load.reqSpe}/${load.capSpe}</span>
       </div>` : '';
     return `<div class="group-block ${status}"><h4>Groupe ${gid}</h4>${members}${loadHtml}</div>`;
   }).join('');
