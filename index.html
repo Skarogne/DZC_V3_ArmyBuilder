@@ -396,30 +396,48 @@ const UNIT_IMAGES = {
    Ces valeurs sont multipliées par la taille d'escouade de l'entrée dans le roster.
 ------------------------------------------------------------- */
 const TRANSPORT_DATA = {};
-Object.keys(UNIT_IMAGES).forEach(id => { TRANSPORT_DATA[id] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0, exclusive:false, reqEither:false}; });
-TRANSPORT_DATA['phr-immortals'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['phr-juno'] = {reqInf:0, reqVeh:1, capInf:2, capVeh:0, reqEither:false};
-TRANSPORT_DATA['phr-t1walker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['phr-neptune'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:2, reqEither:false};
-TRANSPORT_DATA['phr-advjetskimmer'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['phr-t2heavywalker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['phr-t3emwalker'] = {reqInf:0, reqVeh:1, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['phr-atlasquad'] = {reqInf:0, reqVeh:2, capInf:4, capVeh:0, reqEither:false};
-TRANSPORT_DATA['phr-lokheira'] = {reqInf:0, reqVeh:2, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['phr-longreach'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
+Object.keys(UNIT_IMAGES).forEach(id => {TRANSPORT_DATA[id] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};});
+TRANSPORT_DATA['res-mcclellan'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-commandhover'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-fighters'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-mbt'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-technical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-wagon'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-artillerywagon'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-attackheli'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-berserkers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-lifthawkgun'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-mechloader'] = {reqInf:1, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-bombbus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-repairtechnical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-sentry'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-strikehawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:2, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-atilla'] = {reqInf:3, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:true};
+TRANSPORT_DATA['res-carryhawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:3, capVeh:0, capVehLeg:2, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-hellhog'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-occupation'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-ordnancebus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-superheavy'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-thunderstorm'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:12, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-drill109'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-drill209'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:18, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-atvs'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-freeriders'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-k9pack'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:1, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:true};
+TRANSPORT_DATA['res-columbuswalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-sappers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-tempest'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-theropod'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-battlebus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-jackson'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-k9technical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:1, reqEither:false};
+TRANSPORT_DATA['res-kraken'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-leviathan'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:24, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-lifthawkdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-lifthawktroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:6, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-patton'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['res-swifthawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
 
-TRANSPORT_DATA['res-commandhover'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['res-fighters'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['res-mbt'] = {reqInf:0, reqVeh:3, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['res-wagon'] = {reqInf:0, reqVeh:2, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['res-lifthawkdrop'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:6, reqEither:false};
-TRANSPORT_DATA['res-jackson'] = {reqInf:0, reqVeh:2, capInf:2, capVeh:0, reqEither:false};
-TRANSPORT_DATA['res-kraken'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:6, reqEither:false};
-TRANSPORT_DATA['res-attackheli'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['res-atilla'] = {reqInf:3, reqVeh:3, capInf:0, capVeh:0, reqEither:true}
-TRANSPORT_DATA['res-tempest'] = {reqInf:0, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['res-superheavy'] = {reqInf:0, reqVeh:6, capInf:0, capVeh:0, reqEither:false};
-TRANSPORT_DATA['res-berserkers'] = {reqInf:1, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
 
 
 /* ---------------- DATA: UNITS ---------------- */
@@ -1024,18 +1042,24 @@ function totalPoints(){ return roster.reduce((s,r)=>s+unitTotalPts(r),0); }
 function transportLoadMap(){
   const map = {};
   roster.forEach(r=>{
-    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVeh:0, capInf:0, capVeh:0, reqEither:false};
-    if(!map[r.groupId]) map[r.groupId] = {reqInf:0, capInf:0, reqVeh:0, capVeh:0};
+    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+    if(!map[r.groupId]) map[r.groupId] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
     if(td.reqEither){
       // ne compte qu'un seul type selon le mode choisi pour cette entrée
       if(r.transportMode==='veh') map[r.groupId].reqVeh += (td.reqVeh||0) * r.squadSize;
       else map[r.groupId].reqInf += (td.reqInf||0) * r.squadSize;
     } else {
       map[r.groupId].reqInf += (td.reqInf||0) * r.squadSize;
+	  map[r.groupId].reqVehLourd += (td.reqVehLourd||0) * r.squadSize;
       map[r.groupId].reqVeh += (td.reqVeh||0) * r.squadSize;
+	  map[r.groupId].reqVehLeg += (td.reqVehLeg||0) * r.squadSize;
+	  map[r.groupId].reqVehSpe += (td.reqVehSpe||0) * r.squadSize;
     }
     map[r.groupId].capInf += (td.capInf||0) * r.squadSize;
-    map[r.groupId].capVeh += (td.capVeh||0) * r.squadSize;
+    map[r.groupId].capVehLourd += (td.capVehLourd||0) * r.squadSize;
+	map[r.groupId].capVeh += (td.capVeh||0) * r.squadSize
+	map[r.groupId].capVehLeg += (td.capVehLeg||0) * r.squadSize
+	map[r.groupId].capVehSpe += (td.capVehSpe||0) * r.squadSize
   });
   return map;
 }
@@ -1269,7 +1293,11 @@ function computeWarnings(target, cfg, total, groupsUsed){
   const tmap = transportLoadMap();
   Object.entries(tmap).forEach(([gid,load])=>{
     if(load.reqInf>load.capInf) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Infanterie ${load.reqInf}/${load.capInf} — dépasse la capacité Infanterie du transport.`});
-    if(load.reqVeh>load.capVeh) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Véhicule ${load.reqVeh}/${load.capVeh} — dépasse la capacité Véhicule du transport.`});
+	if(load.reqVeh>load.capVeh) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Véhicule Standard ${load.reqVeh}/${load.capVeh} — dépasse la capacité Véhicule Standard du transport.`});
+    if(load.reqVehLourd>load.capVehLourd) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Véhicule Lourd ${load.reqVehLourd}/${load.capVehLourd} — dépasse la capacité Véhicule Lourd du transport.`});
+    if(load.reqVehLeg>load.capVehLeg) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Véhicule Léger ${load.reqVehLeg}/${load.capVehLeg} — dépasse la capacité Véhicule Léger du transport.`});
+    if(load.reqSpe>load.capSpe) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Spéciale ${load.reqSpe}/${load.capSpe} — dépasse la capacité Spéciale du transport.`});
+
   });
 
   return warnings;
@@ -1347,21 +1375,27 @@ function renderGroupSummary(){
   const tmap = transportLoadMap();
 
   box.innerHTML = Object.entries(groups).map(([gid, entries])=>{
-    const load = tmap[gid] || {reqInf:0,capInf:0,reqVeh:0,capVeh:0};
+    const load = tmap[gid] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
     const overInf = load.reqInf > load.capInf;
+	const overSpe = load.reqSpe > load.capSpe;
+	const overVehLourd = load.reqVehLourd > load.capVehLourd;
     const overVeh = load.reqVeh > load.capVeh;
-    const status = (overInf||overVeh) ? 'bad' : 'ok';
+	const overVehLeg = load.reqVehLeg > load.capVehLeg;
+    const status = (overInf||overVeh||overSpe||overVehLourd||overVehLeg) ? 'bad' : 'ok';
     const members = entries.map(e=>{
       const u = UNITS.find(uu=>uu.id===e.unitId);
-      const td = TRANSPORT_DATA[e.unitId] || {reqInf:0,reqVeh:0,capInf:0,capVeh:0};
-      const isTransport = (td.capInf>0 || td.capVeh>0);
-      const tag = isTransport ? ' 🚛 transporteur' : ((td.reqInf>0||td.reqVeh>0) ? ' 📦 embarque' : '');
+      const td = TRANSPORT_DATA[e.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
+      const isTransport = (td.capInf>0 || td.capVehLourd>0 || td.capVeh>0 || td.capVehLeg>0 || td.capSpe>0 );
+      const tag = isTransport ? ' 🚛 transporteur' : ((td.reqInf>0||td.reqVehLourd>0||td.reqVeh>0||td.reqVehLeg>0||td.reqSpe>0) ? ' 📦 embarque' : '');
       return `<div class="gb-member${isTransport?' transport':''}">${u.name} ×${e.squadSize}${tag}</div>`;
     }).join('');
-    const loadHtml = (load.capInf||load.reqInf||load.capVeh||load.reqVeh) ? `
+    const loadHtml = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe) ? `
       <div class="gb-load">
         <span class="${overInf?'over':''}">Inf ${load.reqInf}/${load.capInf}</span>
-        <span class="${overVeh?'over':''}">Véh ${load.reqVeh}/${load.capVeh}</span>
+        <span class="${overVeh?'over':''}">Véh Lourd ${load.reqVehLourd}/${load.capVehLourd}</span>
+		<span class="${overVeh?'over':''}">Véh Std ${load.reqVeh}/${load.capVeh}</span>
+		<span class="${overVeh?'over':''}">Véh Lég ${load.reqVehLeg}/${load.capVehLeg}</span>
+		<span class="${overVeh?'over':''}">Spé ${load.reqSpe}/${load.capSpe}</span>
       </div>` : '';
     return `<div class="group-block ${status}"><h4>Groupe ${gid}</h4>${members}${loadHtml}</div>`;
   }).join('');
@@ -1444,11 +1478,14 @@ const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
       const u = UNITS.find(uu=>uu.id===e.unitId);
       return u.special && u.special!=='—' && u.special!=='-';
     });
-    const load = tmap[gid] || {reqInf:0,capInf:0,reqVeh:0,capVeh:0};
+    const load = tmap[gid] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
     const overInf = load.reqInf > load.capInf;
+	const overSpe = load.reqSpe > load.capSpe;
+	const overVehLourd = load.reqVehLourd > load.capVehLourd;
     const overVeh = load.reqVeh > load.capVeh;
+	const overVehLeg = load.reqVehLeg > load.capVehLeg;
     const bgColor = GROUP_PALETTE[idx % GROUP_PALETTE.length];
-    const borderColor = (overInf||overVeh) ? '#d33' : '#bbb';
+    const borderColor = (overInf||overVeh||overSpe||overVehLourd||overVehLeg) ? '#d33' : '#bbb';
 
     const groupGlossary = new Map(); // term -> def, dédupliqué pour tout le groupe
 
@@ -1484,8 +1521,8 @@ ${hasAnySpecial ? `<td class="col-special">${filteredSpecial}</td>` : ''}
       </tr>`;
     }).join('');
 
-    const loadLine = (load.capInf||load.reqInf||load.capVeh||load.reqVeh)
-      ? `<span>Inf ${load.reqInf}/${load.capInf}</span> · <span>Véh ${load.reqVeh}/${load.capVeh}</span>` : '';
+    const loadLine = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe)
+      ? `<span>Inf ${load.reqInf}/${load.capInf}</span> · <span>VéhLourd ${load.reqVehLourd}/${load.capVehLourd}</span> · <span>VéhStd ${load.reqVeh}/${load.capVeh}</span> · <span>VéhLeg ${load.reqVehLeg}/${load.capVehLeg}</span> · <span>Spé ${load.reqSpe}/${load.capSpe}</span>` : '';
 
     const glossaryHtml = groupGlossary.size ? `
       <table class="pdf-group-glossary">
