@@ -208,8 +208,16 @@ function weaponMatchesVariant(weaponName, variantName){
   const m = weaponName.match(/\(([^)]+)\)\s*$/);
   if(!m) return true; // pas de parenthèse = arme générique, toujours affichée
   const inside = m[1];
+  if (inside === 'All') return true; 
   return inside.split(/[,/]/).map(s=>s.trim())
     .some(part => part.toLowerCase() === variantName.toLowerCase() || variantName.toLowerCase().includes(part.toLowerCase()));
+}
+
+function filterSpecialByVariant(specialStr, variantName){
+  if(!specialStr || specialStr==='-' || specialStr==='—') return specialStr;
+  const parts = specialStr.split(',').map(s=>s.trim()).filter(Boolean);
+  const kept = parts.filter(p => weaponMatchesVariant(p, variantName));
+  return kept.length ? kept.join(', ') : '—';
 }
 
 function parseStats(u){
@@ -275,7 +283,9 @@ const GLOSSARY = [
 ["Critical X","Modifie le nombre de dégâts supplémentaires infligés par un Critique."],
 ["Focus X","Peut sacrifier des tirs touchés pour ajouter +X à l'Énergie d'un tir restant."],
 ["Pen X+","Touche automatiquement sur un jet de dégâts de X+ quel que soit l'Énergie/l'Armure."],
-["AA / AA-S / AA-R","Peut cibler les Aéronefs (Anti-Aircraft). Seules ces armes peuvent viser des Aéronefs en vol."],
+["AA","Peut cibler les Aéronefs (Anti-Aircraft). Réaction possible avec -2 Ac."],
+["AA-S","Peut cibler les Aéronefs (Anti-Aircraft Slow). Réaction impossible."],
+["AA-R","Peut cibler les Aéronefs (Anti-Aircraft Reactive). Réaction possible sans pénalité."],
 ["Strafe","Peut répartir librement ses attaques entre plusieurs cibles proches les unes des autres."],
 ["Blast","Utilise un gabarit qui touche toutes les unités sous le template."],
 ["Indirect","Peut tirer sans ligne de vue directe (souvent via une unité Scout), généralement avec malus."],
@@ -722,7 +732,7 @@ variants:[{name:'Columbus A', pts:75},{name:'Columbus B', pts:75}]},
 {id:'res-drill209', faction:'Resistance', name:'209 Splitting Drill', category:'Vanguard', squadMin:1, squadMax:1, rare:true, unique:false,
   type:'Vehicle', mv:'N/A', stats:'A7 DP8', special:'Subterranean Medium', weapons:[], variants:[{name:'Standard', pts:65}]},
 {id:'res-atvs', faction:'Resistance', name:'ATVs', category:'Vanguard', squadMin:2, squadMax:4, rare:false, unique:false,
-  type:'Infantry', mv:'9"', stats:'OF3 DF5+ B5+ DP3', special:'Bikes 1, Ev1, Infiltrate 18", UC(All), Scanner, Scout(Recon ATVs)',
+  type:'Infantry', mv:'9"', stats:'OF3 DF5+ B5+ DP3', special:'Bikes 1, Ev1, Infiltrate 18", UC(All), Scanner, Scout (Recon ATVs)',
   weapons:[W('Disruptor Array (Recon ATV)','F/S/R','Full','18"',1,'3+',0,'Drive-by, Jammer'), W('Grenade Launchers, Explosive (Attack ATV)','F/S','Full','9/6"',1,'3+',4,'Alt 1, Battery 1, Blast, Drive-by'), W('Grenade Launchers, Incendiary (Attack ATV)','F/S','Full','6"',1,'4+',4,'Alt 1, Concussion, Demo 0, Drive-by, Incendiary 3')],
   variants:[{name:'Recon ATVs', pts:25},{name:'Attack ATVs', pts:30}]},
 {id:'res-freeriders', faction:'Resistance', name:'Freeriders', category:'Vanguard', squadMin:2, squadMax:2, rare:false, unique:false,
@@ -1097,7 +1107,7 @@ function renderUnitCard(u){
     </div>
 <div class="unit-stats">${squadTxt}</div>
     ${statsTableHtmlWeb(u)}
-    <div class="unit-stats">${u.special}</div>
+   <div class="unit-stats special-slot">${filterSpecialByVariant(u.special, u.variants[0].name)}</div>
     ${weaponsHtml}
     ${gearHtml}
     ${noteHtml}
@@ -1125,6 +1135,7 @@ el.querySelector('.btn-add').addEventListener('click', ()=>{
   el.querySelector('.ctl-variant').addEventListener('change', (e)=>{
     const variantName = u.variants[parseInt(e.target.value,10)].name;
     el.querySelector('.weapon-table-slot').innerHTML = weaponTableHtml(u, variantName);
+    el.querySelector('.special-slot').textContent = filterSpecialByVariant(u.special, variantName);
   });
   
   return el;
@@ -1275,6 +1286,7 @@ function exportCsv(){
 	roster.forEach(entry=>{
     const u = UNITS.find(uu=>uu.id===entry.unitId);
     const v = u.variants[entry.variantIdx];
+	const filteredSpecial = filterSpecialByVariant(u.special, v.name);
     const td = TRANSPORT_DATA[entry.unitId] || {reqInf:0,reqVeh:0,capInf:0,capVeh:0};
     const baseRow = [
       u.faction, u.category, u.isBehemoth?'Oui':'Non', u.name, v.name, entry.squadSize, v.pts, unitTotalPts(entry), entry.groupId,
@@ -1361,6 +1373,7 @@ function usedGlossaryTerms(){
   roster.forEach(entry=>{
     const u = UNITS.find(uu=>uu.id===entry.unitId);
     const v = u.variants[entry.variantIdx];
+	const filteredSpecial = filterSpecialByVariant(u.special, v.name);
     bits.push(u.special);
     (u.gear||[]).forEach(g=>bits.push(g));
     const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
@@ -1374,15 +1387,28 @@ function usedGlossaryTerms(){
   });
 }
 
+// Fonction de nettoyage unifiée (sans gestion des parenthèses optionnelles)
+// Elle supprime les chiffres et la ponctuation, mais conserve les tirets (-)
+function cleanTermForMatching(text) {
+  if (!text) return '';
+  return text
+    .replace(/[0-9+":.]/g, '') // Enlève les chiffres et la ponctuation parasite (le tiret \- est préservé !)
+    .trim()
+    .split(/\s+/)[0]           // Récupère uniquement le premier mot s'il y a un espace
+    .toLowerCase();
+}
+
 function explainSpecialString(spStr){
   if(!spStr || spStr==='-') return '';
   const parts = spStr.split(',').map(s=>s.trim()).filter(Boolean);
   const explained = parts.map(part=>{
-    const keyGuess = part.replace(/[0-9+":.\-]/g,' ').trim().split(/\s+/)[0].toLowerCase();
-    const match = GLOSSARY.find(([term])=>{
-      const termKey = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
-      return termKey === keyGuess;
+    
+    const keyGuess = cleanTermForMatching(part);
+    
+    const match = GLOSSARY.find(([term]) => {
+      return cleanTermForMatching(term) === keyGuess;
     });
+    
     return match ? `<b>${part}</b> : ${match[1]}` : `<b>${part}</b>`;
   });
   return explained.join('<br>');
@@ -1391,14 +1417,17 @@ function explainSpecialString(spStr){
 function extractGlossaryMatches(str){
   if(!str || str==='-' || str==='—') return [];
   return str.split(',').map(s=>s.trim()).filter(Boolean).map(part=>{
-    const keyGuess = part.replace(/[0-9+":.\-]/g,' ').trim().split(/\s+/)[0].toLowerCase();
-    const match = GLOSSARY.find(([term])=>{
-      const termKey = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
-      return termKey === keyGuess;
+    
+    const keyGuess = cleanTermForMatching(part);
+    
+    const match = GLOSSARY.find(([term]) => {
+      return cleanTermForMatching(term) === keyGuess;
     });
-    return match ? {term:match[0], def:match[1]} : null;
+    
+    return match ? {term: match[0], def: match[1]} : null;
   }).filter(Boolean);
 }
+
 
 function exportPdf(){
   const cfg = currentGameSizeCfg();
@@ -1426,11 +1455,12 @@ const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
     const memberRows = entries.map(entry=>{
       const u = UNITS.find(uu=>uu.id===entry.unitId);
       const v = u.variants[entry.variantIdx];
+	  const filteredSpecial = filterSpecialByVariant(u.special, v.name);
       const filteredWeapons = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, v.name));
       const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
       const allWeapons = [...filteredWeapons, ...extraWeapons];
 
-      extractGlossaryMatches(u.special).forEach(m=>groupGlossary.set(m.term, m.def));
+      extractGlossaryMatches(filteredSpecial).forEach(m=>groupGlossary.set(m.term, m.def));
       allWeapons.forEach(w=> extractGlossaryMatches(w.sp).forEach(m=>groupGlossary.set(m.term, m.def)));
 
 const p = parseStats(u);
@@ -1449,7 +1479,7 @@ return `<tr>
         <td class="col-cat">${u.category}${u.isBehemoth?' ⚙':''}<br><span class="dim">×${entry.squadSize} (${fmt(unitTotalPts(entry))} points)</span></td>
         <td class="col-unit"><b>${u.name}</b><br><span class="dim">${u.type} — ${v.name}</span></td>
         <td class="col-stats">${statsTable}</td>
-${hasAnySpecial ? `<td class="col-special">${u.special}</td>` : ''}
+${hasAnySpecial ? `<td class="col-special">${filteredSpecial}</td>` : ''}
         <td>${weapons}</td>
       </tr>`;
     }).join('');
