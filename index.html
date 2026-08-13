@@ -1045,8 +1045,10 @@ function transportLoadMap(){
     const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
     if(!map[r.groupId]) map[r.groupId] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
     if(td.reqEither){
-      // ne compte qu'un seul type selon le mode choisi pour cette entrée
-      if(r.transportMode==='veh') map[r.groupId].reqVeh += (td.reqVeh||0) * r.squadSize;
+      if(r.transportMode==='vehLourd') map[r.groupId].reqVehLourd += (td.reqVehLourd||0) * r.squadSize;
+	  else if(r.transportMode==='veh') map[r.groupId].reqVeh += (td.reqVeh||0) * r.squadSize;
+	  else if(r.transportMode==='vehLeg') map[r.groupId].reqVehLeg += (td.reqVehLeg||0) * r.squadSize;
+	  else if(r.transportMode==='spe') map[r.groupId].reqSpe += (td.reqSpe||0) * r.squadSize;
       else map[r.groupId].reqInf += (td.reqInf||0) * r.squadSize;
     } else {
       map[r.groupId].reqInf += (td.reqInf||0) * r.squadSize;
@@ -1212,13 +1214,30 @@ const unit = UNITS.find(u=>u.id===entry.unitId);
         renderAll();
       });
     });
-	const td = TRANSPORT_DATA[entry.unitId];
+    const td = TRANSPORT_DATA[entry.unitId];
     if(td && td.reqEither){
-      const modeSel = document.createElement('select');
-      modeSel.style.cssText = 'width:auto; font-size:10px; margin-left:6px;';
-      modeSel.innerHTML = `<option value="inf" ${entry.transportMode==='inf'?'selected':''}>Compte comme Infanterie</option><option value="veh" ${entry.transportMode==='veh'?'selected':''}>Compte comme Véhicule</option>`;
-      modeSel.addEventListener('change', e=>{ entry.transportMode = e.target.value; renderAll(); });
-      el.querySelector('.re-sub').appendChild(modeSel);
+      const TRANSPORT_TYPES = [
+        {key:'inf',      req:'reqInf',      label:'Infanterie'},
+        {key:'vehLourd', req:'reqVehLourd', label:'Véhicule Lourd'},
+        {key:'veh',      req:'reqVeh',      label:'Véhicule'},
+        {key:'vehLeg',   req:'reqVehLeg',   label:'Véhicule Léger'},
+        {key:'spe',      req:'reqSpe',      label:'Spéciale'}
+      ];
+      const availableTypes = TRANSPORT_TYPES.filter(t => (td[t.req]||0) > 0);
+
+      if(availableTypes.length > 0){
+        // si le mode actuellement stocké n'est plus valide (ou vide), on prend le premier disponible par défaut
+        if(!entry.transportMode || !availableTypes.some(t=>t.key===entry.transportMode)){
+          entry.transportMode = availableTypes[0].key;
+        }
+        const modeSel = document.createElement('select');
+        modeSel.style.cssText = 'width:auto; font-size:10px; margin-left:6px;';
+        modeSel.innerHTML = availableTypes.map(t =>
+          `<option value="${t.key}" ${entry.transportMode===t.key?'selected':''}>${t.label}</option>`
+        ).join('');
+        modeSel.addEventListener('change', e=>{ entry.transportMode = e.target.value; renderAll(); });
+        el.querySelector('.re-sub').appendChild(modeSel);
+      }
     }
     list.appendChild(el);
   });
@@ -1392,10 +1411,10 @@ function renderGroupSummary(){
     const loadHtml = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe) ? `
       <div class="gb-load">
         <span class="${overInf?'over':''}">Inf ${load.reqInf}/${load.capInf}</span>
-        <span class="${overVeh?'over':''}">Véh Lourd ${load.reqVehLourd}/${load.capVehLourd}</span>
+        <span class="${overVehLourd?'over':''}">Véh Lourd ${load.reqVehLourd}/${load.capVehLourd}</span>
 		<span class="${overVeh?'over':''}">Véh Std ${load.reqVeh}/${load.capVeh}</span>
-		<span class="${overVeh?'over':''}">Véh Lég ${load.reqVehLeg}/${load.capVehLeg}</span>
-		<span class="${overVeh?'over':''}">Spé ${load.reqSpe}/${load.capSpe}</span>
+		<span class="${overVehLeg?'over':''}">Véh Lég ${load.reqVehLeg}/${load.capVehLeg}</span>
+		<span class="${overSpe?'over':''}">Spé ${load.reqSpe}/${load.capSpe}</span>
       </div>` : '';
     return `<div class="group-block ${status}"><h4>Groupe ${gid}</h4>${members}${loadHtml}</div>`;
   }).join('');
