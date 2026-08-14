@@ -9,7 +9,7 @@
     --bg:#0d1012; --panel:#161a1d; --panel2:#1d2226; --line:#2a3136;
     --text:#dfe6ea; --dim:#8b9aa3;
     --amber:#e0a339; --amber-dim:#7a5b22;
-    --phr:#7fd4e8; --res:#d9713d;
+    --phr:#ede19a;--phr-dim:#716b44; --res:#2b6cb0;--res-dim:#153557; --scourge:#5c1363; --scourge-dim:#2e0833; --ucm:#446a46; --ucm-dim:#213522;
     --bad:#e15b5b; --good:#5bc98a; --behe:#b98cf0;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
     --disp: "Arial Narrow", Oswald, Impact, sans-serif;
@@ -40,8 +40,10 @@
   .cat-group h3{ font-family:var(--disp); text-transform:uppercase; letter-spacing:2px; font-size:13px; color:var(--dim); border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:8px; display:flex; justify-content:space-between;}
 
   .unit-card{ background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:6px; padding:10px 12px; margin-bottom:8px;}
-  .unit-card.phr{ border-left-color:var(--phr); }
-  .unit-card.res{ border-left-color:var(--res); }
+  .unit-card.phr{ border-left-color:var(--phr); background:#11100b; }
+  .unit-card.res{ border-left-color:var(--res); background:#050b12;}
+  .unit-card.ucm{ border-left-color:var(--ucm); background:#141f15; }
+  .unit-card.scourge{ border-left-color:var(--scourge); background:#1c1420; }
   .unit-card.behe{ border-left-color:var(--behe); background:#191420; }
   .unit-img-wrap{ float:left; width:96px; height:96px; margin-right:12px; margin-bottom:4px; }
   .unit-img-wrap img{ width:96px; height:96px; object-fit:contain; border-radius:5px; border:1px solid var(--line); display:block; }
@@ -125,7 +127,7 @@
   <div class="brand">⛛ DZC ROSTER <span class="tag">V3.01 // BUILD TOOL</span></div>
 
   <div class="field"><label>Faction</label>
-<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option></select>
+<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option></select>
   </div>
 
   <div class="field"><label>Taille de partie</label>
@@ -360,7 +362,22 @@ const GLOSSARY = [
 ["Secondary","Peut tirer en plus d'une autre arme à la fin de n'importe quelle Action du Behemoth."],
 ["Capacitors: X","Peut recevoir un bonus temporaire via le Gear 'Weapons Capacitors' du Behemoth."],
 ["Disrupt","Ajoute un jet de Systems Damage supplémentaire non modifiable si l'arme blesse un Behemoth."],
-["Razorworm Pod / Particle","Effets spécifiques au profil d'arme concerné — se référer au texte de l'unité."]
+["Razorworm Pod / Particle","Effets spécifiques au profil d'arme concerné — se référer au texte de l'unité."],
+["Skimmer","Déjà utilisé par PHR/Resistance mais absent du glossaire — l'unité peut survoler eau/terrain accidenté à sa vitesse normale."],
+["Strong","L'unité compte double pour déterminer si elle est mise en déroute par pertes lors des tests de moral d'escouade."],
+["Cling","Une escouade avec Cling peut être Embarquée sur n'importe quel Aéronef (même sans capacité de Transport ni Cling) ayant au moins autant de DP total qu'elle ; les symboles de Transport sont ignorés. Une fois débarquée, elle ne peut plus être ré-embarquée."],
+["Plasma Generator X\"","Les armes amies contenant « plasma » dans leur nom gagnent +1E si elles attaquent à moins de X\" de cette unité. Non cumulable avec un autre Plasma Generator ; sans effet sur les armes des Fast Movers."],
+["Spark","Les armes Spark visent les Aéronefs à Ac 2+ mais ne peuvent jamais endommager les Zones."],
+["Regenerate X","En fin d'activation, l'unité restaure X Point(s) de Dégâts, dans la limite de son maximum initial."],
+["Stealth","Rend l'unité plus difficile à repérer/cibler à distance (voir texte de l'unité pour l'effet exact sur le ciblage)."],
+["Field","Arme couvrant une zone qui affecte toutes les unités concernées par son gabarit plutôt qu'une cible unique désignée."],
+["Ineffective: Friendlies","Cette arme ne peut jamais cibler ni affecter des unités amies."],
+["Flat Out X\"","En fin d'activation, l'unité peut se déplacer de X\" supplémentaires en ligne droite, généralement en échange d'un désavantage (perte de tir de riposte, etc.)."],
+["Self-Destruct","L'unité (ou l'arme) peut se sacrifier pour infliger des dégâts, utilisable une seule fois."],
+["Razorworm Pod","Cette arme ne peut cibler que des Zones. Pour chaque DP infligé, placez une unité de Razorworms dans la Zone ; tous les Razorworms placés par des Razorworm Pods dans une même Zone forment un seul escouade en fin des tirs du Groupe et comptent comme ayant embarqué dans cette Zone."],
+["Delayed","Cette unité ne peut pas être déployée pendant le premier Tour de Bataille ; elle rejoint le jeu à partir du deuxième Tour, selon les règles de renfort."],
+["Remote Drone","Cette Escouade ne peut pas être choisie dans votre Armée. Pendant son activation, vous pouvez détruire cette Escouade au lieu d'attaquer avec elle."],
+["Drone Base X: Y","Pendant l'activation de cette unité, elle peut lancer une Escouade de X unités de Y. Suivre les règles habituelles de débarquement, cette unité étant traitée comme leur Transport. Chaque Escouade lancée rejoint le Groupe de cette unité. Cette unité ne peut pas lancer si 2 Escouades de Y sont déjà dans son Groupe. Si cette unité est détruite, toutes les Escouades de Y dans son Groupe sont détruites."],
 ];
 
 /* ---------------- IMAGES ------------------------------ */
@@ -474,6 +491,14 @@ TRANSPORT_DATA['phr-tritonlightdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqV
 TRANSPORT_DATA['phr-tritonlighttroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
 TRANSPORT_DATA['phr-atlasquad'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
 
+// TODO
+['scg-despot','scg-battlebeetle','scg-battleskimmer','scg-lightskimmer','scg-warriors',
+ 'scg-commandarthropod','scg-commandbarge','scg-gunship','scg-supportbeetle','scg-supportcrawler',
+ 'scg-demolishers','scg-evicerators','scg-gunskimmer','scg-heavyskimmer','scg-mobileordnance',
+ 'scg-ordnancebarge','scg-subjugator','scg-razorworms','scg-chamelopod','scg-drone',
+ 'scg-interceptor','scg-screamer','scg-spider','scg-vampire','scg-despoilerdrop',
+ 'scg-harbingerdrop','scg-harbingertroop','scg-intruderdrop','scg-intrudertroop','scg-invaderapc','scg-marauderdrop'
+]
 
 /* ---------------- DATA: UNITS ---------------- */
 const UNITS = [
@@ -1011,6 +1036,149 @@ variants:[{name:'Patton A', pts:25},{name:'Patton B', pts:25}]},
   type:'Aircraft (40mm)', mv:'18"', stats:'A2 DP2', special:'Flat Out 6", Surveyor',
   weapons:[W('Twin UM-5 Gatling','F/S','Full','24/12"',5,'3+','S2','-'), W('UM-903 Defence pods (+5pts)','F/S/R','9"','36/9"',2,'3+',2,'AA, Pen 6+')],
   variants:[{name:'Standard', pts:40}]},
+
+
+// ===== Scourge — Standard =====
+{id:'scg-despot', faction:'Scourge', name:'Despot Command Walker', category:'Standard', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A6 DP3', special:'Command Centre, Resilient',
+  weapons:[W('Plasma Hose','F','Full','6"',5,'4+','S5','Ignores Cover'), W('Plasma Hose','F','Full','6"',5,'4+','S5','Ignores Cover'),
+    W('Razor Claws','-','Full','CC',2,'2+',6,'Assault, Demo 0'), W('Micro Subjugation Field','-','Full','3"',1,'A',0,'Field, Ineffective: Friendlies, Suppress')],
+  variants:[{name:'Standard', pts:55}]},
+{id:'scg-battlebeetle', faction:'Scourge', name:'Scourge Battle Beetle', category:'Standard', squadMin:3, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Infiltrate 8", Resilient',
+  weapons:[W('Electroweb Caster (Stalker)','F','Full','9"',1,'2+',8,'Ineffective: Zones'), W('Electroclaws (Slasher)','-','Full','CC',2,'3+',5,'Assault, Ineffective: Zones, Suppress'),
+    W('Cutting Claws','-','Full','CC',1,'2+',6,'Assault, Demo 0')],
+  variants:[{name:'Stalker', pts:25},{name:'Slasher', pts:25}]},
+{id:'scg-battleskimmer', faction:'Scourge', name:'Scourge Battle Skimmer', category:'Standard', squadMin:3, squadMax:9, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A5 DP1', special:'Ev2, Skimmer',
+  weapons:[W('Plasma Cannon (Hunter)','F/S/R','Full','12"',1,'2+',7,'Demo 1'), W('Plasma Cluster (Killer)','F/S/R','Full','4"',3,'2+',5,'Dissipate 1, Strafe'),
+    W('Arc Caster (Reaper)','F/S/R','Full','9"',2,'6+',4,'AA, Spark'), W('Hatchling Hive (Bringer)','F/S/R','Full','6"',5,'2+','S2','Seeker')],
+  variants:[{name:'Killer', pts:30},{name:'Bringer', pts:30},{name:'Hunter', pts:35},{name:'Reaper', pts:40}]},
+{id:'scg-lightskimmer', faction:'Scourge', name:'Scourge Light Skimmer', category:'Standard', squadMin:4, squadMax:8, rare:false, unique:false,
+  type:'Vehicle', mv:'12"', stats:'A3 DP1', special:'Ev3, Scout, Skimmer',
+  weapons:[W('Plasma Stave (Spectre)','F','Full','18"',1,'3+',6,'-'), W('Photon Blaster (Phantom)','F','Full','9"',2,'3+',5,'Indirect, Pen 5+')],
+  variants:[{name:'Spectre', pts:25},{name:'Phantom', pts:25}]},
+{id:'scg-warriors', faction:'Scourge', name:'Warriors', category:'Standard', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF5 DF5+ B4+ DP5', special:'—',
+  weapons:[W('Plasma Rifles, fire at will','F/S/R','Full','12"',5,'3+','S3','Alt 1'), W('Plasma Rifles, volley','F/S/R','Full','12"',1,'3+',6,'Alt 1')],
+  variants:[{name:'Standard', pts:25}]},
+
+// ===== Scourge — Support =====
+{id:'scg-commandarthropod', faction:'Scourge', name:'Oppressor Command Arthropod', category:'Support', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'8"', stats:'A5 DP9', special:'Command Centre, Large, Resilient',
+  weapons:[W('Electroweb Caster','F','4"','9"',1,'2+',8,'Ineffective: Zones'), W('Plasma Carbines, focused','F/S','4"','18"',2,'2+',7,'Alt 1, Demo 1, Strafe'),
+    W('Plasma Carbines, spread','F/S','4"','9"',6,'3+',6,'Alt 1, Strafe'), W('Razor Claws','-','Full','CC',2,'2+',6,'Assault, Demo 0')],
+  variants:[{name:'Standard', pts:150}]},
+{id:'scg-commandbarge', faction:'Scourge', name:'Scourge Command Barge', category:'Support', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'12"', stats:'A3 DP7', special:'Command Centre, Plasma Generator 9"(Overseer)',
+  weapons:[W('Ion Cyclone (Desolator)','F/S/R','9"','12"',15,'3+','S7','Alt 1, Flame, Ineffective: Zones, Strafe'),
+    W('Ion Storm (Desolator)','-','9"','12"',1,'4+',6,'Alt 1, Field, Ineffective: Zones'), W('Ion Cradle (Overseer)','F/S/R','9"','9"',6,'3+',2,'AA, Strafe')],
+  variants:[{name:'Overseer', pts:135},{name:'Desolator', pts:150}]},
+{id:'scg-gunship', faction:'Scourge', name:'Scourge Gunship', category:'Support', squadMin:1, squadMax:3, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'24"', stats:'A2 DP2', special:'—',
+  weapons:[W('Plasma Lance (Reaver) (L)','F/Sl','12"','18"',1,'3+',6,'Demo 1'), W('Plasma Lance (Reaver) (R)','F/Sr','12"','18"',1,'3+',6,'Demo 1'),
+    W('Razorworm Pods (Corruptor)','F','12"','6"',2,'4+',4,'Razorworm Pod'), W('Plasma Hose','F','12"','6"',5,'4+','S5','Ignores Cover')],
+  variants:[{name:'Reaver', pts:55},{name:'Corruptor', pts:70}]},
+{id:'scg-supportbeetle', faction:'Scourge', name:'Scourge Support Beetle', category:'Support', squadMin:3, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Infiltrate 8", Resilient, Obscurer 4"(Weaver)',
+  weapons:[W('Shard Flak Cannons (Ravager)','F/S','Full','48/18"',4,'3+',2,'AA, Strafe'), W('Filament Cloudweaver (Weaver)','F/S','Full','6"',1,'2+',0,'AA, Concussion'),
+    W('Cutting Claws','-','Full','CC',1,'2+',6,'Assault, Demo 0')],
+  variants:[{name:'Weaver', pts:35},{name:'Ravager', pts:40}]},
+{id:'scg-supportcrawler', faction:'Scourge', name:'Scourge Support Crawler', category:'Support', squadMin:1, squadMax:3, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP3', special:'Resilient',
+  weapons:[W('Ravenor Laser (Ravenor)','F','Full','∞',2,'2+',3,'Destroyer 6+, Precision 1'), W('Razorbug Cloud (Afflictor)','F','Full','18"',1,'2+',1,'Blast, Jammer, Pen 6+'),
+    W('Razor Claws','-','Full','CC',2,'2+',6,'Assault, Demo 0')],
+  variants:[{name:'Ravenor', pts:40},{name:'Afflictor', pts:40}]},
+
+// ===== Scourge — Heavy =====
+{id:'scg-demolishers', faction:'Scourge', name:'Demolishers', category:'Heavy', squadMin:2, squadMax:3, rare:true, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF6 DF2+ B2+ DP3', special:'Breachers D3+1, Hardy 3+, Strong',
+  weapons:[W('Plasma Chargers','F/S/R','Full','6"',3,'3+',6,'Alt 1'), W('Shard Cannons','F/S/R','Full','36/12"',10,'3+','S2','Alt 1')],
+  variants:[{name:'Standard', pts:50}]},
+{id:'scg-evicerators', faction:'Scourge', name:'Evicerators', category:'Heavy', squadMin:2, squadMax:3, rare:true, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF7 DF2+ B(A) DP3', special:'Bloodthirsty, Breachers D3+1, Hardy 3+, Lethal, Strong',
+  weapons:[W('Chitin Glaives','-','Full','CC',3,'3+',5,'Assault')],
+  variants:[{name:'Standard', pts:55}]},
+{id:'scg-gunskimmer', faction:'Scourge', name:'Scourge Gun Skimmer', category:'Heavy', squadMin:2, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'8"', stats:'A5 DP3', special:'Skimmer, Ev2, Flat Out 8"(Decapitator)',
+  weapons:[W('Thrust Cutter (Decapitator)','F','4"','4"',1,'2+',10,'Critical D3, Demo 2'), W('Bio-Mortar, burster (Executioner)','F','4"','24/12"',1,'3+',3,'Alt 1, Indirect, Pen 5+, Suppress'),
+    W('Bio-Mortar, seep (Executioner)','F','4"','24/12"',1,'3+',5,'Alt 1, Demo 0, Incendiary D3+1, Indirect')],
+  variants:[{name:'Decapitator', pts:45},{name:'Executioner', pts:55}]},
+{id:'scg-heavyskimmer', faction:'Scourge', name:'Scourge Heavy Skimmer', category:'Heavy', squadMin:2, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP3', special:'Ev1, Skimmer',
+  weapons:[W('Plasma Cannons (Slayer)','F/S/R','Full','12"',2,'2+',7,'Demo 1'), W('Acid Streamer (Tormentor)','F/S/R','Full','6"',10,'3+','S1','Flame')],
+  variants:[{name:'Slayer', pts:50},{name:'Tormentor', pts:50}]},
+{id:'scg-mobileordnance', faction:'Scourge', name:'Scourge Mobile Ordnance', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'2"', stats:'A4 DP7', special:'Jump 18", Strike',
+  weapons:[W('Furnace Laser (Obliterator)','F','0"','∞',1,'2+',9,'Critical D3, Demo 0, Devastator 3'), W('Plasma Bombard (Annihilator)','F','0"','24"',1,'2+',8,'Blast, Devastator 1, Indirect')],
+  variants:[{name:'Obliterator', pts:120},{name:'Annihilator', pts:120}]},
+{id:'scg-ordnancebarge', faction:'Scourge', name:'Scourge Ordnance Barge', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'12"', stats:'A3 DP7', special:'—',
+  weapons:[W('Heavy Pulse Laser (Savager)','F','9"','∞',3,'3+',3,'Demo 0, Destroyer 6+, Precision 2'), W('Super Plasma Lance (Slaughterer)','F','9"','12"',2,'3+',8,'Demo 2, Devastator 3, Precision 2, Strafe')],
+  variants:[{name:'Savager', pts:120},{name:'Slaughterer', pts:120}]},
+{id:'scg-subjugator', faction:'Scourge', name:'Subjugator Arthropod', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'8"', stats:'A5 DP9', special:'Large, Resilient',
+  weapons:[W('Electroweb Caster','F','4"','9"',1,'2+',8,'Ineffective: Zones'), W('Razor Claws','-','Full','CC',2,'2+',6,'Assault, Demo 0'),
+    W('Subjugation Field','-','Full','6"',1,'A',0,'Field, Ineffective: Friendlies, Suppress')],
+  variants:[{name:'Standard', pts:100}]},
+
+// ===== Scourge — Vanguard =====
+{id:'scg-razorworms', faction:'Scourge', name:'Razorworms', category:'Vanguard', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'3"', stats:'OF6 DF4+ B(A) DP3', special:'Agile 1, Infiltrate 18", Lethal, Living Weapons',
+  weapons:[W('Teeth and Claws','F/S/R','Full','CC',2,'4+',3,'Assault')],
+  variants:[{name:'Standard', pts:20}]},
+{id:'scg-chamelopod', faction:'Scourge', name:'Scourge Chamelopod', category:'Vanguard', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Vehicle', mv:'8"', stats:'A5 DP9', special:'Large, Resilient, Stealth',
+  weapons:[W('Electroweb Caster','F','4"','9"',1,'2+',8,'Ineffective: Zones'), W('Heavy Bio-Mortar, burster (Eradicator)','F','0"','24"',1,'3+',4,'Alt 1, Blast, Indirect, Pen 5+, Suppress'),
+    W('Heavy Bio-Mortar, seep (Eradicator)','F','0"','24"',1,'3+',5,'Alt 1, Demo 1, Incendiary D3+3, Indirect'), W('Plasma Fusillades (Eraser)','F/S','4"','18"',6,'3+',3,'AA, Strafe'),
+    W('Razor Claws','-','Full','CC',2,'2+',6,'Assault, Demo 0')],
+  variants:[{name:'Eraser', pts:140},{name:'Eradicator', pts:150}]},
+{id:'scg-drone', faction:'Scourge', name:'Scourge Drone', category:'Vanguard', squadMin:4, squadMax:8, rare:false, unique:false,
+  type:'Aircraft (20mm)', mv:'8"', stats:'A1 DP1', special:'Rapid Insertion 5", Scout, Wide 6"',
+  weapons:[W('Micro Arc Caster (Minder)','F/S/R','2"','6"',1,'6+',2,'AA, Spark'), W('Shard Cannons (Monitor)','F/S/R','Full','36/12"',10,'3+','S2','-'),
+    W('Self-Destruct','F','Full','3"',1,'2+',7,'Demo 0, Self-Destruct')],
+  variants:[{name:'Minder', pts:10},{name:'Monitor', pts:10}]},
+{id:'scg-interceptor', faction:'Scourge', name:'Scourge Interceptor', category:'Vanguard', squadMin:1, squadMax:2, rare:true, unique:false,
+  type:'Aircraft (30mm)', mv:'24-36"', stats:'A2 DP1', special:'Ev 3, Fast Mover',
+  weapons:[W('AA Plasma Cannon (Corsair)','F','Full','12"',1,'3+',7,'AA-S, Demo 1'), W('Interceptor Arc Caster (Brigand)','F','Full','9"',2,'6+',4,'AA, Spark, T1')],
+  variants:[{name:'Corsair', pts:40},{name:'Brigand', pts:50}]},
+{id:'scg-screamer', faction:'Scourge', name:'Scourge Screamer', category:'Vanguard', squadMin:1, squadMax:2, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A4 DP4', special:'Ev2, Infiltrate 12", Regenerate 1, Stealth, UC',
+  weapons:[W('Huge Claws','-','Full','CC',2,'2+',7,'Assault, Demo 0'), W('Hunting Scream','F','Full','6"',1,'A',0,'Concussion, Flame, Jammer')],
+  variants:[{name:'Standard', pts:40}]},
+{id:'scg-spider', faction:'Scourge', name:'Scourge Spider', category:'Vanguard', squadMin:4, squadMax:8, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A1 DP1', special:'Rapid Insertion 5", Scout',
+  weapons:[W('Plasma Proboscis (Prowler)','-','Full','CC',1,'2+',7,'Assault, Demo 0'), W('Acid Proboscis (Raptor)','F','Full','6"',3,'3+','S1','Flame')],
+  variants:[{name:'Prowler', pts:10},{name:'Raptor', pts:10}]},
+{id:'scg-vampire', faction:'Scourge', name:'Vampire', category:'Vanguard', squadMin:2, squadMax:4, rare:true, unique:false,
+  type:'Aircraft (20mm)', mv:'12"', stats:'A0 DP1', special:'Cling, Ev1, UC',
+  weapons:[W('Cutting Beam','F','9"','CC',1,'2+',2,'AA-S, Focus 2, T2')],
+  variants:[{name:'Standard', pts:10}]},
+
+// ===== Scourge — Transport =====
+{id:'scg-despoilerdrop', faction:'Scourge', name:'Despoiler Heavy Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A2 DP7', special:'—',
+  weapons:[W('Plasma Cannons','F/S','9"','12"',2,'4+',7,'Demo 1')], variants:[{name:'Standard', pts:60}]},
+{id:'scg-harbingerdrop', faction:'Scourge', name:'Harbinger Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A3 DP4', special:'—',
+  weapons:[W('Plasma Bombs','F/S/R','9"','GB',1,'4+',7,'Demo 1'), W('Mini Arc Caster (+5pts)','F','9"','6"',1,'6+',3,'AA, Spark')],
+  variants:[{name:'Standard', pts:45}]},
+{id:'scg-harbingertroop', faction:'Scourge', name:'Harbinger Troopship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'18"', stats:'A3 DP4', special:'—',
+  weapons:[W('Plasma Bombs','F/S/R','9"','GB',1,'4+',7,'Demo 1')], variants:[{name:'Standard', pts:50}]},
+{id:'scg-intruderdrop', faction:'Scourge', name:'Intruder Light Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'30"', stats:'A2 DP1', special:'—',
+  weapons:[W('Plasma Hose','F','12"','6"',5,'4+','S5','Ignores Cover')], variants:[{name:'Standard', pts:20}]},
+{id:'scg-intrudertroop', faction:'Scourge', name:'Intruder Light Troopship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'30"', stats:'A2 DP1', special:'—',
+  weapons:[W('Plasma Hose','F','12"','6"',5,'4+','S5','Ignores Cover')], variants:[{name:'Standard', pts:35}]},
+{id:'scg-invaderapc', faction:'Scourge', name:'Invader APC', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Skimmer, Ev1, Flat Out 3", Surveyor',
+  weapons:[], variants:[{name:'Standard', pts:10}]},
+{id:'scg-marauderdrop', faction:'Scourge', name:'Marauder Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'24"', stats:'A2 DP3', special:'—',
+  weapons:[W('Plasma Hose','F','12"','6"',5,'4+','S5','Ignores Cover')], variants:[{name:'Standard', pts:35}]},
+  
 ];
 
 const GAME_SIZES = {
@@ -1134,7 +1302,7 @@ function renderCatalog(){
 
 function renderUnitCard(u){
   const el = document.createElement('div');
-  el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':'res'));
+  el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':(u.faction==='Scourge'?'scourge':(u.faction==='UCM'?'ucm':'res'))));
   const flags = [];
   if(u.rare) flags.push('<span class="flag">[RARE]</span>');
   if(u.unique) flags.push('<span class="flag">[UNIQUE]</span>');
