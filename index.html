@@ -3,13 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DZC // Roster Builder</title>
+<title>DZC // Army List</title>
 <style>
   :root{
     --bg:#0d1012; --panel:#161a1d; --panel2:#1d2226; --line:#2a3136;
     --text:#dfe6ea; --dim:#8b9aa3;
     --amber:#e0a339; --amber-dim:#7a5b22;
-    --phr:#ede19a;--phr-dim:#716b44; --res:#2b6cb0;--res-dim:#153557; --scourge:#5c1363; --scourge-dim:#2e0833; --ucm:#446a46; --ucm-dim:#213522;
+    --phr:#ede19a;--phr-dim:#716b44; 
+	--res:#2b6cb0;--res-dim:#153557; 
+	--scourge:#5c1363; --scourge-dim:#2e0833; 
+	--ucm:#446a46; --ucm-dim:#213522;
+	--shaltari:#d9a441; --shaltari-dim:#7a5c20;
+	--bioficer:#b0201c; --bioficer-dim:#5a0f0d;
     --bad:#e15b5b; --good:#5bc98a; --behe:#b98cf0;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
     --disp: "Arial Narrow", Oswald, Impact, sans-serif;
@@ -40,10 +45,12 @@
   .cat-group h3{ font-family:var(--disp); text-transform:uppercase; letter-spacing:2px; font-size:13px; color:var(--dim); border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:8px; display:flex; justify-content:space-between;}
 
   .unit-card{ background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:6px; padding:10px 12px; margin-bottom:8px;}
-  .unit-card.phr{ border-left-color:var(--phr); background:#11100b; }
+  .unit-card.phr{ border-left-color:var(--phr); background:#1c1a10; }
   .unit-card.res{ border-left-color:var(--res); background:#050b12;}
   .unit-card.ucm{ border-left-color:var(--ucm); background:#141f15; }
   .unit-card.scourge{ border-left-color:var(--scourge); background:#1c1420; }
+  .unit-card.shaltari{ border-left-color:var(--shaltari); background:#1c1608; }
+  .unit-card.bioficer{ border-left-color:var(--bioficer); background:#1f0f0e; }
   .unit-card.behe{ border-left-color:var(--behe); background:#191420; }
   .unit-img-wrap{ float:left; width:96px; height:96px; margin-right:12px; margin-bottom:4px; }
   .unit-img-wrap img{ width:96px; height:96px; object-fit:contain; border-radius:5px; border:1px solid var(--line); display:block; }
@@ -124,10 +131,10 @@
 <body>
 
 <div class="topbar">
-  <div class="brand">⛛ DZC ROSTER <span class="tag">V3.01 // BUILD TOOL</span></div>
+  <div class="brand">⛛ DZC ROSTER <span class="tag">V3.01 / Only PHR & Resistance finish</span></div>
 
   <div class="field"><label>Faction</label>
-<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option></select>
+<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
   </div>
 
   <div class="field"><label>Taille de partie</label>
@@ -378,6 +385,26 @@ const GLOSSARY = [
 ["Delayed","Cette unité ne peut pas être déployée pendant le premier Tour de Bataille ; elle rejoint le jeu à partir du deuxième Tour, selon les règles de renfort."],
 ["Remote Drone","Cette Escouade ne peut pas être choisie dans votre Armée. Pendant son activation, vous pouvez détruire cette Escouade au lieu d'attaquer avec elle."],
 ["Drone Base X: Y","Pendant l'activation de cette unité, elle peut lancer une Escouade de X unités de Y. Suivre les règles habituelles de débarquement, cette unité étant traitée comme leur Transport. Chaque Escouade lancée rejoint le Groupe de cette unité. Cette unité ne peut pas lancer si 2 Escouades de Y sont déjà dans son Groupe. Si cette unité est détruite, toutes les Escouades de Y dans son Groupe sont détruites."],
+["Gate","Cette unité est un Transport Gate. Les Escouades amies peuvent débuter la partie en Holding et débarquer depuis n'importe quelle Gate dont le symbole de transport correspond. Les Gates ne comptent pas dans le nombre de Groupes autorisés ; en Déploiement Direct, chaque Gate forme son propre Groupe."],
+["Aux Gate","Fonctionne comme une Gate mais est une Transport Auxiliaire : prise comme une Escouade normale (hors-Gate) et doit être activée normalement — elle ne peut pas être activée avec un autre Groupe non-Gate. Ne peut pas attaquer le tour où elle fait embarquer/débarquer des unités."],
+["Aircharge","Cette Arme suit les mêmes règles qu'une Arme AA-R. De plus, une unité ne peut être ciblée par une Arme avec cette capacité qu'une seule fois durant son activation."],
+["Grav","Contre un Véhicule, ajoutez le DP initial de la cible à l'E de cette Arme (+1 si le Véhicule a A4 ou plus, +2 si A7 ou plus). Contre un Véhicule Large, +1 Devastator. Ignore Resilient sur les Véhicules. Endommage toujours les Zones sur 3+ avec une valeur de Demo égale à son E."],
+["Particle","Cette Arme ignore les Contre-mesures Passives et Resilient."],
+["Skimcharger","Si une Escouade amie avec Skimmer reçoit au moins autant de touches d'Armes avec Skimcharger que d'unités dans l'Escouade durant une même activation, elle reçoit un jeton Skimcharged : elle gagne Flat Out 5\", +5\" de MA sur ses Armes, et peut bénéficier de Flat Out même en attaquant (mais pas en embarquant/débarquant)."],
+["Microgate","Cette unité, et celles en cohérence avec elle, gagnent Regenerate 2. En début d'activation, si toutes les unités de son Escouade sont en cohérence, elle peut être placée en Holding (opération d'embarquement)."],
+["Subservient","Ces unités gagnent +2B et +2OF quand elles occupent une Zone contenant une unité amie sans Subservient. Dans une Escouade mixte, elles gagnent aussi les capacités spéciales des unités non-Subservient présentes. Ne peuvent pas recevoir de Commandant."],
+["Warsuit","Les Armes à Petit Calibre et les Armes d'E2 ou moins ciblant cette unité d'Infanterie doivent utiliser leur 2ème valeur de portée."],
+["Climber","Cette unité ignore les pénalités de terrain lorsqu'elle franchit des obstacles ou des élévations."],
+["Shield: [cible] X\" Y+","Les unités amies de la catégorie indiquée dans ce rayon bénéficient d'une sauvegarde supplémentaire de Y+ contre les dégâts (ou protection équivalente selon la cible précisée : Véhicules, Zones, etc.)."],
+["Strike","Cette unité doit terminer son mouvement d'activation à distance de Strike d'un point de déploiement ou d'une cible désignée par la règle ; se référer au texte spécifique de l'unité pour les conditions exactes."],
+["Collector X","Cette unité peut porter jusqu'à X jetons RM (Raw Materials). Les jetons RM peuvent être transférés entre une unité Genitor et une unité Collector à moins de 5\" l'une de l'autre, durant l'activation de l'une ou l'autre. Une unité Genitor ne peut pas donner de jetons RM à un Collector."],
+["Genitor X","Unité au symbole de Transport vert évidé indiquant X : elle peut débuter la partie avec jusqu'à X jetons RM embarqués (ou vide). Les jetons RM coûtent 5pts chacun à l'Armée mais ne comptent pour aucune catégorie ni aucun KP. Une unité Genitor ne peut jamais dépasser X jetons RM, ni en dépenser plus de X par activation. Au lieu de faire Débarquer une Escouade normalement, une unité Genitor peut faire apparaître (Spawn) une Escouade d'unités Generated dans les limites de taille d'escouade ; celle-ci rejoint le Groupe du Genitor. Un Genitor peut Spawn plusieurs Escouades par Round, mais pas la même Round où il Embarque des unités."],
+["Generated X","Unité de catégorie Generated (symbole de Transport vert plein indiquant son coût X en RM) : ne peut pas être achetée directement lors de la construction de l'Armée. Elle est produite en jeu par une unité Genitor, qui dépense X jetons RM pour la faire apparaître (Spawn) à son Débarquement. Vaut 5pts × X en jeu (icône rouge sur la carte). Une Escouade Generated peut Embarquer sur n'importe quel Genitor à tout moment (limites d'Embarquement/Débarquement ignorées) ; l'Escouade est alors retirée du jeu et remplacée par X jetons RM par unité embarquée (moitié de X, arrondi, si l'unité a la moitié ou moins de ses DP initiaux)."],
+["Genitor/Generated Avancé","Les unités Generated au symbole bordé d'or ne peuvent être Spawn que par un Genitor au chiffre doré ; un Genitor avancé peut aussi Spawn des unités Generated non avancées. Les unités Generated avancées peuvent Embarquer sur n'importe quel Genitor normalement."],
+["Grubsinger","Les Grubs occupant la même Zone qu'une ou plusieurs unités possédant cette capacité gagnent +1OF et +1DF."],
+["Puppet","Hors de portée de contrôle d'un Puppeteer ami, cette unité voit son OF réduit à 1, sa DF à 6+, son Mv à 0\", et ne peut plus attaquer (valeurs non modifiables) ; toutes ses autres capacités spéciales (hors Living Weapons, UC et Puppet) cessent de s'appliquer. Un joueur qui n'a que des unités Puppet Occupantes hors de contrôle dans une Zone ne peut que la Contester. Il est interdit de sortir intentionnellement une unité Puppet de portée de contrôle."],
+["Puppeteer X\"","Cette unité contrôle les unités Puppet amies à moins de X\" d'elle, y compris les Occupantes dans la même Zone. Toute unité non-Infanterie contenant un Commandant Bioficer gagne Puppeteer 9\"."],
+["Decon","Chaque fois qu'une unité ennemie est détruite dans la même activation qu'une touche par une Arme Decon amie, placez des jetons RM sur 1 unité Genitor ou Collector amie à moins de 15\" (2 jetons si la cible avait 1-2 DP initiaux ou était de l'Infanterie, sinon 4 jetons). En fin d'étape 8 d'un CQB, si des unités amies impliquées avaient des Armes Decon en début de CQB, placez 2 jetons RM par unité d'Infanterie ennemie détruite (limité au nombre d'unités amies impliquées ayant une Arme Decon)."],
 ];
 
 /* ---------------- IMAGES ------------------------------ */
@@ -492,13 +519,46 @@ TRANSPORT_DATA['phr-tritonlighttroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, req
 TRANSPORT_DATA['phr-atlasquad'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
 
 // TODO
-['scg-despot','scg-battlebeetle','scg-battleskimmer','scg-lightskimmer','scg-warriors',
- 'scg-commandarthropod','scg-commandbarge','scg-gunship','scg-supportbeetle','scg-supportcrawler',
- 'scg-demolishers','scg-evicerators','scg-gunskimmer','scg-heavyskimmer','scg-mobileordnance',
- 'scg-ordnancebarge','scg-subjugator','scg-razorworms','scg-chamelopod','scg-drone',
- 'scg-interceptor','scg-screamer','scg-spider','scg-vampire','scg-despoilerdrop',
- 'scg-harbingerdrop','scg-harbingertroop','scg-intruderdrop','scg-intrudertroop','scg-invaderapc','scg-marauderdrop'
-]
+TRANSPORT_DATA['shal-bravewarsuits'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-pungari'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-battlestrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-maingravtank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-warstrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-firedrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-obeliskionspire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-gunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-supportgravtank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-supportwarstrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-tegugatestrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-totemshieldspire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-adamahgungate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-assaultwarsuits'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-frostdrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-gunstrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-heavygravtank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-heavywarsuits'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-interceptor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-lightgravtank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-scoutstrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-edengate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-gaiagate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-haventerragate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-spiritgate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['shal-ziongatespire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+
+/* Bioficer : la faction fonctionne via Genitor/Collector/RM Tokens (voir GLOSSARY), un système
+   totalement séparé du Inf/Véh classique ci-dessus. Valeurs laissées à 0 par défaut — à ajuster
+   uniquement si tu veux modéliser la capacité Genitor/Collector via ce même système. */
+TRANSPORT_DATA['bio-grievancegenitorark'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-thornlightskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-tuskmainbattleskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-surgegunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-tangentsupportskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-silenceheavygunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-gyroaerogenitor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-datastrikedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-devicedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
+TRANSPORT_DATA['bio-digitlightdropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false};
 
 /* ---------------- DATA: UNITS ---------------- */
 const UNITS = [
@@ -1179,6 +1239,181 @@ variants:[{name:'Patton A', pts:25},{name:'Patton B', pts:25}]},
   type:'Aircraft (40mm)', mv:'24"', stats:'A2 DP3', special:'—',
   weapons:[W('Plasma Hose','F','12"','6"',5,'4+','S5','Ignores Cover')], variants:[{name:'Standard', pts:35}]},
   
+  
+  // ===== Shaltari — Standard =====
+{id:'shal-bravewarsuits', faction:'Shaltari', name:'Brave Warsuits', category:'Standard', squadMin:2, squadMax:2, rare:false, unique:false,
+  type:'Infantry', mv:'3"', stats:'OF6 DF3+ B2+ DP3', special:'Hardy 3+, Warsuit',
+  weapons:[W('Discus Launchers','F/S/R','Full','18/6"',6,'2+','S1','Ignores Cover'), W('Gauss Rifle','F/S/R','0"','∞/20"',1,'2+',5,'Pen 6+')],
+  variants:[{name:'Standard', pts:35}]},
+{id:'shal-pungari', faction:'Shaltari', name:'Pungari', category:'Standard', squadMin:4, squadMax:4, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF2 DF5+ B6+ DP5', special:'Subservient',
+  weapons:[W('Shoulder Discus Launchers','F/S/R','Full','18/6"',5,'4+','S1','Ignores Cover')],
+  variants:[{name:'Standard', pts:15}]},
+{id:'shal-battlestrider', faction:'Shaltari', name:'Shaltari Battlestrider', category:'Standard', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A5 DP2', special:'Climber, P5+',
+  weapons:[W('Gravity Cannon (Tarantula)','F/S','Full','18"',1,'2+',2,'Grav'), W('Twin Ion Cannons (Birdeater)','F/S','Full','18"',4,'2+',2,'AA'), W('Laser Pod','F/S','Full','∞"',1,'3+',3,'Destroyer 6+')],
+  variants:[{name:'Tarantula', pts:50},{name:'Birdeater', pts:50}]},
+{id:'shal-maingravtank', faction:'Shaltari', name:'Shaltari Main Grav-tank', category:'Standard', squadMin:3, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A4 DP1', special:'Ev2, Flat Out 5", P5+, Skimmer',
+  weapons:[W('Gauss Cannon (Tomahawk)','F/S/R','Full','∞/30"',1,'2+',6,'Drive-by, Demo 0'), W('Twin Ion Cannons (Kukri)','F/S/R','Full','18"',4,'2+',2,'AA')],
+  variants:[{name:'Tomahawk', pts:30},{name:'Kukri', pts:40}]},
+{id:'shal-warstrider', faction:'Shaltari', name:'Shaltari Warstrider', category:'Standard', squadMin:1, squadMax:3, rare:false, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A6 DP4', special:'P5+, P3+, Command Centre, AWACS 12" (Lynx)',
+  weapons:[W('Dual Gauss Cannons (Jaguar, Lynx, Puma)','F/S','Full','∞/30"',2,'2+',6,'Demo 0, Strafe'), W('Twin Ion Cannons (Jaguar, Oncilla)','F/S/R','Full','18"',4,'2+',2,'AA'),
+    W('Dual Heavy Bio-Atomisers, spread (Oncilla)','F/S','Full','8"',10,'2+','S1','Alt-1, Flame, Ineffective:Zones'), W('Dual Heavy Bio-Atomisers, harmonised (Oncilla)','F/S','Full','8"',1,'2+',1,'Alt-1, Critical D3, Ineffective:Zones, Pen 2+'), W('Sonic Cannon (Puma)','F/S/R','Full','9"',2,'4+',5,'Demo 3, Dissipate 1')],
+  variants:[{name:'Jaguar', pts:95},{name:'Oncilla', pts:100},{name:'Puma', pts:110},{name:'Lynx', pts:115}]},
+
+// ===== Shaltari — Support =====
+{id:'shal-firedrake', faction:'Shaltari', name:'Firedrake', category:'Support', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'20"', stats:'A2 DP6', special:'Aux Gate, Ev1, P5+',
+  weapons:[W('Disruption Cannon','F','10"','12"',1,'3+',8,'Blast, Dissipate 2'), W('Dragon Cannon','F/S','Full','12"',12,'3+','S2','Alt-1, Ignores cover'), W('Concentrated Dragon Beam','F','Full','12"',3,'3+',2,'Alt-1, Focus 2, Ignores cover')],
+  variants:[{name:'Standard', pts:120}]},
+{id:'shal-obeliskionspire', faction:'Shaltari', name:'Obelisk Ionspire', category:'Support', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'N/A', stats:'A5 DP4', special:'P5+',
+  weapons:[W('Ion Storm','F/S/R','Full','8"',1,'3+',5,'AA-S, Alt 1, Field, Ineffective: Friendlies, Zones'), W('Ion Strike','F/S/R','Full','8"',1,'2+',10,'Alt 1, Critical 1, Overwatch')],
+  variants:[{name:'Standard', pts:60}]},
+{id:'shal-gunship', faction:'Shaltari', name:'Shaltari Gunship', category:'Support', squadMin:1, squadMax:3, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'20"', stats:'A2 DP1', special:'Ev2, P5+',
+  weapons:[W('Twin Disintegrators (Firebird)','F/S/R','16"','12"',4,'3+',3,'Devastator 1, Pen 6+'), W('Short Gauss Cannon (Thunderbird)','F/S/R','16"','∞/20"',1,'3+',6,'Demo 0, Precision 2')],
+  variants:[{name:'Firebird', pts:30},{name:'Thunderbird', pts:30}]},
+{id:'shal-supportgravtank', faction:'Shaltari', name:'Shaltari Support Grav-tank', category:'Support', squadMin:3, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A4 DP1', special:'Ev1, Flat Out 5", P5+, Skimmer',
+  weapons:[W('Energy Storm (Arrowhead)','F/S/R','Full','12"',2,'2+',3,'AA-R, Assault, T2'), W('Atomic Teleporter, Cyclone (Atlatl)','F/S/R','Full','12"',1,'3+',5,'Alt 1, Destroyer 6+, Overwatch'), W('Atomic Teleporter, Patch (Atlatl)','F/S/R','Full','12"',2,'3+',0,'AA, Alt 1, Repair 1: Vehicles and Aircraft')],
+  variants:[{name:'Arrowhead', pts:30},{name:'Atlatl', pts:30}]},
+{id:'shal-supportwarstrider', faction:'Shaltari', name:'Shaltari Support Warstrider', category:'Support', squadMin:1, squadMax:3, rare:false, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A6 DP4', special:'P5+, Shield: Friendly Vehicles 6" 4+ (Dreamsnare)',
+  weapons:[W('Dual Dragon Cannons','F/S','Full','12"',24,'3+','S2','Alt-1, Ignores cover, Strafe'), W('Concentrated Dragon Beams','F','Full','12"',6,'3+',2,'Alt-1, Focus 2, Ignores cover'), W('Thermal Lance (Leopard)','F/S/R','Full','9"',2,'2+',8,'-')],
+  variants:[{name:'Leopard', pts:75},{name:'Dreamsnare', pts:85}]},
+{id:'shal-tegugatestrider', faction:'Shaltari', name:'Tegu Gatestrider', category:'Support', squadMin:1, squadMax:3, rare:true, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A6 DP4', special:'Aux Gate, Delayed, P5+',
+  weapons:[W('Sonic Cannon','F/S/R','Full','9"',2,'4+',5,'Demo 3, Dissipate 1')],
+  variants:[{name:'Standard', pts:85}]},
+{id:'shal-totemshieldspire', faction:'Shaltari', name:'Totem Shieldspire', category:'Support', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'N/A', stats:'A5 DP4', special:'Shield: Friendly Vehicles and Aircraft 6" 5+, P5+, Shield: Zones',
+  weapons:[W('Purge Wave','F/S/R','Full','8"','D6+2','3+','S1','Seeker')],
+  variants:[{name:'Standard', pts:50}]},
+
+// ===== Shaltari — Heavy =====
+{id:'shal-adamahgungate', faction:'Shaltari', name:'Adamah Gungate', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'20"', stats:'A1 DP7', special:'Aux Gate, P5+',
+  weapons:[W('Gravity Cannon (L)','F/S','10"','18"',1,'2+',2,'Grav'), W('Gravity Cannon (R)','F/S','10"','18"',1,'2+',2,'Grav'), W('Charged Atmosphere','F/S/R','10"','4"',3,'4+',2,'Aircharge, Pen 5+')],
+  variants:[{name:'Standard', pts:110}]},
+{id:'shal-assaultwarsuits', faction:'Shaltari', name:'Assault Warsuits', category:'Heavy', squadMin:2, squadMax:2, rare:false, unique:false,
+  type:'Infantry', mv:'3"', stats:'OF6 DF3+ B2+ DP3', special:'Agile 2, Hardy 3+, Lethal, Warsuit, Command Centre, Microgate (Daimyo)',
+  weapons:[W('Energy Swords','F/S/R','Full','CC',3,'2+',2,'Assault, Pen 6+')],
+  variants:[{name:'Firstborns', pts:45},{name:'Daimyo', pts:70}]},
+{id:'shal-frostdrake', faction:'Shaltari', name:'Frostdrake', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'20"', stats:'A2 DP6', special:'Command Centre, Ev1, P5+',
+  weapons:[W('Foe Crusher Cannon','F/S','10"','18"',1,'2+',5,'Grav'), W('Disruption Cannon','F','10"','12"',1,'3+',8,'Blast, Dissipate 2'), W('Dragon Cannon','F/S','Full','12"',12,'3+','S2','Alt-1, Ignores cover'), W('Concentrated Dragon Beam','F','Full','12"',3,'3+',2,'Alt-1, Focus 2, Ignores cover')],
+  variants:[{name:'Standard', pts:160}]},
+{id:'shal-gunstrider', faction:'Shaltari', name:'Shaltari Gunstrider', category:'Heavy', squadMin:1, squadMax:3, rare:false, unique:false,
+  type:'Vehicle', mv:'3"', stats:'A6 DP4', special:'P5+',
+  weapons:[W('Ion Cannonade (Bobcat)','F/S','Full','18"',12,'2+',2,'AA, T1'), W('Twin Super Gravity Cannon (Wildcat)','F/S','Full','24"',2,'2+',3,'Devastator 1, Grav'), W('Particle Triad (Panther)','F/S','2"','∞"',3,'3+',4,'AA-S, Devastator 1, Particle, T2'), W('Strider Particle Cannon (Ocelot)','F/S','2"','∞"',1,'2+',10,'Critical 1, Demo 3, Devastator 1, Particle, T2')],
+  variants:[{name:'Bobcat', pts:120},{name:'Panther', pts:120},{name:'Ocelot', pts:120},{name:'Wildcat', pts:110}]},
+{id:'shal-heavygravtank', faction:'Shaltari', name:'Shaltari Heavy Grav-tank', category:'Heavy', squadMin:1, squadMax:3, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A4 DP4', special:'Skimmer, Ev2, P5+, Wide 6", Command Centre (Gharial, Crocodile)',
+  weapons:[W('Skimmer Particle Cannon (Crocodile)','F/S/R','3"','∞"',1,'2+',8,'Critical 1, Demo 2, Devastator 1, Particle, T2'), W('Microwave Cannon, Harmonised (Gharial)','F/S','Full','12"','D3','2+',9,'Alt 1, Critical 1, Ignores Cover'),
+    W('Microwave Cannon, Spread (Gharial)','F/S','Full','12"',10,'3+','S2','Alt 1, Concussion, Flame'), W('Neutron Launchers (Gharial)','F/S','Full','12"',2,'3+',6,'Demo 3, Strafe, Suppress'), W('Gauss Triad (Caiman)','F/S/R','Full','∞/36"',3,'2+',6,'Demo 0, Devastator 1'),
+    W('Laser Pods (Caiman)','F/S','Full','∞"',2,'3+',3,'Destroyer 6+, Strafe'), W('Skimcharge Spine (Alligator)','F/S/R','Full','6"',1,'A',0,'Alt 1, Field, Skimcharger'), W('Spine Discharge (Alligator)','F/S/R','Full','12"',6,'4+',2,'Alt 1, Destroyer 6+, Overwatch, Pen 4+')],
+  variants:[{name:'Alligator', pts:85},{name:'Crocodile', pts:110},{name:'Caiman', pts:110},{name:'Gharial', pts:115}]},
+
+// ===== Shaltari — Vanguard =====
+{id:'shal-heavywarsuits', faction:'Shaltari', name:'Shaltari Heavy Warsuits', category:'Vanguard', squadMin:2, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'4"', stats:'A3 DP1', special:'Ev1, P5+, Rapid Insertion 5"',
+  weapons:[W('Gauss Carbines (Ronin)','F/S/R','Full','∞/20"',2,'3+',5,'Assault'), W('Energy Glave (Samurai)','F/S/R','Full','CC',1,'2+',6,'Alt-1, Assault, Destroyer 6+'), W('Bio-Atomiser (Samurai)','F/S/R','Full','6"',3,'3+','S1','Alt-1, Assault, Flame, Ineffective:Zones')],
+  variants:[{name:'Ronin', pts:20},{name:'Samurai', pts:20}]},
+{id:'shal-interceptor', faction:'Shaltari', name:'Shaltari Interceptor', category:'Vanguard', squadMin:1, squadMax:2, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'20"-48"', stats:'A2 DP1', special:'Ev3, Fast Mover, P5+',
+  weapons:[W('Twin Heavy Ion Cannons','F','Full','18"',2,'3+',3,'AA, Alt-1, Critical 1, T3'), W('Gauss Cannon (Warspear)','F','Full','∞/30"',1,'2+',6,'Alt-1, Demo 0'), W('Heavy Bio-Atomiser (Khopesh)','F','Full','8"',5,'3+','S1','Alt-1, Flame, Ineffective:Zones')],
+  variants:[{name:'Warspear', pts:65},{name:'Khopesh', pts:70}]},
+{id:'shal-lightgravtank', faction:'Shaltari', name:'Shaltari Light Grav-tank', category:'Vanguard', squadMin:3, squadMax:6, rare:false, unique:false,
+  type:'Vehicle', mv:'12"', stats:'A2 DP1', special:'Skimmer, P5+, Ev2, Scout, Shield: Friendly Vehicles 3" 4+ (Tate)',
+  weapons:[W('Microwave Gun (Naginata)','F/S/R','Full','6"',3,'3+','S1','Flame'), W('Light Ion Cannon (Yari)','F/S/R','6"','18"',1,'2+',2,'AA, T1')],
+  variants:[{name:'Yari', pts:15},{name:'Naginata', pts:15},{name:'Tate', pts:20}]},
+{id:'shal-scoutstrider', faction:'Shaltari', name:'Shaltari Scoutstrider', category:'Vanguard', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'6"', stats:'A4 DP2', special:'Climber, P5+, Scout, Ev1, Stealth (Recluse)',
+  weapons:[W('Polymer Carbines (Widow)','F','Full','24/12"',4,'3+',1,'Assault, Pen 6+, Suppress'), W('Spectra Projectors, Dazzle (Recluse)','F','Full','36"',1,'4+','N/A','Alt 1, Concussion, Jammer, Precision 2'), W('Spectra Projectors, Shroud (Recluse)','F','Full','36"',1,'A','N/A','Alt 1, Smoke')],
+  variants:[{name:'Widow', pts:45},{name:'Recluse', pts:55}]},
+
+// ===== Shaltari — Transport (Gates) =====
+{id:'shal-edengate', faction:'Shaltari', name:'Eden Medium Gate', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'20"', stats:'A1 DP3', special:'Gate, P5+',
+  weapons:[W('Charged Atmosphere','F/S/R','10"','4"',3,'4+',2,'Aircharge, Pen 5+')],
+  variants:[{name:'Standard', pts:40}]},
+{id:'shal-gaiagate', faction:'Shaltari', name:'Gaia Heavy Gate', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (40mm)', mv:'20"', stats:'A1 DP7', special:'Gate, P5+',
+  weapons:[W('Charged Atmosphere','F/S/R','10"','4"',3,'4+',2,'Aircharge, Pen 5+')],
+  variants:[{name:'Standard', pts:70}]},
+{id:'shal-haventerragate', faction:'Shaltari', name:'Haven Terragate', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'9"', stats:'A4 DP2', special:'Ev2, Gate, P5+, Skimmer, Surveyor',
+  weapons:[W('Charged Earth','F/S/R','Full','4"',2,'4+',2,'Overwatch, Pen 5+')],
+  variants:[{name:'Standard', pts:15}]},
+{id:'shal-spiritgate', faction:'Shaltari', name:'Spirit Light Gate', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'30"', stats:'A1 DP1', special:'Gate, P5+',
+  weapons:[W('Charged Atmosphere','F/S/R','10"','4"',3,'4+',2,'Aircharge, Pen 5+')],
+  variants:[{name:'Standard', pts:30}]},
+{id:'shal-ziongatespire', faction:'Shaltari', name:'Zion Gatespire', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Vehicle', mv:'N/A', stats:'A5 DP4', special:'Delayed, Gate, Obscurer 4", P5+, Strike',
+  weapons:[W('Charged Area','F/S/R','Full','4"',6,'4+',2,'Overwatch, Pen 5+')],
+  variants:[{name:'Standard', pts:50}]},
+
+// ===== Bioficer — Standard =====
+{id:'bio-grievancegenitorark', faction:'Bioficer', name:'Grievance Genitor Ark', category:'Standard', squadMin:1, squadMax:2, rare:false, unique:false,
+  type:'Vehicle', mv:'5"', stats:'A5 DP4', special:'Genitor 12 (Grievance 1) / Genitor 14 (Grievance 2), Puppeteer 6", Skimmer, Surveyor',
+  weapons:[W('Decon Staff (Grievance 1)','F','Full','18"',1,'3+',5,'Decon'), W('Electro-Bombard (Grievance 2)','F','Full','12"',1,'4+',3,'AA-S, Indirect, Ineffective:Zones, Suppress')],
+  variants:[{name:'Grievance 1', pts:35},{name:'Grievance 2', pts:40}]},
+{id:'bio-thornlightskimmer', faction:'Bioficer', name:'Thorn Light Skimmer', category:'Standard', squadMin:2, squadMax:8, rare:false, unique:false,
+  type:'Vehicle', mv:'10"', stats:'A4 DP1', special:'Ev2, Skimmer',
+  weapons:[W('Decon Stave (Thorn 1)','F/S','5"','24"',1,'3+',5,'Decon, Precision 2'), W('Lightmaw (Thorn 2)','F/S','5"','24"/6"',1,'4+',7,'Demo 0, Precision 2'),
+    W('Ghost Circuit, wide (Thorn 3)','F/S','5"','12"',2,'2+','S1','Alt 1, Decon, Flame'), W('Ghost Circuit, narrow (Thorn 3)','F/S','5"','12"',1,'2+',5,'Alt 1, Decon, Pen 6+')],
+  variants:[{name:'Thorn 1', pts:25},{name:'Thorn 2', pts:25},{name:'Thorn 3', pts:25}]},
+{id:'bio-tuskmainbattleskimmer', faction:'Bioficer', name:'Tusk Main Battle Skimmer', category:'Standard', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'5"', stats:'A6 DP2', special:'Ev1, Skimmer',
+  weapons:[W('Twin Barb Destructor (Tusk 1)','F/S','Full','∞/36"',4,'2+',4,'Decon, Pen 6+'), W('Bisection Organ (Tusk 2)','F/S','Full','18"',1,'3+',6,'Demo 1, Devastator D3+1, Precision 1'),
+    W('Scythe Battery (Tusk 3)','F/S','Full','∞',3,'2+',2,'Focus 2, Strafe, T1')],
+  variants:[{name:'Tusk 1', pts:45},{name:'Tusk 2', pts:45},{name:'Tusk 3', pts:50}]},
+
+// ===== Bioficer — Support =====
+{id:'bio-surgegunship', faction:'Bioficer', name:'Surge Gunship', category:'Support', squadMin:1, squadMax:2, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'15"', stats:'A3 DP2', special:'Ev1',
+  weapons:[W('Decon Pulse','F/S','5"','5"',1,'5+',6,'Decon, Precision 2'), W('Decon Cannon Pair (Surge 1)','F/S','5"','24"',2,'3+',7,'Decon, Precision 1, Strafe'),
+    W('Twin Scythes Pair (Surge 2)','F/S','5"','∞',4,'2+',2,'Focus 2, Strafe, T1'), W('Heavy Lightmaw Pair (Surge 3)','F/S','5"','24"/6"',2,'4+',8,'Demo 0, Devastator 1, Precision 2, Strafe'),
+    W('Ghost Orbit Pair, wide (Surge 4)','F/S','5"','12"',6,'2+','S1','Alt 1, Decon, Flame, Strafe'), W('Ghost Orbit Pair, narrow (Surge 4)','F/S','5"','12"',2,'2+',5,'Alt 1, Decon, Pen 5+, Strafe')],
+  variants:[{name:'Surge 1', pts:55},{name:'Surge 2', pts:55},{name:'Surge 3', pts:55},{name:'Surge 4', pts:60}]},
+{id:'bio-tangentsupportskimmer', faction:'Bioficer', name:'Tangent Support Skimmer', category:'Support', squadMin:2, squadMax:4, rare:false, unique:false,
+  type:'Vehicle', mv:'5"', stats:'A6 DP2', special:'Skimmer, Ev1',
+  weapons:[W('Winnow Web (Tangent 1)','F/S','Full','15"',8,'4+',2,'AA, Decon, Strafe, T1'), W('Barb Spitter (Tangent 2)','F/S','Full','∞/36"',2,'3+',4,'AA-S, Pen 6+'),
+    W('Quake Howitzer (Tangent 3)','F/S','Full','18"/6"',3,'5+',6,'Demo 1, Indirect, Suppress')],
+  variants:[{name:'Tangent 1', pts:45},{name:'Tangent 2', pts:45},{name:'Tangent 3', pts:45}]},
+
+// ===== Bioficer — Heavy =====
+{id:'bio-silenceheavygunship', faction:'Bioficer', name:'Silence Heavy Gunship', category:'Heavy', squadMin:1, squadMax:1, rare:true, unique:false,
+  type:'Aircraft (40mm)', mv:'15"', stats:'A3 DP4', special:'Collector 6',
+  weapons:[W('Decon Wave','F/S','5"','5"',2,'5+',6,'Decon, Precision 2'), W('Decon Cannon Pair (Silence 1)','F/S','5"','24"',2,'3+',7,'Decon, Precision 1, Strafe'),
+    W('Twin Scythes Pair (Silence 2)','F/S','5"','∞',4,'2+',2,'Focus 2, Strafe, T1'), W('Heavy Lightmaw Pair (Silence 3)','F/S','5"','24"/6"',2,'4+',8,'Demo 0, Devastator 1, Precision 2, Strafe'),
+    W('Ghost Orbit Pair, wide (Silence 4)','F/S','5"','12"',6,'2+','S1','Alt 1, Decon, Flame, Strafe'), W('Ghost Orbit Pair, narrow (Silence 4)','F/S','5"','12"',2,'2+',5,'Alt 1, Decon, Pen 5+, Strafe')],
+  variants:[{name:'Silence 1', pts:85},{name:'Silence 2', pts:85},{name:'Silence 3', pts:85},{name:'Silence 4', pts:90}]},
+
+// ===== Bioficer — Vanguard =====
+{id:'bio-gyroaerogenitor', faction:'Bioficer', name:'Gyro Aero-Genitor', category:'Vanguard', squadMin:1, squadMax:2, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'20"', stats:'A3 DP1', special:'Genitor 8, Puppeteer 4"',
+  weapons:[W('Decon Zap','F/S','10"','5"',1,'4+',4,'Decon')],
+  variants:[{name:'Standard', pts:30}]},
+
+// ===== Bioficer — Transport =====
+{id:'bio-datastrikedropship', faction:'Bioficer', name:'Data Strike Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'15"', stats:'A3 DP2', special:'Collector 6',
+  weapons:[W('Decon Pulse','F/S','5"','5"',1,'5+',6,'Decon, Precision 2')],
+  variants:[{name:'Standard', pts:25}]},
+{id:'bio-devicedropship', faction:'Bioficer', name:'Device Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'15"', stats:'A3 DP4', special:'Collector 12',
+  weapons:[W('Decon Wave','F/S','5"','5"',2,'5+',6,'Decon, Precision 2')],
+  variants:[{name:'Standard', pts:45}]},
+{id:'bio-digitlightdropship', faction:'Bioficer', name:'Digit Light Dropship', category:'Transport', squadMin:null, squadMax:null, rare:false, unique:false,
+  type:'Aircraft (30mm)', mv:'20"', stats:'A3 DP1', special:'—',
+  weapons:[W('Decon Zap','F/S','10"','5"',1,'4+',4,'Decon')],
+  variants:[{name:'Standard', pts:15}]},
+
 ];
 
 const GAME_SIZES = {
@@ -1302,7 +1537,7 @@ function renderCatalog(){
 
 function renderUnitCard(u){
   const el = document.createElement('div');
-  el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':(u.faction==='Scourge'?'scourge':(u.faction==='UCM'?'ucm':'res'))));
+el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':(u.faction==='Scourge'?'scourge':(u.faction==='UCM'?'ucm':(u.faction==='Shaltari'?'shaltari':(u.faction==='Bioficer'?'bioficer':'res'))))));
   const flags = [];
   if(u.rare) flags.push('<span class="flag">[RARE]</span>');
   if(u.unique) flags.push('<span class="flag">[UNIQUE]</span>');
