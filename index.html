@@ -417,7 +417,7 @@ const UNIT_IMAGES = {
   'phr-type6grandwalker': 'phr-type6grandwalker.png', 'phr-mercuryscout': 'phr-mercuryscout.png', 'phr-longreach': 'phr-longreach.png', 'phr-airsuperiority': 'phr-airsuperiority.png',
   'phr-columbuswalker': 'phr-columbuswalker.png', 'phr-strikewalker': 'phr-strikewalker.png', 'phr-scoutwalker': 'phr-scoutwalker.png', 'phr-valkyrie': 'phr-valkyrie.png',
   'phr-juno': 'phr-juno.png', 'phr-neptune': 'phr-neptune.png', 'phr-njord': 'phr-njord.png', 'phr-poseidon': 'phr-poseidon.png',
-  'phr-tritonlightdrop': 'phr-tritonlightdrop.png', 'phr-tritonlighttroop': 'phr-tritonlighttroop.png', 'phr-atlasquad': 'phr-atlasquad.png',
+  'phr-tritonlightdrop': 'phr-tritonlightdrop.png', 'phr-tritonlighttroop': 'phr-tritonlighttroop.png', 'phr-atlasquad': 'phr-atlasquad.png','phr-venusdrone': 'phr-venusdrone.png',
   'res-mcclellan': 'res-mcclellan.png', 'res-commandhover': 'res-commandhover.png', 'res-fighters': 'res-fighters.png', 'res-mbt': 'res-mbt.png',
   'res-technical': 'res-technical.png', 'res-wagon': 'res-wagon.png', 'res-artillerywagon': 'res-artillerywagon.png', 'res-attackheli': 'res-attackheli.png',
   'res-berserkers': 'res-berserkers.png', 'res-lifthawkgun': 'res-lifthawkgun.png', 'res-mechloader': 'res-mechloader.png', 'res-bombbus': 'res-bombbus.png',
@@ -518,6 +518,9 @@ TRANSPORT_DATA['phr-poseidon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0
 TRANSPORT_DATA['phr-tritonlightdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:2, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['phr-tritonlighttroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['phr-atlasquad'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['phr-type7grandwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['phr-type6grandwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:8, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['phr-venusdrone'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 
 // TODO
 TRANSPORT_DATA['shal-bravewarsuits'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
@@ -688,6 +691,10 @@ variants:[{name:'Thor', pts:50},{name:'Taranis', pts:50}]},
     W('Triple RX-1 Railguns','F/S','Full','∞/24"',3,'2+',7,'Demo 0')],
   note:'Porphyrion : le Gear Director 2:4 inclut automatiquement 2 escouades de Venus Drone (Vehicle, Mv8", A5, DP1, Directed/Ev1/Skimmer — Twin RX-1L Short Railguns et R6X-13 Fusion Mine [L1, Pen 4+]) ; ces unités ne s\'achètent pas séparément.',
   variants:[{name:'Alcyoneus', pts:420},{name:'Porphyrion', pts:435}]},
+  {id:'phr-venusdrone', faction:'PHR', name:'Venus Drone', category:'Support', squadMin:1, squadMax:1, rare:false, unique:false,
+  type:'Vehicle', mv:'8"', stats:'A5 DP1', special:'Directed, Ev1, Skimmer',
+  weapons:[W('Twin RX-1L Short Railguns','F','4"','∞/24"',2,'3+',6,'Demo 0'), W('R6X-13 Fusion Mine','F/S/R','Full','CC',1,'4+',6,'L1, Pen 4+')],
+  variants:[{name:'Standard', pts:0}]},
 
 // ===== PHR — Vanguard =====
 {id:'phr-mercuryscout', faction:'PHR', name:'Mercury Scout Drone', category:'Vanguard', squadMin:2, squadMax:4, rare:false, unique:false,
