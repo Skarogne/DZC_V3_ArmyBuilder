@@ -131,13 +131,13 @@
 <body>
 
 <div class="topbar">
-  <div class="brand">⛛ DZC ROSTER <span class="tag">V3.01 / Only PHR & Resistance finish</span></div>
+  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.01 / Only PHR & Resistance finish</span></div>
 
-  <div class="field"><label>Faction</label>
+  <div class="field"><label data-i18n="label.faction">Faction</label>
 <select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
   </div>
 
-  <div class="field"><label>Taille de partie</label>
+  <div class="field"><label data-i18n="label.gameSize">Taille de partie</label>
     <select id="gameSizeSelect">
       <option value="Skirmish">Skirmish (501-1000)</option>
       <option value="Clash" selected>Clash (1001-2000)</option>
@@ -146,11 +146,12 @@
     </select>
   </div>
 
-  <div class="field"><label>Points visés</label>
+  <div class="field"><label data-i18n="label.targetPoints">Points visés</label>
     <input type="number" id="targetPoints" value="1750" step="5" style="width:90px;">
   </div>
 
   <div class="spacer"></div>
+  <button id="langToggle" class="btn-ghost" type="button" title="Français / English" style="padding:6px 10px; font-size:17px; line-height:1; border-color:var(--amber); color:var(--amber);">🇬🇧</button>
   <div class="stat-pill" id="pillPoints">0 / 0<b>PTS</b></div>
   <div class="stat-pill" id="pillGroups">0 / 0<b>GROUPES</b></div>
   <div class="stat-pill" id="pillStatus">—<b>STATUT</b></div>
@@ -159,9 +160,9 @@
 <div class="layout">
   <div class="catalog">
     <div class="catalog-controls">
-      <input type="text" id="searchBox" placeholder="Rechercher une unité...">
+      <input type="text" id="searchBox" placeholder="Rechercher une unité..." data-i18n-placeholder="placeholder.search">
       <select id="catFilter">
-        <option value="">Toutes catégories</option>
+        <option value="" data-i18n="opt.allCategories">Toutes catégories</option>
         <option>Standard</option><option>Vanguard</option><option>Heavy</option>
         <option>Support</option><option>Transport</option><option>Behemoth</option>
       </select>
@@ -170,15 +171,15 @@
   </div>
 
   <div class="roster">
-    <h2>Feuille de Roster</h2>
+    <h2 data-i18n="h2.rosterSheet">Feuille de Roster</h2>
 <div class="summary-grid" id="summaryGrid"></div>
     <div class="export-row">
-      <button class="btn-primary" id="exportCsv">⇩ Exporter en CSV</button>
-      <button class="btn-primary" id="exportPdf" style="background:var(--behe); border-color:var(--behe);">⇩ Exporter en PDF</button>
-      <button class="btn-primary" id="exportJson">⇩ Exporter la liste (JSON)</button>
-      <button class="btn-ghost" id="importJsonBtn" style="border-color:var(--amber); color:var(--amber);">⇧ Importer une liste (JSON)</button>
+      <button class="btn-primary" id="exportCsv" data-i18n="btn.exportCsv">⇩ Exporter en CSV</button>
+      <button class="btn-primary" id="exportPdf" style="background:var(--behe); border-color:var(--behe);" data-i18n="btn.exportPdf">⇩ Exporter en PDF</button>
+      <button class="btn-primary" id="exportJson" data-i18n="btn.exportJson">⇩ Exporter la liste (JSON)</button>
+      <button class="btn-ghost" id="importJsonBtn" style="border-color:var(--amber); color:var(--amber);" data-i18n="btn.importJson">⇧ Importer une liste (JSON)</button>
       <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
-      <button class="btn-danger" id="resetBtn">Vider le roster</button>
+      <button class="btn-danger" id="resetBtn" data-i18n="btn.reset">Vider le roster</button>
     </div>
     <div id="rosterList"></div>
     <div id="groupSummary"></div>
@@ -186,25 +187,11 @@
     <div class="warnbox" id="warnBox"></div>
 
     <details class="glossary">
-      <summary>Glossaire des règles spéciales (armes / unités / Behemoths)</summary>
+      <summary data-i18n="glossary.summary">Glossaire des règles spéciales (armes / unités / Behemoths)</summary>
       <div class="gloss-grid" id="glossGrid"></div>
     </details>
 
-    <div class="footnote">
-      Un « Groupe » = une escouade (et son transport dédié le cas échéant). Donnez le même n° de Groupe
-      à une escouade et à son transport pour qu'ils comptent comme un seul Groupe. Plafond de points par
-      Groupe : 25% du total visé (V3.01, 3.2). Les Behemoths comptent leur "Group Equivalent" en nombre
-      de Groupes consommés (limite max de Groupes) mais restent évalués comme 1 seul Groupe pour le
-      plafond de 25%. Colonnes Arc/MA/R/Att/Ac/E = Arc de tir / Move&Attack / Portée / Nb d'attaques /
-      Précision / Énergie, telles que publiées sur les stat cards officielles.
-      <br><br>
-      <b>Capacité de transport (V3) :</b> remplace les 0 dans le bloc <code>TRANSPORT_DATA</code> en
-      haut du script — <code>reqInf</code>/<code>reqVeh</code> pour ce qu'une unité prend comme place
-      (Infanterie ou Véhicule), <code>capInf</code>/<code>capVeh</code> pour ce qu'un transport offre.
-      Une unité transportée DOIT être dans le même n° de Groupe que son transport (mets le même
-      numéro dans le champ « Groupe » du roster) : le panneau « Groupe X » ci-dessus liste qui
-      transporte qui et signale en rouge tout dépassement Inf ou Véh. Le détail est repris dans l'export CSV.
-    </div>
+    <div class="footnote" id="footnoteText"></div>
   </div>
 </div>
 
@@ -258,9 +245,9 @@ function statsTableHtmlWeb(u){
 
 function weaponTableHtml(u, variantName){
   const filtered = u.weapons.filter(w => !isOptionalWeapon(w) && weaponMatchesVariant(w.n, variantName));
-  if(filtered.length===0) return '<div class="unit-stats" style="font-style:italic;">Sans armement</div>';
+  if(filtered.length===0) return `<div class="unit-stats" style="font-style:italic;">${t('text.noWeapons')}</div>`;
   return `<div class="weapon-table">
-    <div class="weapon-row hdr"><span>Arme</span><span>Arc</span><span>MA</span><span>R</span><span>Att</span><span>Ac</span><span>E</span><span>Spécial</span></div>
+    <div class="weapon-row hdr"><span>${t('weapon.hdr.name')}</span><span>${t('weapon.hdr.arc')}</span><span>${t('weapon.hdr.ma')}</span><span>${t('weapon.hdr.r')}</span><span>${t('weapon.hdr.att')}</span><span>${t('weapon.hdr.ac')}</span><span>${t('weapon.hdr.e')}</span><span>${t('weapon.hdr.special')}</span></div>
     ${filtered.map(w=>`<div class="weapon-row"><span>${w.n}</span><span>${w.arc}</span><span>${w.ma}</span><span>${w.r}</span><span>${w.att}</span><span>${w.ac}</span><span>${w.e}</span><span>${w.sp}</span></div>`).join('')}
   </div>`;
 }
@@ -406,6 +393,396 @@ const GLOSSARY = [
 ["Puppeteer X\"","Cette unité contrôle les unités Puppet amies à moins de X\" d'elle, y compris les Occupantes dans la même Zone. Toute unité non-Infanterie contenant un Commandant Bioficer gagne Puppeteer 9\"."],
 ["Decon","Chaque fois qu'une unité ennemie est détruite dans la même activation qu'une touche par une Arme Decon amie, placez des jetons RM sur 1 unité Genitor ou Collector amie à moins de 15\" (2 jetons si la cible avait 1-2 DP initiaux ou était de l'Infanterie, sinon 4 jetons). En fin d'étape 8 d'un CQB, si des unités amies impliquées avaient des Armes Decon en début de CQB, placez 2 jetons RM par unité d'Infanterie ennemie détruite (limité au nombre d'unités amies impliquées ayant une Arme Decon)."],
 ];
+
+const GLOSSARY_EN = [
+["Ac","Accuracy (roll required to hit, before modifiers)."],
+["Att","Number of attacks (shots) the weapon makes."],
+["E","Weapon Energy, compared against the target's Armour (A) on the damage table."],
+["MA (Move & Attack)","Max. distance the unit can move while still using this weapon in the same activation."],
+["R","Range. Two values separated by / : the 2nd applies against Vehicles/Aircraft (active countermeasures)."],
+["A / DF","Armour (Vehicles/Aircraft) or Defence (Infantry) — used to block damage."],
+["OF","Offense — dice pool used in Close Quarters Battle (CQB) for Infantry."],
+["B (Bravery)","Bravery — morale test threshold; 'A' = automatic pass."],
+["DP","Damage Points (life) of the unit."],
+["Ev X","Evasion countermeasures: attackers suffer -X Ac against this unit."],
+["P X+ / Passive CM","Passive countermeasures: save on X+ against damage (penalised at E9, ignored at E10+)."],
+["S (before the E, e.g. S2)","'Small Arms' Energy weapon — only inflicts 1 automatic DP per hit against Infantry, must combine 5 attacks to damage Vehicles/Aircraft."],
+["Demo X","Extra automatic damage inflicted against Zones (buildings/areas)."],
+["Devastator X","Adds X extra damage to every successful hit against the targeted type."],
+["Destroyer X+","A hit is an automatic critical if the damage roll reaches X+, without a normal roll."],
+["Critical X","Modifies the number of extra damage inflicted by a Critical."],
+["Focus X","Can sacrifice hits already scored to add +X to the Energy of a remaining shot."],
+["Pen X+","Automatically hits on a damage roll of X+ regardless of Energy/Armour."],
+["AA","Can target Aircraft (Anti-Aircraft). Reaction fire possible with -2 Ac."],
+["AA-S","Can target Aircraft (Anti-Aircraft Slow). Reaction fire not possible."],
+["AA-R","Can target Aircraft (Anti-Aircraft Reactive). Reaction fire possible with no penalty."],
+["Strafe","Can freely split its attacks between several targets close to one another."],
+["Blast","Uses a template that hits every unit underneath it."],
+["Indirect","Can fire without direct line of sight (often via a Scout unit), usually at a penalty."],
+["Ignores Cover","Ignores the target's cover effects (Obscured)."],
+["Ineffective: Zones","This weapon cannot damage Zones (buildings/areas)."],
+["Articulated","Can measure line of sight from a raised point (folding turret)."],
+["Alt X","Alternating-fire weapon: weapons sharing the same X may only fire one profile per Round."],
+["L X (Limited)","Limited ammunition: can only be fired X times per game."],
+["Overcharge X","Overcharge effect, usually tied to a temporary penalty or bonus (see unit text)."],
+["Precision X","Modifies/reduces a random effect (e.g. Systems Damage) by X."],
+["T X","Tracking/lock-on bonus against certain targets (value is weapon-specific — check the exact rulebook entry)."],
+["Seeker","Guided weapon that gets an accuracy bonus against certain designated targets."],
+["Concussion","Inflicts a disruption status (Concussed) on the hit target."],
+["Suppress","Inflicts a Suppression status that limits the target's actions."],
+["Smoke","Generates a smoke status/area that hinders targeting."],
+["Jammer","Disrupts nearby enemy command/targeting abilities."],
+["Needs Spotter","Requires another friendly unit to have a spot/lock on the target before it can attack."],
+["Repair X: [type]","Restores X Damage Points to the indicated unit type at the end of the activation."],
+["Nanomachines","Weapon with automatic Indirect + Ineffective:Zones; cannot target Aircraft nor attack while Sited."],
+["Supercruise","The unit may declare 'Supercruise' at the start of its activation: its weapons, and those targeting it, suffer -1Ac until the end of the Round."],
+["Dissipate X","Reduces an effect or a build-up by X (weapon-specific context)."],
+["Incendiary X","Inflicts extra fire-related damage/effects tied to X."],
+["Battery X","Number of successive shots the weapon can fire in one salvo."],
+["Drive-by","Can attack even after a full move, typical of light vehicles/bikes."],
+["Assault","Allows this weapon to be used in Close Quarters Battle (CQB)."],
+["Ram","After a full move, the unit may charge: it loses 1 DP on a 4+ after the attack."],
+["SelfDestruct","The unit may sacrifice itself to inflict damage (often on death or on command)."],
+["Command Centre","A Commander can be assigned to this unit as if it had the Command category."],
+["Obscurer X\"","Friendly units within this radius get a concealment bonus (Obscured)."],
+["Scanner","Can perform a special reconnaissance/detection action."],
+["Surveyor","Can help search/analyse terrain or Objects."],
+["Scout","Reconnaissance unit; notably can serve as a line-of-sight point for Indirect."],
+["AWACS X\"","Provides a support bonus (often accuracy/anti-air) to friendly units within this radius."],
+["Hardy X+","Reduces the effects of certain negative results (context depends on the unit)."],
+["Jump X\"","Can move while ignoring certain obstacles/terrain up to X\", often linked to Rapid Insertion."],
+["Lethal","Offensive bonus in Close Quarters Battle (CQB)."],
+["Rapid Insertion X\"","Can disembark from an Aircraft that hasn't landed, under the stated conditions and distance."],
+["Infiltrate X\"","Can be deployed directly onto the table within X\" of the table edge, even outside the normal deployment zone."],
+["Agile X","Extra save in CQB (a kind of 'dodge')."],
+["FS X (Fortified/Firing Solution)","Contextual bonus for the infantry unit (see the unit's specific text)."],
+["Fast Mover","Must move every activation, has a min/max speed, can fly high, usually enters from Reserve."],
+["Resilient","Reduces or avoids certain Critical/special damage effects."],
+["Large","Cannot be Obscured/Hull-Down; imposing footprint."],
+["Wide X\"","Doubles (or extends, depending on X) the unit's coherency distance."],
+["UC","Can always use its 1st range value even against active countermeasures."],
+["Bikes X","Treated as a Vehicle (Armour X) outside of Zones, becomes Infantry again inside them."],
+["Aegis X\"","Defensive bonus to friendly units within range (often against certain kinds of fire)."],
+["Bloodthirsty","Cannot flee/leave a Zone containing enemies; penalty when searching for Objects."],
+["Terror","Inflicts a fear/morale penalty on enemies engaged in melee."],
+["Living Weapons","The unit's weapons are tied to its biological traits (K9/creature context)."],
+["Dogs","Trait of canine units (Resistance) tied to melee combat."],
+["Breachers X","Bonus for forcing entry into Zones/fortified structures."],
+["Demo Charges X+","Bonus to demolition damage against Zones."],
+["Overwatch","Can react to nearby enemy movement with an out-of-sequence attack."],
+["Firing Ports","The Transport gains the weapons (except CC) of an embarked squad that doesn't disembark this Round."],
+["Flexible Capacity","This Transport can be taken with only half of its capacity filled."],
+["Subterranean Small/Medium","'Drilling' unit that lets squads start the game in Holding and emerge into play."],
+["Directed","Unit that cannot be bought on its own; automatically accompanies a Behemoth with the Director Gear."],
+["Integrated Gate","The Behemoth functions as a Shaltari/PHR Auxiliary Gate for embarking."],
+["Lithe","The Behemoth's centre counts as any other part of itself with regard to Zones."],
+["Walker X\"xY\"","Cylindrical template (radius X, height Y) used to measure the Behemoth's range/line of sight/placement."],
+["Power","Number of Power Tokens (PT) generated at the start of the Round, spent to activate the Behemoth multiple times."],
+["Group Equivalent","Number of Groups a Behemoth 'consumes' against the army's total Group limit."],
+["AS X (Anti-Systems)","Can modify by ±X the roll on the Systems Damage table inflicted on a hit Behemoth."],
+["Huge Blast","8\"-diameter Blast template instead of 5\"."],
+["Integral","Requires 2 'Weapon Destroyed' results to be neutralised; can only fire in Volley."],
+["LT X\" (Limited Traverse)","Cannot attack a non-Behemoth unit within X\"."],
+["Linked X","Weapons sharing the same X count as a single weapon for actions and PT cost."],
+["Macro","Automatically inflicts 2 DP per hit on non-Behemoths (no roll), ignores passive countermeasures, kills infantry instantly."],
+["Secondary","Can fire in addition to another weapon at the end of any Behemoth Action."],
+["Capacitors: X","Can receive a temporary bonus via the Behemoth's 'Weapons Capacitors' Gear."],
+["Disrupt","Adds an extra, unmodifiable Systems Damage roll if the weapon damages a Behemoth."],
+["Razorworm Pod / Particle","Effects specific to the weapon profile in question — refer to the unit's text."],
+["Skimmer","Already used by PHR/Resistance but missing from the glossary — the unit can fly over water/rough terrain at its normal speed."],
+["Strong","The unit counts double when determining whether the squad is routed by casualties during morale tests."],
+["Cling","A squad with Cling can be Embarked on any Aircraft (even one without Transport capacity or Cling) that has at least as many total DP as it does; Transport symbols are ignored. Once disembarked, it can no longer re-embark."],
+["Plasma Generator X\"","Friendly weapons containing 'plasma' in their name get +1E if they attack within X\" of this unit. Doesn't stack with another Plasma Generator; has no effect on Fast Movers' weapons."],
+["Spark","Spark weapons target Aircraft at Ac 2+ but can never damage Zones."],
+["Regenerate X","At the end of its activation, the unit restores X Damage Point(s), up to its original maximum."],
+["Stealth","Makes the unit harder to spot/target at range (see the unit's text for the exact targeting effect)."],
+["Field","Weapon covering an area that affects every unit under its template rather than a single designated target."],
+["Ineffective: Friendlies","This weapon can never target or affect friendly units."],
+["Flat Out X\"","At the end of its activation, the unit may move an extra X\" in a straight line, usually in exchange for a drawback (loss of return fire, etc.)."],
+["Self-Destruct","The unit (or weapon) may sacrifice itself to inflict damage, usable once only."],
+["Razorworm Pod","This weapon can only target Zones. For each DP inflicted, place a Razorworm unit in the Zone; all Razorworms placed by Razorworm Pods in the same Zone form a single squad at the end of the Group's shooting and count as having embarked into that Zone."],
+["Delayed","This unit cannot be deployed during the first Battle Round; it joins the game from the second Round onward, following the reinforcement rules."],
+["Remote Drone","This squad cannot be chosen for your Army. During its activation, you may destroy this squad instead of attacking with it."],
+["Drone Base X: Y","During this unit's activation, it may launch a squad of X units of Y. Follow the normal disembarkation rules, with this unit treated as their Transport. Each launched squad joins this unit's Group. This unit cannot launch if 2 squads of Y are already in its Group. If this unit is destroyed, all Y squads in its Group are destroyed."],
+["Gate","This unit is a Transport Gate. Friendly squads may start the game in Holding and disembark from any Gate whose transport symbol matches. Gates don't count toward the allowed number of Groups; in Direct Deployment, each Gate forms its own Group."],
+["Aux Gate","Works like a Gate but is an Auxiliary Transport: taken as a normal squad (non-Gate) and must be activated normally — it cannot be activated alongside another non-Gate Group. Cannot attack the Round it embarks/disembarks units."],
+["Aircharge","This weapon follows the same rules as an AA-R weapon. In addition, a unit can only be targeted once during its activation by a weapon with this ability."],
+["Grav","Against a Vehicle, add the target's starting DP to this weapon's E (+1 if the Vehicle has A4 or more, +2 if A7 or more). Against a Large Vehicle, +1 Devastator. Ignores Resilient on Vehicles. Always damages Zones on a 3+ with a Demo value equal to its E."],
+["Particle","This weapon ignores Passive Countermeasures and Resilient."],
+["Skimcharger","If a friendly squad with Skimmer receives at least as many hits from weapons with Skimcharger as there are units in the squad during the same activation, it gains a Skimcharged token: it gains Flat Out 5\", +5\" MA on its weapons, and can benefit from Flat Out even while attacking (but not while embarking/disembarking)."],
+["Microgate","This unit, and those in coherency with it, gain Regenerate 2. At the start of its activation, if every unit in its squad is in coherency, it may be placed in Holding (an embarkation operation)."],
+["Subservient","These units gain +2B and +2OF while occupying a Zone containing a friendly unit without Subservient. In a mixed squad, they also gain the special abilities of any non-Subservient units present. Cannot be given a Commander."],
+["Warsuit","Small-calibre weapons and weapons of E2 or less targeting this Infantry unit must use their 2nd range value."],
+["Climber","This unit ignores terrain penalties when crossing obstacles or elevation."],
+["Shield: [target] X\" Y+","Friendly units of the indicated category within this radius get an extra Y+ save against damage (or equivalent protection depending on the stated target: Vehicles, Zones, etc.)."],
+["Strike","This unit must end its activation move within Strike distance of a deployment point or a target designated by the rule; refer to the unit's specific text for the exact conditions."],
+["Collector X","This unit can carry up to X RM (Raw Materials) tokens. RM tokens can be transferred between a Genitor unit and a Collector unit within 5\" of each other, during either one's activation. A Genitor unit cannot give RM tokens to a Collector."],
+["Genitor X","Unit with a hollow green Transport symbol showing X: it may start the game with up to X RM tokens embarked (or empty). RM tokens cost 5pts each to the Army but don't count toward any category or KP. A Genitor unit can never exceed X RM tokens, nor spend more than X per activation. Instead of Disembarking a squad normally, a Genitor unit may Spawn a squad of Generated units within squad-size limits; it then joins the Genitor's Group. A Genitor can Spawn several squads per Round, but not the same Round it Embarks units."],
+["Generated X","Generated-category unit (solid green Transport symbol showing its RM cost X): cannot be bought directly during Army construction. It is produced in-game by a Genitor unit, which spends X RM tokens to Spawn it on Disembarking. Worth 5pts × X in-game (red icon on the card). A Generated squad may Embark on any Genitor at any time (Embark/Disembark limits ignored); the squad is then removed from play and replaced by X RM tokens per embarked unit (half of X, rounded, if the unit is at half or less of its starting DP)."],
+["Genitor/Generated Avancé","Generated units with a gold-bordered symbol can only be Spawned by a Genitor with a gold number; an Advanced Genitor can also Spawn non-advanced Generated units. Advanced Generated units can Embark on any Genitor normally."],
+["Grubsinger","Grubs occupying the same Zone as one or more units with this ability gain +1OF and +1DF."],
+["Puppet","Outside the control range of a friendly Puppeteer, this unit has its OF reduced to 1, its DF to 6+, its Mv to 0\", and can no longer attack (values not modifiable); all its other special abilities (except Living Weapons, UC and Puppet) stop applying. A player who only has out-of-control Occupying Puppet units in a Zone may only Contest it. It is forbidden to intentionally move a Puppet unit out of control range."],
+["Puppeteer X\"","This unit controls friendly Puppet units within X\" of it, including Occupying units in the same Zone. Any non-Infantry unit containing a Bioficer Commander gains Puppeteer 9\"."],
+["Decon","Whenever an enemy unit is destroyed in the same activation as a hit by a friendly Decon weapon, place RM tokens on 1 friendly Genitor or Collector unit within 15\" (2 tokens if the target had 1-2 starting DP or was Infantry, otherwise 4 tokens). At the end of step 8 of a CQB, if friendly units involved had Decon weapons at the start of the CQB, place 2 RM tokens per destroyed enemy Infantry unit (limited to the number of friendly units involved that had a Decon weapon)."],
+];
+
+/* ---------------- I18N ---------------- */
+let LANG = (function(){ try { return localStorage.getItem('dzcLang') || 'fr'; } catch(e){ return 'fr'; } })();
+
+function currentGlossary(){ return LANG==='en' ? GLOSSARY_EN : GLOSSARY; }
+
+const I18N = {
+  fr: {
+    'brand.tag': 'V3.01 / Only PHR & Resistance finish',
+    'label.faction': 'Faction',
+    'label.gameSize': 'Taille de partie',
+    'label.targetPoints': 'Points visés',
+    'pill.pts': 'PTS',
+    'pill.groups': 'GROUPES',
+    'pill.status': 'STATUT',
+    'placeholder.search': 'Rechercher une unité...',
+    'opt.allCategories': 'Toutes catégories',
+    'h2.rosterSheet': 'Feuille de Roster',
+    'btn.exportCsv': '⇩ Exporter en CSV',
+    'btn.exportPdf': '⇩ Exporter en PDF',
+    'btn.exportJson': '⇩ Exporter la liste (JSON)',
+    'btn.importJson': '⇧ Importer une liste (JSON)',
+    'btn.reset': 'Vider le roster',
+    'glossary.summary': 'Glossaire des règles spéciales (armes / unités / Behemoths)',
+    'footnote.text': `Un « Groupe » = une escouade (et son transport dédié le cas échéant). Donnez le même n° de Groupe
+      à une escouade et à son transport pour qu'ils comptent comme un seul Groupe. Plafond de points par
+      Groupe : 25% du total visé (V3.01, 3.2). Les Behemoths comptent leur "Group Equivalent" en nombre
+      de Groupes consommés (limite max de Groupes) mais restent évalués comme 1 seul Groupe pour le
+      plafond de 25%. Colonnes Arc/MA/R/Att/Ac/E = Arc de tir / Move&Attack / Portée / Nb d'attaques /
+      Précision / Énergie, telles que publiées sur les stat cards officielles.
+      <br><br>
+      <b>Capacité de transport (V3) :</b> remplace les 0 dans le bloc <code>TRANSPORT_DATA</code> en
+      haut du script — <code>reqInf</code>/<code>reqVeh</code> pour ce qu'une unité prend comme place
+      (Infanterie ou Véhicule), <code>capInf</code>/<code>capVeh</code> pour ce qu'un transport offre.
+      Une unité transportée DOIT être dans le même n° de Groupe que son transport (mets le même
+      numéro dans le champ « Groupe » du roster) : le panneau « Groupe X » ci-dessus liste qui
+      transporte qui et signale en rouge tout dépassement Inf ou Véh. Le détail est repris dans l'export CSV.`,
+    'label.loadout': 'Loadout',
+    'label.optWeapons': 'Options d\'armement',
+    'label.number': 'Nombre',
+    'label.squadSize': 'Taille escouade',
+    'btn.add': '+ Ajouter',
+    'text.freeQty': 'Qté libre',
+    'text.perSquad': '/ escouade',
+    'text.noWeapons': 'Sans armement',
+    'text.imageNotFound': 'image introuvable',
+    'weapon.hdr.name': 'Arme',
+    'weapon.hdr.arc': 'Arc',
+    'weapon.hdr.ma': 'MA',
+    'weapon.hdr.r': 'R',
+    'weapon.hdr.att': 'Att',
+    'weapon.hdr.ac': 'Ac',
+    'weapon.hdr.e': 'E',
+    'weapon.hdr.special': 'Spécial',
+    'roster.empty': 'Aucune unité ajoutée. Choisissez une unité dans le catalogue à gauche.',
+    'text.group': 'Groupe',
+    'btn.remove': 'retirer',
+    'transport.infantry': 'Infanterie',
+    'transport.vehHeavy': 'Véhicule Lourd',
+    'transport.veh': 'Véhicule',
+    'transport.vehLight': 'Véhicule Léger',
+    'transport.special': 'Spéciale',
+    'status.legal': 'LÉGALE',
+    'status.empty': 'VIDE',
+    'status.errors': '{n} ERREUR{s}',
+    'summary.totalPts': 'Total pts',
+    'summary.entries': 'Entrées',
+    'summary.groups': 'Groupes',
+    'summary.maxPerGroup': 'Max / Groupe (25%)',
+    'catBreakdown.overCap': ' ⚠ > Standard',
+    'warn.pointsOver': 'Dépassement de points : {over} pts au-dessus de l\'objectif ({target} pts).',
+    'warn.tooManyGroups': 'Trop de Groupes : {used} utilisés (Behemoths comptés via Group Equivalent) pour un maximum de {max} en {size}.',
+    'warn.catOverStandard': 'Catégorie {cat} ({catPts} pts) dépasse les points de Standard ({stdPts} pts).',
+    'warn.noStandard': 'Aucune unité Standard dans le roster.',
+    'warn.groupOverCap': 'Groupe {gid} : {pts} pts dépasse le plafond de 25% ({cap} pts).',
+    'warn.rareOver': '"{name}" (Rare) : {count} pris, max {max} en {size}.',
+    'warn.uniqueOver': '"{name}" (Unique) : {count} pris, max 1.',
+    'warn.squadSizeOut': '{name} : taille d\'escouade {size} hors bornes ({min}-{max}).',
+    'warn.behemothSquadSize': '{name} : un Behemoth a toujours Squad Size 1.',
+    'warn.allGood': 'Roster conforme aux règles de construction V3.01 (points, Groupes, catégories, Rare/Unique, Behemoths).',
+    'warn.transportInf': 'Groupe {gid} : charge Infanterie {req}/{cap} — dépasse la capacité Infanterie du transport.',
+    'warn.transportVeh': 'Groupe {gid} : charge Véhicule Standard {req}/{cap} — dépasse la capacité Véhicule Standard du transport.',
+    'warn.transportVehLourd': 'Groupe {gid} : charge Véhicule Lourd {req}/{cap} — dépasse la capacité Véhicule Lourd du transport.',
+    'warn.transportVehLeg': 'Groupe {gid} : charge Véhicule Léger {req}/{cap} — dépasse la capacité Véhicule Léger du transport.',
+    'warn.transportSpe': 'Groupe {gid} : charge Spéciale {req}/{cap} — dépasse la capacité Spéciale du transport.',
+    'group.transporter': ' 🚛 transporteur',
+    'group.embarked': ' 🪖 embarque',
+    'group.label': 'Groupe {gid}',
+    'group.load.inf': '🟩Inf {req}/{cap}',
+    'group.load.vehLourd': '🔺Véh Lourd {req}/{cap}',
+    'group.load.veh': '🔶Véh Std {req}/{cap}',
+    'group.load.vehLeg': '🔵Véh Lég {req}/{cap}',
+    'group.load.spe': '▼Spé {req}/{cap}',
+    'alert.badJsonVersion': 'Fichier de liste non reconnu.',
+    'alert.someUnitsIgnored': 'Attention : certaines unités du fichier importé ne correspondent plus au catalogue actuel et ont été ignorées.',
+    'alert.jsonReadError': 'Impossible de lire ce fichier JSON : {err}',
+    'confirm.changeFaction': 'Changer de faction va vider le roster actuel. Continuer ?',
+    'confirm.resetRoster': 'Vider tout le roster ?',
+    'csv.headers': 'Faction,Categorie,Behemoth,Unite,Loadout,Taille escouade,Pts/unite,Pts total entree,Groupe,Rare,Unique,Type,Mv,Stats,Regles speciales unite,Gear,ReqInf,CapInf,ReqVeh,CapVeh,Arme_Nom,Arme_Arc,Arme_MA,Arme_R,Arme_Att,Arme_Ac,Arme_E,Arme_Special',
+    'csv.oui': 'Oui', 'csv.non': 'Non',
+    'csv.totalPoints': 'Total points',
+    'csv.groupsUsed': 'Groupes utilises',
+    'csv.gameSize': 'Taille de partie',
+    'csv.targetPoints': 'Points vises',
+    'csv.transportSectionTitle': '--- CHARGE DE TRANSPORT PAR GROUPE ---',
+    'csv.transportHeaders': 'Groupe,Req Inf,Cap Inf,Req Veh,Cap Veh,Statut',
+    'csv.ok': 'OK', 'csv.overCapacity': 'DEPASSEMENT',
+    'csv.glossarySectionTitle': '--- GLOSSAIRE DES REGLES SPECIALES ---',
+    'csv.glossaryHeaders': 'Terme,Definition',
+    'pdf.printBtn': '🖨 Imprimer / Enregistrer en PDF',
+    'pdf.h1': 'DZC Roster — {faction}',
+    'pdf.meta': '{size} · {total} / {target} pts · {groups} / {maxGroups} Groupes',
+    'pdf.hdr.cat': 'Cat.',
+    'pdf.hdr.unit': 'Unité',
+    'pdf.hdr.stats': 'Stats',
+    'pdf.hdr.special': 'Spécial',
+    'pdf.hdr.weapons': 'Armement',
+    'pdf.noWeapons': 'Sans armement',
+    'pdf.groupHead': 'Groupe {gid}',
+    'pdf.load.line': 'Inf {reqInf}/{capInf} · VéhLourd {reqVL}/{capVL} · VéhStd {reqV}/{capV} · VéhLeg {reqVLeg}/{capVLeg} · Spé {reqS}/{capS}',
+    'pdf.glossaryTitle': 'Définitions des règles spéciales de ce Groupe',
+    'pdf.pointsSuffix': 'points',
+  },
+  en: {
+    'brand.tag': 'V3.01 / Only PHR & Resistance finish',
+    'label.faction': 'Faction',
+    'label.gameSize': 'Game size',
+    'label.targetPoints': 'Points target',
+    'pill.pts': 'PTS',
+    'pill.groups': 'GROUPS',
+    'pill.status': 'STATUS',
+    'placeholder.search': 'Search for a unit...',
+    'opt.allCategories': 'All categories',
+    'h2.rosterSheet': 'Roster Sheet',
+    'btn.exportCsv': '⇩ Export to CSV',
+    'btn.exportPdf': '⇩ Export to PDF',
+    'btn.exportJson': '⇩ Export list (JSON)',
+    'btn.importJson': '⇧ Import a list (JSON)',
+    'btn.reset': 'Clear roster',
+    'glossary.summary': 'Glossary of special rules (weapons / units / Behemoths)',
+    'footnote.text': `A "Group" = one squad (and its dedicated transport, if any). Give the same Group #
+      to a squad and its transport so they count as a single Group. Points cap per
+      Group: 25% of the target total (V3.01, 3.2). Behemoths count their "Group Equivalent" toward
+      the number of Groups consumed (max Group limit) but are still evaluated as a single Group for
+      the 25% cap. Arc/MA/R/Att/Ac/E columns = Firing Arc / Move&Attack / Range / Number of attacks /
+      Accuracy / Energy, as published on the official stat cards.
+      <br><br>
+      <b>Transport capacity (V3):</b> replace the 0s in the <code>TRANSPORT_DATA</code> block at the
+      top of the script — <code>reqInf</code>/<code>reqVeh</code> for what a unit takes up
+      (Infantry or Vehicle), <code>capInf</code>/<code>capVeh</code> for what a transport offers.
+      A transported unit MUST be in the same Group # as its transport (put the same
+      number in the roster's "Group" field): the "Group X" panel above lists who
+      is carrying whom and flags in red any Inf or Veh overload. The detail is repeated in the CSV export.`,
+    'label.loadout': 'Loadout',
+    'label.optWeapons': 'Weapon options',
+    'label.number': 'Quantity',
+    'label.squadSize': 'Squad size',
+    'btn.add': '+ Add',
+    'text.freeQty': 'Free qty',
+    'text.perSquad': '/ squad',
+    'text.noWeapons': 'No weapons',
+    'text.imageNotFound': 'image not found',
+    'weapon.hdr.name': 'Weapon',
+    'weapon.hdr.arc': 'Arc',
+    'weapon.hdr.ma': 'MA',
+    'weapon.hdr.r': 'R',
+    'weapon.hdr.att': 'Att',
+    'weapon.hdr.ac': 'Ac',
+    'weapon.hdr.e': 'E',
+    'weapon.hdr.special': 'Special',
+    'roster.empty': 'No units added. Choose a unit from the catalog on the left.',
+    'text.group': 'Group',
+    'btn.remove': 'remove',
+    'transport.infantry': 'Infantry',
+    'transport.vehHeavy': 'Heavy Vehicle',
+    'transport.veh': 'Vehicle',
+    'transport.vehLight': 'Light Vehicle',
+    'transport.special': 'Special',
+    'status.legal': 'LEGAL',
+    'status.empty': 'EMPTY',
+    'status.errors': '{n} ERROR{s}',
+    'summary.totalPts': 'Total pts',
+    'summary.entries': 'Entries',
+    'summary.groups': 'Groups',
+    'summary.maxPerGroup': 'Max / Group (25%)',
+    'catBreakdown.overCap': ' ⚠ > Standard',
+    'warn.pointsOver': 'Points exceeded: {over} pts above the target ({target} pts).',
+    'warn.tooManyGroups': 'Too many Groups: {used} used (Behemoths counted via Group Equivalent) for a maximum of {max} in {size}.',
+    'warn.catOverStandard': 'Category {cat} ({catPts} pts) exceeds Standard points ({stdPts} pts).',
+    'warn.noStandard': 'No Standard unit in the roster.',
+    'warn.groupOverCap': 'Group {gid}: {pts} pts exceeds the 25% cap ({cap} pts).',
+    'warn.rareOver': '"{name}" (Rare): {count} taken, max {max} in {size}.',
+    'warn.uniqueOver': '"{name}" (Unique): {count} taken, max 1.',
+    'warn.squadSizeOut': '{name}: squad size {size} out of bounds ({min}-{max}).',
+    'warn.behemothSquadSize': '{name}: a Behemoth always has Squad Size 1.',
+    'warn.allGood': 'Roster complies with V3.01 construction rules (points, Groups, categories, Rare/Unique, Behemoths).',
+    'warn.transportInf': 'Group {gid}: Infantry load {req}/{cap} — exceeds the transport\'s Infantry capacity.',
+    'warn.transportVeh': 'Group {gid}: Standard Vehicle load {req}/{cap} — exceeds the transport\'s Standard Vehicle capacity.',
+    'warn.transportVehLourd': 'Group {gid}: Heavy Vehicle load {req}/{cap} — exceeds the transport\'s Heavy Vehicle capacity.',
+    'warn.transportVehLeg': 'Group {gid}: Light Vehicle load {req}/{cap} — exceeds the transport\'s Light Vehicle capacity.',
+    'warn.transportSpe': 'Group {gid}: Special load {req}/{cap} — exceeds the transport\'s Special capacity.',
+    'group.transporter': ' 🚛 transport',
+    'group.embarked': ' 🪖 embarked',
+    'group.label': 'Group {gid}',
+    'group.load.inf': '🟩Inf {req}/{cap}',
+    'group.load.vehLourd': '🔺HeavyVeh {req}/{cap}',
+    'group.load.veh': '🔶StdVeh {req}/{cap}',
+    'group.load.vehLeg': '🔵LightVeh {req}/{cap}',
+    'group.load.spe': '▼Special {req}/{cap}',
+    'alert.badJsonVersion': 'Unrecognised list file.',
+    'alert.someUnitsIgnored': 'Warning: some units from the imported file no longer match the current catalog and were ignored.',
+    'alert.jsonReadError': 'Could not read this JSON file: {err}',
+    'confirm.changeFaction': 'Changing faction will clear the current roster. Continue?',
+    'confirm.resetRoster': 'Clear the whole roster?',
+    'csv.headers': 'Faction,Category,Behemoth,Unit,Loadout,Squad size,Pts/unit,Total entry pts,Group,Rare,Unique,Type,Mv,Stats,Unit special rules,Gear,ReqInf,CapInf,ReqVeh,CapVeh,Weapon_Name,Weapon_Arc,Weapon_MA,Weapon_R,Weapon_Att,Weapon_Ac,Weapon_E,Weapon_Special',
+    'csv.oui': 'Yes', 'csv.non': 'No',
+    'csv.totalPoints': 'Total points',
+    'csv.groupsUsed': 'Groups used',
+    'csv.gameSize': 'Game size',
+    'csv.targetPoints': 'Points target',
+    'csv.transportSectionTitle': '--- TRANSPORT LOAD PER GROUP ---',
+    'csv.transportHeaders': 'Group,Req Inf,Cap Inf,Req Veh,Cap Veh,Status',
+    'csv.ok': 'OK', 'csv.overCapacity': 'OVER CAPACITY',
+    'csv.glossarySectionTitle': '--- SPECIAL RULES GLOSSARY ---',
+    'csv.glossaryHeaders': 'Term,Definition',
+    'pdf.printBtn': '🖨 Print / Save as PDF',
+    'pdf.h1': 'DZC Roster — {faction}',
+    'pdf.meta': '{size} · {total} / {target} pts · {groups} / {maxGroups} Groups',
+    'pdf.hdr.cat': 'Cat.',
+    'pdf.hdr.unit': 'Unit',
+    'pdf.hdr.stats': 'Stats',
+    'pdf.hdr.special': 'Special',
+    'pdf.hdr.weapons': 'Weapons',
+    'pdf.noWeapons': 'No weapons',
+    'pdf.groupHead': 'Group {gid}',
+    'pdf.load.line': 'Inf {reqInf}/{capInf} · HeavyVeh {reqVL}/{capVL} · StdVeh {reqV}/{capV} · LightVeh {reqVLeg}/{capVLeg} · Special {reqS}/{capS}',
+    'pdf.glossaryTitle': 'Special rule definitions for this Group',
+    'pdf.pointsSuffix': 'points',
+  }
+};
+
+function t(key, vars){
+  let str = (I18N[LANG] && I18N[LANG][key] !== undefined) ? I18N[LANG][key] : (I18N.fr[key] !== undefined ? I18N.fr[key] : key);
+  if(vars){
+    Object.keys(vars).forEach(k=>{ str = str.split('{'+k+'}').join(vars[k]); });
+  }
+  return str;
+}
+
+function applyStaticI18n(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
+  const fn = document.getElementById('footnoteText');
+  if(fn) fn.innerHTML = t('footnote.text');
+  const langBtn = document.getElementById('langToggle');
+  if(langBtn) langBtn.textContent = LANG==='fr' ? '🇬🇧' : '🇫🇷';
+}
 
 /* ---------------- IMAGES ------------------------------ */
 const UNIT_IMAGES = {
@@ -1538,7 +1915,7 @@ const targetPointsInput = $('#targetPoints');
 const searchBox = $('#searchBox');
 const catFilter = $('#catFilter');
 
-function fmt(n){ return n.toLocaleString('fr-FR'); }
+function fmt(n){ return n.toLocaleString(LANG==='en' ? 'en-US' : 'fr-FR'); }
 function currentGameSizeCfg(){ return GAME_SIZES[gameSizeSelect.value]; }
 
 /* group "weight" toward Groups-cap: Behemoth uses its Group Equivalent, others 1 */
@@ -1675,7 +2052,7 @@ el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':
   if(u.rare) flags.push('<span class="flag">[RARE]</span>');
   if(u.unique) flags.push('<span class="flag">[UNIQUE]</span>');
   if(u.isBehemoth) flags.push(`<span class="flag behe">[BEHEMOTH · Power ${u.power} · Grp.Eq ${u.groupEquivalent}]</span>`);
-  const squadTxt = u.squadMin===null ? 'Qté libre' : `${u.squadMin}-${u.squadMax} / escouade`;
+  const squadTxt = u.squadMin===null ? t('text.freeQty') : `${u.squadMin}-${u.squadMax} ${t('text.perSquad')}`;
 
   const weaponsHtml = `<div class="weapon-table-slot">${weaponTableHtml(u, u.variants[0].name)}</div>`;
 
@@ -1683,7 +2060,7 @@ el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':
   const optWeapons = optionalWeaponsOf(u);
   const optHtml = optWeapons.length ? `
     <div class="field" style="min-width:220px;">
-      <label>Options d'armement</label>
+      <label>${t('label.optWeapons')}</label>
       ${optWeapons.map(w=>`<label style="display:block; font-size:11px; font-weight:400; color:var(--text);">
         <input type="checkbox" class="ctl-opt" value="${w.n}"> ${w.n} — +${parseOptionalCost(w.n)}pts
       </label>`).join('')}
@@ -1693,7 +2070,7 @@ el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':
   const noteHtml = u.note ? `<div class="unit-stats" style="color:var(--amber);">${u.note}</div>` : '';
   const imgPath = UNIT_IMAGES[u.id];
   const imgHtml = imgPath
-    ? `<div class="unit-img-wrap"><img src="${imgPath}" alt="${u.name}" onerror="this.parentElement.innerHTML='<div class=&quot;unit-img-placeholder&quot;>image introuvable</div>'"></div>`
+    ? `<div class="unit-img-wrap"><img src="${imgPath}" alt="${u.name}" onerror="this.parentElement.innerHTML='<div class=&quot;unit-img-placeholder&quot;>${t('text.imageNotFound')}</div>'"></div>`
     : `<div class="unit-img-wrap"><div class="unit-img-placeholder">${u.type.split(' ')[0]}</div></div>`;
 
   el.innerHTML = `
@@ -1709,14 +2086,14 @@ el.className = 'unit-card ' + (u.isBehemoth ? 'behe' : (u.faction==='PHR'?'phr':
     ${gearHtml}
     ${noteHtml}
     <div class="unit-controls">
-      <div class="field"><label>Loadout</label>
+      <div class="field"><label>${t('label.loadout')}</label>
         <select class="ctl-variant">${u.variants.map((v,i)=>`<option value="${i}">${v.name} — ${v.pts}pts</option>`).join('')}</select>
       </div>
-      <div class="field"><label>${u.squadMin===null?'Nombre':'Taille escouade'}</label>
+      <div class="field"><label>${u.squadMin===null?t('label.number'):t('label.squadSize')}</label>
         <input type="number" class="ctl-size" min="${u.squadMin===null?1:u.squadMin}" max="${u.squadMin===null?20:u.squadMax}" value="${u.squadMin===null?1:u.squadMin}" style="width:60px;">
       </div>
 	  ${optHtml}
-      <button class="btn-add">+ Ajouter</button>
+      <button class="btn-add">${t('btn.add')}</button>
     </div>
   `;
 el.querySelector('.btn-add').addEventListener('click', ()=>{
@@ -1743,7 +2120,7 @@ function renderRoster(){
   const list = $('#rosterList');
   list.innerHTML='';
   if(roster.length===0){
-    list.innerHTML = '<div class="roster-empty">Aucune unité ajoutée. Choisissez une unité dans le catalogue à gauche.</div>';
+    list.innerHTML = `<div class="roster-empty">${t('roster.empty')}</div>`;
     return;
   }
   roster.forEach(entry=>{
@@ -1768,9 +2145,9 @@ const unit = UNITS.find(u=>u.id===entry.unitId);
       </div>
       <div class="re-sub">
         <span>×</span><input type="number" class="e-size" min="1" value="${entry.squadSize}">
-        <span>Groupe</span><input type="number" class="e-group grp-input" min="1" value="${entry.groupId}">
+        <span>${t('text.group')}</span><input type="number" class="e-group grp-input" min="1" value="${entry.groupId}">
         ${unit.isBehemoth ? `<span title="Group Equivalent">GrpEq ${unit.groupEquivalent}</span>` : ''}
-        <button class="re-remove">retirer</button>
+        <button class="re-remove">${t('btn.remove')}</button>
       </div>
       ${optHtml}
     `;
@@ -1788,11 +2165,11 @@ const unit = UNITS.find(u=>u.id===entry.unitId);
     const td = TRANSPORT_DATA[entry.unitId];
     if(td && td.reqEither){
       const TRANSPORT_TYPES = [
-        {key:'inf',      req:'reqInf',      label:'Infanterie'},
-        {key:'vehLourd', req:'reqVehLourd', label:'Véhicule Lourd'},
-        {key:'veh',      req:'reqVeh',      label:'Véhicule'},
-        {key:'vehLeg',   req:'reqVehLeg',   label:'Véhicule Léger'},
-        {key:'spe',      req:'reqSpe',      label:'Spéciale'}
+        {key:'inf',      req:'reqInf',      label:t('transport.infantry')},
+        {key:'vehLourd', req:'reqVehLourd', label:t('transport.vehHeavy')},
+        {key:'veh',      req:'reqVeh',      label:t('transport.veh')},
+        {key:'vehLeg',   req:'reqVehLeg',   label:t('transport.vehLight')},
+        {key:'spe',      req:'reqSpe',      label:t('transport.special')}
       ];
       const availableTypes = TRANSPORT_TYPES.filter(t => (td[t.req]||0) > 0);
 
@@ -1821,21 +2198,21 @@ function renderSummary(){
   const total = totalPoints();
   const groupsUsed = reservedGroupsCount();
 
-  $('#pillPoints').innerHTML = `${fmt(total)} / ${fmt(target)}<b>PTS</b>`;
+  $('#pillPoints').innerHTML = `${fmt(total)} / ${fmt(target)}<b>${t('pill.pts')}</b>`;
   $('#pillPoints').className = 'stat-pill ' + (total>target ? 'warn' : (total>0?'ok':''));
-  $('#pillGroups').innerHTML = `${groupsUsed} / ${cfg.groups}<b>GROUPES</b>`;
+  $('#pillGroups').innerHTML = `${groupsUsed} / ${cfg.groups}<b>${t('pill.groups')}</b>`;
   $('#pillGroups').className = 'stat-pill ' + (groupsUsed>cfg.groups ? 'warn' : (groupsUsed>0?'ok':''));
 
   const warnings = computeWarnings(target, cfg, total, groupsUsed);
   const badCount = warnings.filter(w=>w.type==='bad').length;
-  $('#pillStatus').innerHTML = (badCount===0 && roster.length>0) ? `LÉGALE<b>STATUT</b>` : (roster.length===0 ? `VIDE<b>STATUT</b>` : `${badCount} ERREUR${badCount>1?'S':''}<b>STATUT</b>`);
+  $('#pillStatus').innerHTML = (badCount===0 && roster.length>0) ? `${t('status.legal')}<b>${t('pill.status')}</b>` : (roster.length===0 ? `${t('status.empty')}<b>${t('pill.status')}</b>` : `${t('status.errors',{n:badCount, s:badCount>1?'S':''})}<b>${t('pill.status')}</b>`);
   $('#pillStatus').className = 'stat-pill ' + (roster.length===0 ? '' : (badCount===0?'ok':'warn'));
 
   $('#summaryGrid').innerHTML = `
-    <div class="stat-pill">${fmt(total)}<b>Total pts</b></div>
-    <div class="stat-pill">${roster.length}<b>Entrées</b></div>
-    <div class="stat-pill">${groupsUsed}<b>Groupes</b></div>
-    <div class="stat-pill">${fmt(Math.floor(target/4))}<b>Max / Groupe (25%)</b></div>
+    <div class="stat-pill">${fmt(total)}<b>${t('summary.totalPts')}</b></div>
+    <div class="stat-pill">${roster.length}<b>${t('summary.entries')}</b></div>
+    <div class="stat-pill">${groupsUsed}<b>${t('summary.groups')}</b></div>
+    <div class="stat-pill">${fmt(Math.floor(target/4))}<b>${t('summary.maxPerGroup')}</b></div>
   `;
 
   const catMap = categoryPointsMap();
@@ -1843,7 +2220,7 @@ function renderSummary(){
   $('#catBreakdown').innerHTML = ['Standard','Vanguard','Heavy','Support','Transport'].map(cat=>{
     const val = catMap[cat];
     const overCap = (cat!=='Standard' && cat!=='Transport' && val>standardPts);
-    return `<div class="${overCap?'over':''}"><span>${cat}</span><span>${fmt(val)} pts${overCap?' ⚠ > Standard':''}</span></div>`;
+    return `<div class="${overCap?'over':''}"><span>${cat}</span><span>${fmt(val)} pts${overCap?t('catBreakdown.overCap'):''}</span></div>`;
   }).join('');
 
   $('#warnBox').innerHTML = warnings.map(w=>`<div class="warn-item ${w.type}">${w.type==='bad'?'⚠':'✓'} ${w.msg}</div>`).join('');
@@ -1851,42 +2228,42 @@ function renderSummary(){
 
 function computeWarnings(target, cfg, total, groupsUsed){
   const warnings = [];
-  if(total>target) warnings.push({type:'bad', msg:`Dépassement de points : ${fmt(total-target)} pts au-dessus de l'objectif (${fmt(target)} pts).`});
-  if(groupsUsed>cfg.groups) warnings.push({type:'bad', msg:`Trop de Groupes : ${groupsUsed} utilisés (Behemoths comptés via Group Equivalent) pour un maximum de ${cfg.groups} en ${gameSizeSelect.value}.`});
+  if(total>target) warnings.push({type:'bad', msg:t('warn.pointsOver',{over:fmt(total-target), target:fmt(target)})});
+  if(groupsUsed>cfg.groups) warnings.push({type:'bad', msg:t('warn.tooManyGroups',{used:groupsUsed, max:cfg.groups, size:gameSizeSelect.value})});
 
   const catMap = categoryPointsMap();
   ['Vanguard','Heavy','Support'].forEach(cat=>{
-    if(catMap[cat] > catMap.Standard) warnings.push({type:'bad', msg:`Catégorie ${cat} (${fmt(catMap[cat])} pts) dépasse les points de Standard (${fmt(catMap.Standard)} pts).`});
+    if(catMap[cat] > catMap.Standard) warnings.push({type:'bad', msg:t('warn.catOverStandard',{cat:cat, catPts:fmt(catMap[cat]), stdPts:fmt(catMap.Standard)})});
   });
-  if(catMap.Standard===0 && roster.length>0) warnings.push({type:'bad', msg:`Aucune unité Standard dans le roster.`});
+  if(catMap.Standard===0 && roster.length>0) warnings.push({type:'bad', msg:t('warn.noStandard')});
 
   const gmap = groupPointsMap();
   const cap = target/4;
   Object.entries(gmap).forEach(([gid,pts])=>{
-    if(pts>cap) warnings.push({type:'bad', msg:`Groupe ${gid} : ${fmt(pts)} pts dépasse le plafond de 25% (${fmt(Math.floor(cap))} pts).`});
+    if(pts>cap) warnings.push({type:'bad', msg:t('warn.groupOverCap',{gid:gid, pts:fmt(pts), cap:fmt(Math.floor(cap))})});
   });
 
   const rareCounts = {}; const uniqueCounts = {};
   roster.forEach(r=>{ const u = UNITS.find(uu=>uu.id===r.unitId); if(u.rare) rareCounts[u.name]=(rareCounts[u.name]||0)+1; if(u.unique) uniqueCounts[u.name]=(uniqueCounts[u.name]||0)+1; });
-  Object.entries(rareCounts).forEach(([name,count])=>{ if(count>cfg.rareMax) warnings.push({type:'bad', msg:`"${name}" (Rare) : ${count} pris, max ${cfg.rareMax} en ${gameSizeSelect.value}.`}); });
-  Object.entries(uniqueCounts).forEach(([name,count])=>{ if(count>1) warnings.push({type:'bad', msg:`"${name}" (Unique) : ${count} pris, max 1.`}); });
+  Object.entries(rareCounts).forEach(([name,count])=>{ if(count>cfg.rareMax) warnings.push({type:'bad', msg:t('warn.rareOver',{name:name, count:count, max:cfg.rareMax, size:gameSizeSelect.value})}); });
+  Object.entries(uniqueCounts).forEach(([name,count])=>{ if(count>1) warnings.push({type:'bad', msg:t('warn.uniqueOver',{name:name, count:count})}); });
 
   roster.forEach(r=>{
     const u = UNITS.find(uu=>uu.id===r.unitId);
-    if(u.squadMin!==null && (r.squadSize<u.squadMin || r.squadSize>u.squadMax)) warnings.push({type:'bad', msg:`${u.name} : taille d'escouade ${r.squadSize} hors bornes (${u.squadMin}-${u.squadMax}).`});
-    if(u.isBehemoth && r.squadSize!==1) warnings.push({type:'bad', msg:`${u.name} : un Behemoth a toujours Squad Size 1.`});
+    if(u.squadMin!==null && (r.squadSize<u.squadMin || r.squadSize>u.squadMax)) warnings.push({type:'bad', msg:t('warn.squadSizeOut',{name:u.name, size:r.squadSize, min:u.squadMin, max:u.squadMax})});
+    if(u.isBehemoth && r.squadSize!==1) warnings.push({type:'bad', msg:t('warn.behemothSquadSize',{name:u.name})});
   });
 
-  if(warnings.length===0 && roster.length>0) warnings.push({type:'good', msg:'Roster conforme aux règles de construction V3.01 (points, Groupes, catégories, Rare/Unique, Behemoths).'});
+  if(warnings.length===0 && roster.length>0) warnings.push({type:'good', msg:t('warn.allGood')});
 
   // transport capacity per group, séparé Infanterie / Véhicule (only flags groups where TRANSPORT_DATA a été rempli)
   const tmap = transportLoadMap();
   Object.entries(tmap).forEach(([gid,load])=>{
-    if(load.reqInf>load.capInf) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Infanterie ${load.reqInf}/${load.capInf} — dépasse la capacité Infanterie du transport.`});
-	if(load.reqVeh>load.capVeh) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Véhicule Standard ${load.reqVeh}/${load.capVeh} — dépasse la capacité Véhicule Standard du transport.`});
-    if(load.reqVehLourd>load.capVehLourd) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Véhicule Lourd ${load.reqVehLourd}/${load.capVehLourd} — dépasse la capacité Véhicule Lourd du transport.`});
-    if(load.reqVehLeg>load.capVehLeg) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Véhicule Léger ${load.reqVehLeg}/${load.capVehLeg} — dépasse la capacité Véhicule Léger du transport.`});
-    if(load.reqSpe>load.capSpe) warnings.push({type:'bad', msg:`Groupe ${gid} : charge Spéciale ${load.reqSpe}/${load.capSpe} — dépasse la capacité Spéciale du transport.`});
+    if(load.reqInf>load.capInf) warnings.push({type:'bad', msg:t('warn.transportInf',{gid:gid, req:load.reqInf, cap:load.capInf})});
+	if(load.reqVeh>load.capVeh) warnings.push({type:'bad', msg:t('warn.transportVeh',{gid:gid, req:load.reqVeh, cap:load.capVeh})});
+    if(load.reqVehLourd>load.capVehLourd) warnings.push({type:'bad', msg:t('warn.transportVehLourd',{gid:gid, req:load.reqVehLourd, cap:load.capVehLourd})});
+    if(load.reqVehLeg>load.capVehLeg) warnings.push({type:'bad', msg:t('warn.transportVehLeg',{gid:gid, req:load.reqVehLeg, cap:load.capVehLeg})});
+    if(load.reqSpe>load.capSpe) warnings.push({type:'bad', msg:t('warn.transportSpe',{gid:gid, req:load.reqSpe, cap:load.capSpe})});
 
   });
 
@@ -1895,20 +2272,20 @@ function computeWarnings(target, cfg, total, groupsUsed){
 
 /* ---------------- GLOSSARY RENDER ---------------- */
 function renderGlossary(){
-  $('#glossGrid').innerHTML = GLOSSARY.map(([k,v])=>`<div class="gloss-item"><b>${k}</b> — ${v}</div>`).join('');
+  $('#glossGrid').innerHTML = currentGlossary().map(([k,v])=>`<div class="gloss-item"><b>${k}</b> — ${v}</div>`).join('');
 }
 
 /* ---------------- CSV EXPORT ---------------- */
 function exportCsv(){
-	const rows = [['Faction','Categorie','Behemoth','Unite','Loadout','Taille escouade','Pts/unite','Pts total entree','Groupe','Rare','Unique','Type','Mv','Stats','Regles speciales unite','Gear','ReqInf','CapInf','ReqVeh','CapVeh','Arme_Nom','Arme_Arc','Arme_MA','Arme_R','Arme_Att','Arme_Ac','Arme_E','Arme_Special']];
+	const rows = [t('csv.headers').split(',')];
 	roster.forEach(entry=>{
     const u = UNITS.find(uu=>uu.id===entry.unitId);
     const v = u.variants[entry.variantIdx];
 	const filteredSpecial = filterSpecialByVariant(u.special, v.name);
     const td = TRANSPORT_DATA[entry.unitId] || {reqInf:0,reqVeh:0,capInf:0,capVeh:0};
     const baseRow = [
-      u.faction, u.category, u.isBehemoth?'Oui':'Non', u.name, v.name, entry.squadSize, v.pts, unitTotalPts(entry), entry.groupId,
-      u.rare?'Oui':'Non', u.unique?'Oui':'Non', u.type, u.mv, u.stats, u.special, (u.gear||[]).join(' | '),
+      u.faction, u.category, u.isBehemoth?t('csv.oui'):t('csv.non'), u.name, v.name, entry.squadSize, v.pts, unitTotalPts(entry), entry.groupId,
+      u.rare?t('csv.oui'):t('csv.non'), u.unique?t('csv.oui'):t('csv.non'), u.type, u.mv, u.stats, u.special, (u.gear||[]).join(' | '),
       td.reqInf, td.capInf, td.reqVeh, td.capVeh
     ];
     const emptyRow = baseRow.map(()=>'');
@@ -1926,22 +2303,22 @@ function exportCsv(){
     }
   });
   rows.push([]);
-  rows.push(['Total points', totalPoints()]);
-  rows.push(['Groupes utilises', reservedGroupsCount()]);
-  rows.push(['Taille de partie', gameSizeSelect.value]);
-  rows.push(['Points vises', targetPointsInput.value]);
+  rows.push([t('csv.totalPoints'), totalPoints()]);
+  rows.push([t('csv.groupsUsed'), reservedGroupsCount()]);
+  rows.push([t('csv.gameSize'), gameSizeSelect.value]);
+  rows.push([t('csv.targetPoints'), targetPointsInput.value]);
   rows.push([]);
-  rows.push(['--- CHARGE DE TRANSPORT PAR GROUPE ---']);
-  rows.push(['Groupe','Req Inf','Cap Inf','Req Veh','Cap Veh','Statut']);
+  rows.push([t('csv.transportSectionTitle')]);
+  rows.push(t('csv.transportHeaders').split(','));
   const tmap = transportLoadMap();
   Object.entries(tmap).forEach(([gid,load])=>{
     const ok = load.reqInf<=load.capInf && load.reqVeh<=load.capVeh;
-    rows.push([gid, load.reqInf, load.capInf, load.reqVeh, load.capVeh, ok?'OK':'DEPASSEMENT']);
+    rows.push([gid, load.reqInf, load.capInf, load.reqVeh, load.capVeh, ok?t('csv.ok'):t('csv.overCapacity')]);
   });
   rows.push([]);
-  rows.push(['--- GLOSSAIRE DES REGLES SPECIALES ---']);
-  rows.push(['Terme','Definition']);
-  GLOSSARY.forEach(([k,v])=>rows.push([k,v]));
+  rows.push([t('csv.glossarySectionTitle')]);
+  rows.push(t('csv.glossaryHeaders').split(','));
+  currentGlossary().forEach(([k,v])=>rows.push([k,v]));
 
   const csv = rows.map(r=>r.map(c=>{
     const s = String(c ?? '');
@@ -1981,18 +2358,18 @@ function renderGroupSummary(){
       const u = UNITS.find(uu=>uu.id===e.unitId);
       const td = TRANSPORT_DATA[e.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
       const isTransport = (td.capInf>0 || td.capVehLourd>0 || td.capVeh>0 || td.capVehLeg>0 || td.capSpe>0 );
-      const tag = isTransport ? ' 🚛 transporteur' : ((td.reqInf>0||td.reqVehLourd>0||td.reqVeh>0||td.reqVehLeg>0||td.reqSpe>0) ? ' 🪖 embarque' : '');
+      const tag = isTransport ? t('group.transporter') : ((td.reqInf>0||td.reqVehLourd>0||td.reqVeh>0||td.reqVehLeg>0||td.reqSpe>0) ? t('group.embarked') : '');
       return `<div class="gb-member${isTransport?' transport':''}">${u.name} ×${e.squadSize}${tag}</div>`;
     }).join('');
     const loadHtml = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe) ? `
       <div class="gb-load">
-        <span class="${overInf ? 'over' : (equalInf ? 'equal' : '')}">🟩Inf ${load.reqInf}/${load.capInf}</span>
-        <span class="${overVehLourd ? 'over' : (equalVehLourd ? 'equal' : '')}">🔺Véh Lourd ${load.reqVehLourd}/${load.capVehLourd}</span>
-		<span class="${overVeh ? 'over' : (equalVeh ? 'equal' : '')}">🔶Véh Std ${load.reqVeh}/${load.capVeh}</span>
-		<span class="${overVehLeg ? 'over' : (equalVehLeg ? 'equal' : '')}">🔵Véh Lég ${load.reqVehLeg}/${load.capVehLeg}</span>
-		<span class="${overSpe ? 'over' : (equalSpe ? 'equal' : '')}">▼Spé ${load.reqSpe}/${load.capSpe}</span>
+        <span class="${overInf ? 'over' : (equalInf ? 'equal' : '')}">${t('group.load.inf',{req:load.reqInf, cap:load.capInf})}</span>
+        <span class="${overVehLourd ? 'over' : (equalVehLourd ? 'equal' : '')}">${t('group.load.vehLourd',{req:load.reqVehLourd, cap:load.capVehLourd})}</span>
+		<span class="${overVeh ? 'over' : (equalVeh ? 'equal' : '')}">${t('group.load.veh',{req:load.reqVeh, cap:load.capVeh})}</span>
+		<span class="${overVehLeg ? 'over' : (equalVehLeg ? 'equal' : '')}">${t('group.load.vehLeg',{req:load.reqVehLeg, cap:load.capVehLeg})}</span>
+		<span class="${overSpe ? 'over' : (equalSpe ? 'equal' : '')}">${t('group.load.spe',{req:load.reqSpe, cap:load.capSpe})}</span>
       </div>` : '';
-    return `<div class="group-block ${status}"><h4>Groupe ${gid}</h4>${members}${loadHtml}</div>`;
+    return `<div class="group-block ${status}"><h4>${t('group.label',{gid:gid})}</h4>${members}${loadHtml}</div>`;
   }).join('');
 }
 
@@ -2010,7 +2387,7 @@ function usedGlossaryTerms(){
     [...filteredWeapons, ...extraWeapons].forEach(w=>bits.push(w.sp));
   });
   const blob = bits.join(' ; ').toLowerCase();
-  return GLOSSARY.filter(([term])=>{
+  return currentGlossary().filter(([term])=>{
     const key = term.split('(')[0].replace(/[X0-9+":]/g,'').trim().split(' ')[0].toLowerCase();
     return key.length>=2 && blob.includes(key);
   });
@@ -2034,7 +2411,7 @@ function explainSpecialString(spStr){
     
     const keyGuess = cleanTermForMatching(part);
     
-    const match = GLOSSARY.find(([term]) => {
+    const match = currentGlossary().find(([term]) => {
       return cleanTermForMatching(term) === keyGuess;
     });
     
@@ -2049,7 +2426,7 @@ function extractGlossaryMatches(str){
     
     const keyGuess = cleanTermForMatching(part);
     
-    const match = GLOSSARY.find(([term]) => {
+    const match = currentGlossary().find(([term]) => {
       return cleanTermForMatching(term) === keyGuess;
     });
     
@@ -2102,13 +2479,13 @@ const statsTable = `<table class="pdf-stats-table">
       </table>`;
       const weapons = allWeapons.length
         ? `<table class="pdf-weapon-table">
-            <tr><th>Arme</th><th>Arc</th><th>MA</th><th>R</th><th>Att</th><th>Ac</th><th>E</th><th>Spécial</th></tr>
+            <tr><th>${t('weapon.hdr.name')}</th><th>${t('weapon.hdr.arc')}</th><th>${t('weapon.hdr.ma')}</th><th>${t('weapon.hdr.r')}</th><th>${t('weapon.hdr.att')}</th><th>${t('weapon.hdr.ac')}</th><th>${t('weapon.hdr.e')}</th><th>${t('weapon.hdr.special')}</th></tr>
             ${allWeapons.map(w=>`<tr><td>${w.n}</td><td>${w.arc}</td><td>${w.ma}</td><td>${w.r}</td><td>${w.att}</td><td>${w.ac}</td><td>${w.e}</td><td>${w.sp}</td></tr>`).join('')}
           </table>`
-        : '<span style="font-style:italic;">Sans armement</span>';
+        : `<span style="font-style:italic;">${t('pdf.noWeapons')}</span>`;
 
 return `<tr>
-        <td class="col-cat">${u.category}${u.isBehemoth?' ⚙':''}<br><span class="dim">×${entry.squadSize} (${fmt(unitTotalPts(entry))} points)</span></td>
+        <td class="col-cat">${u.category}${u.isBehemoth?' ⚙':''}<br><span class="dim">×${entry.squadSize} (${fmt(unitTotalPts(entry))} ${t('pdf.pointsSuffix')})</span></td>
         <td class="col-unit"><b>${u.name}</b><br><span class="dim">${u.type} — ${v.name}</span></td>
         <td class="col-stats">${statsTable}</td>
 ${hasAnySpecial ? `<td class="col-special">${filteredSpecial}</td>` : ''}
@@ -2117,20 +2494,20 @@ ${hasAnySpecial ? `<td class="col-special">${filteredSpecial}</td>` : ''}
     }).join('');
 
     const loadLine = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe)
-      ? `<span>Inf ${load.reqInf}/${load.capInf}</span> · <span>VéhLourd ${load.reqVehLourd}/${load.capVehLourd}</span> · <span>VéhStd ${load.reqVeh}/${load.capVeh}</span> · <span>VéhLeg ${load.reqVehLeg}/${load.capVehLeg}</span> · <span>Spé ${load.reqSpe}/${load.capSpe}</span>` : '';
+      ? t('pdf.load.line',{reqInf:load.reqInf, capInf:load.capInf, reqVL:load.reqVehLourd, capVL:load.capVehLourd, reqV:load.reqVeh, capV:load.capVeh, reqVLeg:load.reqVehLeg, capVLeg:load.capVehLeg, reqS:load.reqSpe, capS:load.capSpe}) : '';
 
     const glossaryHtml = groupGlossary.size ? `
       <table class="pdf-group-glossary">
-        <tr><th colspan="2">Définitions des règles spéciales de ce Groupe</th></tr>
+        <tr><th colspan="2">${t('pdf.glossaryTitle')}</th></tr>
         ${Array.from(groupGlossary.entries()).map(([term,def])=>`<tr><td class="gt">${term}</td><td>${def}</td></tr>`).join('')}
       </table>` : '';
 
     return `<div class="pdf-group" style="background:${bgColor}; border-color:${borderColor};">
-      <div class="pdf-group-head">Groupe ${gid} ${loadLine ? '— '+loadLine : ''}</div>
+      <div class="pdf-group-head">${t('pdf.groupHead',{gid:gid})} ${loadLine ? '— '+loadLine : ''}</div>
       <table>
         <tr>
-<th class="col-cat">Cat.</th><th class="col-unit">Unité</th>
-          <th class="col-stats">Stats</th>${hasAnySpecial ? '<th class="col-special">Spécial</th>' : ''}<th>Armement</th>
+<th class="col-cat">${t('pdf.hdr.cat')}</th><th class="col-unit">${t('pdf.hdr.unit')}</th>
+          <th class="col-stats">${t('pdf.hdr.stats')}</th>${hasAnySpecial ? `<th class="col-special">${t('pdf.hdr.special')}</th>` : ''}<th>${t('pdf.hdr.weapons')}</th>
         </tr>
         ${memberRows}
       </table>
@@ -2183,9 +2560,9 @@ ${hasAnySpecial ? `<td class="col-special">${filteredSpecial}</td>` : ''}
       @media print { .printbtn{ display:none; } }
     </style></head>
     <body>
-      <button class="printbtn" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
-      <h1>DZC Roster — ${factionSelect.value}</h1>
-      <div class="meta">${gameSizeSelect.value} · ${fmt(total)} / ${fmt(target)} pts · ${reservedGroupsCount()} / ${cfg.groups} Groupes</div>
+      <button class="printbtn" onclick="window.print()">${t('pdf.printBtn')}</button>
+      <h1>${t('pdf.h1',{faction:factionSelect.value})}</h1>
+      <div class="meta">${t('pdf.meta',{size:gameSizeSelect.value, total:fmt(total), target:fmt(target), groups:reservedGroupsCount(), maxGroups:cfg.groups})}</div>
       ${groupBlocksHtml}
     </body></html>
   `);
@@ -2215,11 +2592,11 @@ function importRosterJson(file){
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
-      if(data.version !== 'dzc-roster-v1') { alert('Fichier de liste non reconnu.'); return; }
+      if(data.version !== 'dzc-roster-v1') { alert(t('alert.badJsonVersion')); return; }
       // vérifie que chaque unité importée existe toujours dans le catalogue actuel
       const validRoster = (data.roster||[]).filter(r => UNITS.some(u=>u.id===r.unitId));
       if(validRoster.length !== (data.roster||[]).length){
-        alert('Attention : certaines unités du fichier importé ne correspondent plus au catalogue actuel et ont été ignorées.');
+        alert(t('alert.someUnitsIgnored'));
       }
       factionSelect.value = data.faction || factionSelect.value;
       gameSizeSelect.value = data.gameSize || gameSizeSelect.value;
@@ -2229,7 +2606,7 @@ function importRosterJson(file){
       nextGroup = data.nextGroup || (Math.max(0, ...roster.map(r=>r.groupId)) + 1);
       renderAll();
     } catch(err){
-      alert('Impossible de lire ce fichier JSON : ' + err.message);
+      alert(t('alert.jsonReadError',{err:err.message}));
     }
   };
   reader.readAsText(file);
@@ -2240,7 +2617,7 @@ function importRosterJson(file){
 function renderAll(){ renderCatalog(); renderRoster(); renderGroupSummary(); renderSummary(); }
 
 factionSelect.addEventListener('change', ()=>{
-  if(roster.length>0 && !confirm('Changer de faction va vider le roster actuel. Continuer ?')){
+  if(roster.length>0 && !confirm(t('confirm.changeFaction'))){
     factionSelect.value = roster[0] ? UNITS.find(u=>u.id===roster[0].unitId).faction : factionSelect.value;
     return;
   }
@@ -2256,14 +2633,22 @@ searchBox.addEventListener('input', renderCatalog);
 catFilter.addEventListener('change', renderCatalog);
 $('#exportCsv').addEventListener('click', exportCsv);
 $('#exportPdf').addEventListener('click', exportPdf);
-$('#resetBtn').addEventListener('click', ()=>{ if(roster.length===0 || confirm('Vider tout le roster ?')){ roster=[]; nextGroup=1; renderAll(); } });
+$('#resetBtn').addEventListener('click', ()=>{ if(roster.length===0 || confirm(t('confirm.resetRoster'))){ roster=[]; nextGroup=1; renderAll(); } });
 $('#exportJson').addEventListener('click', exportRosterJson);
 $('#importJsonBtn').addEventListener('click', ()=> $('#importJsonFile').click());
 $('#importJsonFile').addEventListener('change', (e)=>{
   if(e.target.files[0]) importRosterJson(e.target.files[0]);
   e.target.value = ''; // permet de réimporter le même fichier plusieurs fois
 });
+$('#langToggle').addEventListener('click', ()=>{
+  LANG = (LANG==='fr') ? 'en' : 'fr';
+  try { localStorage.setItem('dzcLang', LANG); } catch(e){}
+  applyStaticI18n();
+  renderGlossary();
+  renderAll();
+});
 
+applyStaticI18n();
 renderGlossary();
 renderAll();
 </script>
