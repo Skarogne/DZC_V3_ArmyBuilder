@@ -131,10 +131,10 @@
 <body>
 
 <div class="topbar">
-  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.01 / Only PHR & Resistance finish</span></div>
+  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.01 / last update : 16/08/2026</span></div>
 
   <div class="field"><label data-i18n="label.faction">Faction</label>
-<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
+<select id="factionSelect"><option value="PHR">PHR(full)</option><option value="Resistance">Resistance(full)</option><option value="UCM">UCM(miss transport)</option><option value="Scourge">Scourge(full)</option><option value="Shaltari">Shaltari(miss transport)</option><option value="Bioficer">Bioficer(miss units)</option></select>
   </div>
 
   <div class="field"><label data-i18n="label.gameSize">Taille de partie</label>
@@ -533,7 +533,7 @@ function currentGlossary(){ return LANG==='en' ? GLOSSARY_EN : GLOSSARY; }
 
 const I18N = {
   fr: {
-    'brand.tag': 'V3.01 / Only PHR & Resistance finish',
+    'brand.tag': 'V3.01 / last update : 16/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Taille de partie',
     'label.targetPoints': 'Points visés',
@@ -649,7 +649,7 @@ const I18N = {
     'pdf.pointsSuffix': 'points',
   },
   en: {
-    'brand.tag': 'V3.01 / Only PHR & Resistance finish',
+    'brand.tag': 'V3.01 / last update : 16/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Game size',
     'label.targetPoints': 'Points target',
@@ -899,47 +899,51 @@ TRANSPORT_DATA['phr-type7grandwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, req
 TRANSPORT_DATA['phr-type6grandwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:8, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['phr-venusdrone'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 
-// TODO
-TRANSPORT_DATA['shal-bravewarsuits'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-pungari'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-battlestrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-maingravtank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-warstrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-firedrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-obeliskionspire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-bravewarsuits'] = {reqInf:2, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-pungari'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-battlestrider'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-maingravtank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-warstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-firedrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-obeliskionspire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['shal-gunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-supportgravtank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-supportwarstrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-tegugatestrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-totemshieldspire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-adamahgungate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-assaultwarsuits'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-supportgravtank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-supportwarstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+
+//TODO
+TRANSPORT_DATA['shal-tegugatestrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:true};
+
+TRANSPORT_DATA['shal-totemshieldspire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-adamahgungate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:9, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-assaultwarsuits'] = {reqInf:2, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['shal-frostdrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-gunstrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-heavygravtank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-heavywarsuits'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-gunstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-heavygravtank'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-heavywarsuits'] = {reqInf:2, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:true, capEither:false};
 TRANSPORT_DATA['shal-interceptor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-lightgravtank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-scoutstrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-edengate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-gaiagate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-haventerragate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-spiritgate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['shal-ziongatespire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-lightgravtank'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-scoutstrider'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-edengate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-gaiagate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-haventerragate'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-spiritgate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shal-ziongatespire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 
 /* Bioficer : la faction fonctionne via Genitor/Collector/RM Tokens (voir GLOSSARY), un système
    totalement séparé du Inf/Véh classique ci-dessus. Valeurs laissées à 0 par défaut — à ajuster
    uniquement si tu veux modéliser la capacité Genitor/Collector via ce même système. */
-TRANSPORT_DATA['bio-grievancegenitorark'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['bio-thornlightskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['bio-tuskmainbattleskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-grievancegenitorark'] = {reqInf:0, reqVehLourd:4, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:12, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-thornlightskimmer'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-tuskmainbattleskimmer'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['bio-surgegunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['bio-tangentsupportskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['bio-silenceheavygunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['bio-gyroaerogenitor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['bio-datastrikedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['bio-devicedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
-TRANSPORT_DATA['bio-digitlightdropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-tangentsupportskimmer'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-silenceheavygunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-gyroaerogenitor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:8, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-datastrikedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-devicedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:8, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-digitlightdropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+
+//TO DO BIO : manque les 2 dernières unités
 
 /* ---------------- DATA: UNITS ---------------- */
 const UNITS = [
