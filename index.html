@@ -134,7 +134,7 @@
   <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.01 / last update : 16/08/2026</span></div>
 
   <div class="field"><label data-i18n="label.faction">Faction</label>
-<select id="factionSelect"><option value="PHR">PHR(full)</option><option value="Resistance">Resistance(full)</option><option value="UCM">UCM(miss transport)</option><option value="Scourge">Scourge(full)</option><option value="Shaltari">Shaltari(miss transport)</option><option value="Bioficer">Bioficer(miss units)</option></select>
+<select id="factionSelect"><option value="PHR">PHR(full)</option><option value="Resistance">Resistance(full)</option><option value="UCM">UCM(miss transport)</option><option value="Scourge">Scourge(full)</option><option value="Shaltari">Shaltari(miss transport)</option><option value="Bioficer">Bioficer(full)</option></select>
   </div>
 
   <div class="field"><label data-i18n="label.gameSize">Taille de partie</label>
@@ -280,6 +280,7 @@ const GLOSSARY = [
 ["Destroyer X+","Touche = critique automatique si le jet de dégâts atteint X+, sans jet normal."],
 ["Critical X","Modifie le nombre de dégâts supplémentaires infligés par un Critique."],
 ["Focus X","Peut sacrifier des tirs touchés pour ajouter +X à l'Énergie d'un tir restant."],
+["Flame","Ignore le malus de précision contre les cibles Obscured et ignore l'Évasion (Ev) ; l'Infanterie subit -1DF contre cette arme. Peut viser les Occupants d'une Zone comme s'ils étaient Sited n'importe où sur celle-ci : les tirs manqués touchent alors une escouade amie choisie au hasard dans cette Zone. Les armes Flame en Small Arms peuvent aussi combiner leurs attaques contre les Zones, peuvent infliger des Critiques contre les Zones, et gagnent +1 Demo contre les Areas."],
 ["Pen X+","Touche automatiquement sur un jet de dégâts de X+ quel que soit l'Énergie/l'Armure."],
 ["AA","Peut cibler les Aéronefs (Anti-Aircraft). Réaction possible avec -2 Ac."],
 ["AA-S","Peut cibler les Aéronefs (Anti-Aircraft Slow). Réaction impossible."],
@@ -412,6 +413,7 @@ const GLOSSARY_EN = [
 ["Destroyer X+","A hit is an automatic critical if the damage roll reaches X+, without a normal roll."],
 ["Critical X","Modifies the number of extra damage inflicted by a Critical."],
 ["Focus X","Can sacrifice hits already scored to add +X to the Energy of a remaining shot."],
+["Flame","Ignores the Ac penalty against Obscured targets and ignores Evasion (Ev); Infantry suffer -1DF against it. Can target Zone Occupiers as if Sited anywhere on that Zone: misses that turn hit a random friendly Squad in that Zone instead. Flame Weapons with Small Arms may also combine their attacks against Zones, can inflict Criticals against Zones, and gain +1 Demo against Areas."],
 ["Pen X+","Automatically hits on a damage roll of X+ regardless of Energy/Armour."],
 ["AA","Can target Aircraft (Anti-Aircraft). Reaction fire possible with -2 Ac."],
 ["AA-S","Can target Aircraft (Anti-Aircraft Slow). Reaction fire not possible."],
@@ -942,8 +944,9 @@ TRANSPORT_DATA['bio-gyroaerogenitor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqV
 TRANSPORT_DATA['bio-datastrikedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['bio-devicedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:8, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['bio-digitlightdropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-drones'] = {reqInf:4, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['bio-hulks'] = {reqInf:6, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 
-//TO DO BIO : manque les 2 dernières unités
 
 /* ---------------- DATA: UNITS ---------------- */
 const UNITS = [
@@ -1061,7 +1064,7 @@ variants:[{name:'Thor', pts:50},{name:'Taranis', pts:50}]},
     W('Nanomachine Plague (Tethys)','F/S/R','Full','24"',30,'2+','S6','Secondary, Strafe, Nanomachines'),
     W('Nova Missile','F','5"','∞/18"',1,'2+',8,'Blast, Critical D6-2, Devastator D6-2, L3, Macro, Pen 3+'),
     W('Twin RX-30 Heavy Miniguns','F/Sl','Full','48/18"',8,'2+','S4','Secondary'),
-    W('Dual R7X-5 Rotary Cannons (+0pts)','F','Full','36/18"',10,'3+',5,'Secondary, Strafe — OU (remplace):'),
+    W('Dual R7X-5 Rotary Cannons (+0pts)','F','Full','36/18"',10,'3+',5,'Secondary, Strafe'),
     W('Dual R7X-66 Incinerators (+0pts)','F','9"','9"',6,'2+',4,'Concussion, Demo 2, Flame, Strafe, Macro')],
   variants:[{name:'Chronus', pts:930},{name:'Tethys', pts:985}]},
 {id:'phr-type6grandwalker', faction:'PHR', name:'Type 6 Grand Walker', category:'Heavy', squadMin:1, squadMax:1, rare:false, unique:false, isBehemoth:true,
@@ -1897,7 +1900,16 @@ variants:[{name:'Patton A', pts:25},{name:'Patton B', pts:25}]},
   type:'Aircraft (30mm)', mv:'20"', stats:'A3 DP1', special:'—',
   weapons:[W('Decon Zap','F/S','10"','5"',1,'4+',4,'Decon')],
   variants:[{name:'Standard', pts:15}]},
-
+  
+// ===== Bioficer — Generated =====
+{id:'bio-drones', faction:'Bioficer', name:'Drones', category:'Generated', squadMin:2, squadMax:3, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF4 DF4+ B(A) DP5', special:'Generated 4, Puppet',
+  weapons:[W('Decon Rifles','F/S/R','Full','18"',5,'3+','S1','Decon')],
+  variants:[{name:'Standard', pts:20}]},
+{id:'bio-hulks', faction:'Bioficer', name:'Hulks', category:'Generated', squadMin:2, squadMax:2, rare:false, unique:false,
+  type:'Infantry', mv:'2"', stats:'OF2 DF3+ B(A) DP3', special:'Generated 6, Hardy 4+, Puppet, Strong',
+  weapons:[W('Winnow Carbines','F/S/R','Full','9"',6,'4+',2,'AA, Assault, Decon')],
+  variants:[{name:'Standard', pts:30}]},
 ];
 
 const GAME_SIZES = {
@@ -1954,7 +1966,7 @@ function groupPointsMap(){
   return map;
 }
 function categoryPointsMap(){
-  const map = {Standard:0, Vanguard:0, Heavy:0, Support:0, Transport:0};
+  const map = {Standard:0, Vanguard:0, Heavy:0, Support:0, Transport:0, Generated:0};
   roster.forEach(r=>{ const unit = UNITS.find(u=>u.id===r.unitId); map[unit.category] += unitTotalPts(r); });
   return map;
 }
@@ -2036,7 +2048,7 @@ function renderCatalog(){
     return;
   }
 
-  const cats = ['Standard','Vanguard','Heavy','Support','Transport'];
+  const cats = ['Standard','Vanguard','Heavy','Support','Transport','Generated'];
   cats.forEach(cat=>{
     if(catFilterVal && catFilterVal!==cat) return;
     const items = UNITS.filter(u=>u.faction===faction && u.category===cat && (!search || u.name.toLowerCase().includes(search)));
