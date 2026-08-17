@@ -787,28 +787,203 @@ function applyStaticI18n(){
 }
 
 /* ---------------- IMAGES ------------------------------ */
+/* ---------------- UNIT_IMAGES : id -> nom de fichier image ---------------- */
 const UNIT_IMAGES = {
-  'phr-angelos': 'phr-angelos.png', 'phr-immortals': 'phr-immortals.png', 'phr-proteus': 'phr-proteus.png', 'phr-t1walker': 'phr-t1walker.png',
-  'phr-hecate': 'phr-hecate.png', 'phr-luna': 'phr-luna.png', 'phr-medusa': 'phr-medusa.png', 'phr-advjetskimmer': 'phr-advjetskimmer.png',
-  'phr-artillerytank': 'phr-artillerytank.png', 'phr-siren': 'phr-siren.png', 'phr-supjetskimmer': 'phr-supjetskimmer.png', 'phr-tritonx': 'phr-tritonx.png',
-  'phr-t3emwalker': 'phr-t3emwalker.png', 'phr-tiamat': 'phr-tiamat.png', 'phr-t2heavywalker': 'phr-t2heavywalker.png', 'phr-battlescorpion': 'phr-battlescorpion.png',
-  'phr-commandscorpion': 'phr-commandscorpion.png', 'phr-frontierwalker': 'phr-frontierwalker.png', 'phr-lokheira': 'phr-lokheira.png', 'phr-type7grandwalker': 'phr-type7grandwalker.png',
-  'phr-type6grandwalker': 'phr-type6grandwalker.png', 'phr-mercuryscout': 'phr-mercuryscout.png', 'phr-longreach': 'phr-longreach.png', 'phr-airsuperiority': 'phr-airsuperiority.png',
-  'phr-columbuswalker': 'phr-columbuswalker.png', 'phr-strikewalker': 'phr-strikewalker.png', 'phr-scoutwalker': 'phr-scoutwalker.png', 'phr-valkyrie': 'phr-valkyrie.png',
-  'phr-juno': 'phr-juno.png', 'phr-neptune': 'phr-neptune.png', 'phr-njord': 'phr-njord.png', 'phr-poseidon': 'phr-poseidon.png',
-  'phr-tritonlightdrop': 'phr-tritonlightdrop.png', 'phr-tritonlighttroop': 'phr-tritonlighttroop.png', 'phr-atlasquad': 'phr-atlasquad.png','phr-venusdrone': 'phr-venusdrone.png',
-  'res-mcclellan': 'res-mcclellan.png', 'res-commandhover': 'res-commandhover.png', 'res-fighters': 'res-fighters.png', 'res-mbt': 'res-mbt.png',
-  'res-technical': 'res-technical.png', 'res-wagon': 'res-wagon.png', 'res-artillerywagon': 'res-artillerywagon.png', 'res-attackheli': 'res-attackheli.png',
-  'res-berserkers': 'res-berserkers.png', 'res-lifthawkgun': 'res-lifthawkgun.png', 'res-mechloader': 'res-mechloader.png', 'res-bombbus': 'res-bombbus.png',
-  'res-repairtechnical': 'res-repairtechnical.png', 'res-sentry': 'res-sentry.png', 'res-strikehawk': 'res-strikehawk.png', 'res-atilla': 'res-atilla.png',
-  'res-carryhawk': 'res-carryhawk.png', 'res-hellhog': 'res-hellhog.png', 'res-occupation': 'res-occupation.png', 'res-ordnancebus': 'res-ordnancebus.png',
-  'res-superheavy': 'res-superheavy.png', 'res-thunderstorm': 'res-thunderstorm.png', 'res-explorator': 'res-explorator.png', 'res-miningengine': 'res-miningengine.png',
-  'res-drill109': 'res-drill109.png', 'res-drill209': 'res-drill209.png', 'res-atvs': 'res-atvs.png', 'res-freeriders': 'res-freeriders.png',
-  'res-k9pack': 'res-k9pack.png', 'res-columbuswalker': 'res-columbuswalker.png', 'res-sappers': 'res-sappers.png', 'res-tempest': 'res-tempest.png',
-  'res-theropod': 'res-theropod.png', 'res-battlebus': 'res-battlebus.png', 'res-jackson': 'res-jackson.png', 'res-k9technical': 'res-k9technical.png',
-  'res-kraken': 'res-kraken.png', 'res-leviathan': 'res-leviathan.png', 'res-lifthawkdrop': 'res-lifthawkdrop.png', 'res-lifthawktroop': 'res-lifthawktroop.png',
-  'res-patton': 'res-patton.png', 'res-swifthawk': 'res-swifthawk.png'
+  'phr-angelos': 'phr-Angelos_Jetskimmer.png',
+  'phr-immortals': 'phr-Immortals.png',
+  'phr-proteus': 'phr-Proteus_Mobile_Command_Post.png',
+  'phr-t1walker': 'phr-Type_1_Battle_Walker.png',
+  'phr-hecate': 'phr-Hecate_Target_Support_Craft.png',
+  'phr-luna': 'phr-Luna_Gunship.png',
+  'phr-medusa': 'phr-Medusa.png',
+  'phr-advjetskimmer': 'phr-PHR_Advanced_Jetskimmer.png',
+  'phr-artillerytank': 'phr-PHR_Artillery_Tank.png',
+  'phr-siren': 'phr-Siren_Corps.png',
+  'phr-supjetskimmer': 'phr-Support_Jetskimmer.png',
+  'phr-tritonx': 'phr-Triton_X_Gunship.png',
+  'phr-t3emwalker': 'phr-Type_3_EM_Walker.png',
+  'phr-tiamat': 'phr-Tiamat_Ordnance_Ship.png',
+  'phr-t2heavywalker': 'phr-Type_2_Heavy_Battle_Walker.png',
+  'phr-battlescorpion': 'phr-Type_4_Battle_Scorpion.png',
+  'phr-commandscorpion': 'phr-Type_4_Command_Scorpion.png',
+  'phr-frontierwalker': 'phr-Type_9_Frontier_Walker.png',
+  'phr-lokheira': 'phr-Type_11_Lokheira_Quad_Walker.png',
+  // 'phr-type7grandwalker': pas trouvé dans la liste
+  // 'phr-type6grandwalker': pas trouvé dans la liste
+  // 'phr-venusdrone': pas trouvé dans la liste
+  'phr-mercuryscout': 'phr-Mercury_Scout_Drone.png',
+  'phr-longreach': 'phr-Longreach_Snipers.png',
+  'phr-airsuperiority': 'phr-PHR_Air_Superiority_Fighter.png',
+  'phr-columbuswalker': 'phr-PHR_Columbus_Battlewalker.png',
+  'phr-strikewalker': 'phr-Type_3_Strike_Walker.png',
+  'phr-scoutwalker': 'phr-Type_S_Scout_Walker.png',
+  'phr-valkyrie': 'phr-Valkyrie_Assault_Troops.png',
+  'phr-juno': 'phr-Juno_IFVs.png',
+  'phr-neptune': 'phr-Neptune_Dropship.png',
+  'phr-njord': 'phr-Njord_Assault_Dropship.png',
+  'phr-poseidon': 'phr-Poseidon_Heavy_Dropship.png',
+  'phr-tritonlightdrop': 'phr-Triton_Light_Dropship.png',
+  'phr-tritonlighttroop': 'phr-Triton_Light_Troopship.png',
+  'phr-atlasquad': 'phr-Type_11_Atlas_Quad_Walker.png',
 
+  'res-mcclellan': 'res-McClellan_Command_Bunker.png',
+  'res-commandhover': 'res-Resistance_Command_Hovercraft.png',
+  'res-fighters': 'res-Resistance_Fighters.png',
+  'res-mbt': 'res-Resistance_Main_Battle_Tank.png',
+  'res-technical': 'res-Resistance_Technical.png',
+  'res-wagon': 'res-Resistance_Wagon.png',
+  'res-artillerywagon': 'res-Artillery_Wagon.png',
+  'res-attackheli': 'res-Attack_Helicopter.png',
+  'res-berserkers': 'res-Berserkers.png',
+  'res-lifthawkgun': 'res-Lifthawk_Gunship.png',
+  'res-mechloader': 'res-Mech_Loader.png',
+  'res-bombbus': 'res-Remote_Bomb_Bus.png',
+  'res-repairtechnical': 'res-Repair_Technical.png',
+  'res-sentry': 'res-Resistance_Sentry_Unit.png',
+  'res-strikehawk': 'res-Strikehawk_Tilt_Rotor.png',
+  'res-atilla': 'res-Atilla_Trackwalker.png',
+  'res-carryhawk': 'res-Carryhawk_Tilt_Rotor.png',
+  'res-hellhog': 'res-Hellhog_Jumpjet.png',
+  'res-occupation': 'res-Occupation_Veterans.png',
+  'res-ordnancebus': 'res-Ordnance_Bus.png',
+  'res-superheavy': 'res-Resistance_Super_Heavy_Tank.png',
+  'res-thunderstorm': 'res-Thunderstorm_Heavy_Hovercraft.png',
+  // 'res-explorator': pas trouvé dans la liste
+  // 'res-miningengine': pas trouvé dans la liste
+  'res-drill109': 'res-109_Splitting_Drill.png',
+  'res-drill209': 'res-209_Splitting_Drill.png',
+  'res-atvs': 'res-ATVs.png',
+  'res-freeriders': 'res-Freeriders.png',
+  'res-k9pack': 'res-K9_Pack.png',
+  'res-columbuswalker': 'res-Resistance_Columbus_Battlewalker.png',
+  'res-sappers': 'res-Sappers.png',
+  'res-tempest': 'res-Tempest_Interceptor.png',
+  'res-theropod': 'res-Theropod_Walker.png',
+  'res-battlebus': 'res-Battle_Bus.png',
+  'res-jackson': 'res-Jackson_Halftrack.png',
+  'res-k9technical': 'res-K9_Technical.png',
+  'res-kraken': 'res-Kraken_Hovercraft.png',
+  'res-leviathan': 'res-Leviathan_Heavy_Hovercraft.png',
+  'res-lifthawkdrop': 'res-Lifthawk_Dropship.png',
+  'res-lifthawktroop': 'res-Lifthawk_Troopship.png',
+  'res-patton': 'res-Patton_IFV.png',
+  'res-swifthawk': 'res-Swifthawk_Tilt_Jet_Squall_Helicopter.png',
+
+  'ucm-legionnaireweapon': 'ucm-Legionnaire_Weapon_Team.png',
+  'ucm-legionnaires': 'ucm-Legionnaires.png',
+  'ucm-polecat': 'ucm-Polecat_Buggy.png',
+  'ucm-heavybuggy': 'ucm-UCM_Heavy_Buggy.png',
+  'ucm-lightbattletank': 'ucm-UCM_Light_Battle_Tank.png',
+  'ucm-mainbattletank': 'ucm-UCM_Main_Battle_Tank.png',
+  'ucm-falcon': 'ucm-Falcon_Gunship.png',
+  'ucm-ferrumdronebase': 'ucm-Ferrum_Drone_Base.png',
+  'ucm-osprey': 'ucm-Osprey_Gunship.png',
+  'ucm-armouredcommand': 'ucm-UCM_Armoured_Command_Vehicle.png',
+  'ucm-artilleryvehicle': 'ucm-UCM_Artillery_Vehicle.png',
+  'ucm-howitzer': 'ucm-UCM_Howitzer.png',
+  // 'ucm-heavybattlemech': pas trouvé dans la liste
+  // 'ucm-lightbattlemech': pas trouvé dans la liste
+  'ucm-dominionbomber': 'ucm-Dominion_Heavy_Bomber.png',
+  'ucm-eagle': 'ucm-Eagle_Heavy_Gunship.png',
+  'ucm-flail': 'ucm-Flail_Heavy_Tank.png',
+  'ucm-hazardsuits': 'ucm-Hazard_Suits.png',
+  'ucm-seraphim': 'ucm-Seraphim_Bomber.png',
+  'ucm-heavytank': 'ucm-UCM_Heavy_Tank.png',
+  'ucm-supergunship': 'ucm-UCM_Super_Gunship.png',
+  'ucm-superheavytank': 'ucm-UCM_Super_Heavy_Tank.png',
+  'ucm-archangel': 'ucm-Archangel.png',
+  'ucm-harrier': 'ucm-Harrier_Gunship.png',
+  'ucm-praetoriansnipers': 'ucm-Praetorian_Snipers.png',
+  'ucm-praetorianspecops': 'ucm-Praetorian_Spec_Ops.png',
+  'ucm-starsprite': 'ucm-Starsprite.png',
+  'ucm-columbuswalker': 'ucm-UCM_Columbus_Battlewalker.png',
+  'ucm-troopbuggy': 'ucm-UCM_Troop_Buggy.png',
+  'ucm-wolverine': 'ucm-Wolverine_Buggy.png',
+  'ucm-albatross': 'ucm-Albatross_Heavy_Dropship.png',
+  'ucm-bear': 'ucm-Bear_APC.png',
+  'ucm-condor': 'ucm-Condor_Dropship.png',
+  'ucm-crow': 'ucm-Crow_Dropship.png',
+  'ucm-ravenlight': 'ucm-Raven_Light_Dropship.png',
+  'ucm-raventroop': 'ucm-Raven_Light_Troopship.png',
+  'ucm-vulturedrop': 'ucm-Vulture_Dropship.png',
+  'ucm-vulturetroop': 'ucm-Vulture_Troopship.png',
+
+  // Note : les fichiers de la liste utilisent le préfixe "scourge-" (et non "scg-")
+  // 'scourge-deathmech': pas trouvé dans la liste
+  // 'scourge-terrormech': pas trouvé dans la liste
+  'scg-despot': 'scourge-Despot_Command_Walker.png',
+  'scg-battlebeetle': 'scourge-Scourge_Battle_Beetle.png',
+  'scg-battleskimmer': 'scourge-Scourge_Battle_Skimmer.png',
+  'scg-lightskimmer': 'scourge-Scourge_Light_Skimmer.png',
+  'scg-warriors': 'scourge-Warriors.png',
+  'scg-commandarthropod': 'scourge-Oppressor_Command_Arthropod.png',
+  'scg-commandbarge': 'scourge-Scourge_Command_Barge.png',
+  'scg-gunship': 'scourge-Scourge_Gunship.png',
+  'scg-supportbeetle': 'scourge-Scourge_Support_Beetle.png',
+  'scg-supportcrawler': 'scourge-Scourge_Support_Crawler.png',
+  'scg-demolishers': 'scourge-Demolishers.png',
+  'scg-evicerators': 'scourge-Evicerators.png',
+  'scg-gunskimmer': 'scourge-Scourge_Gun_Skimmer.png',
+  'scg-heavyskimmer': 'scourge-Scourge_Heavy_Skimmer.png',
+  'scg-mobileordnance': 'scourge-Scourge_Mobile_Ordnance.png',
+  'scg-ordnancebarge': 'scourge-Scourge_Ordnance_Barge.png',
+  'scg-subjugator': 'scourge-Subjugator_Arthropod.png',
+  'scg-razorworms': 'scourge-Razorworms.png',
+  'scg-chamelopod': 'scourge-Scourge_Chamelopod.png',
+  'scg-drone': 'scourge-Scourge_Drone.png',
+  'scg-interceptor': 'scourge-Scourge_Interceptor.png',
+  'scg-screamer': 'scourge-Scourge_Screamer.png',
+  'scg-spider': 'scourge-Scourge_Spider.png',
+  'scg-vampire': 'scourge-Vampire.png',
+  'scg-despoilerdrop': 'scourge-Despoiler_Heavy_Dropship.png',
+  'scg-harbingerdrop': 'scourge-Harbinger_Dropship.png',
+  'scg-harbingertroop': 'scourge-Harbinger_Troopship.png',
+  'scg-intruderdrop': 'scourge-Intruder_Light_Dropship.png',
+  'scg-intrudertroop': 'scourge-Intruder_Light_Troopship.png',
+  'scg-invaderapc': 'scourge-Invader_APC.png',
+  'scg-marauderdrop': 'scourge-Marauder_Dropship.png',
+
+  // 'shaltari-dragon': pas trouvé dans la liste
+  // 'shaltari-siegestrider': pas trouvé dans la liste
+  'shal-bravewarsuits': 'shal-Brave_Warsuits.png',
+  'shal-pungari': 'shal-Pungari.png',
+  'shal-battlestrider': 'shal-Shaltari_Battlestrider.png',
+  'shal-maingravtank': 'shal-Shaltari_Main_Grav_tank.png',
+  'shal-warstrider': 'shal-Shaltari_Warstrider.png',
+  'shal-firedrake': 'shal-Firedrake.png',
+  'shal-obeliskionspire': 'shal-Obelisk_Ionspire.png',
+  'shal-gunship': 'shal-Shaltari_Gunship.png',
+  'shal-supportgravtank': 'shal-Shaltari_Support_Grav_tank.png',
+  'shal-supportwarstrider': 'shal-Shaltari_Support_Warstrider.png',
+  'shal-tegugatestrider': 'shal-Tegu_Gatestrider.png',
+  'shal-totemshieldspire': 'shal-Totem_Shieldspire.png',
+  'shal-adamahgungate': 'shal-Adamah_Gungate.png',
+  'shal-assaultwarsuits': 'shal-Assault_Warsuits.png',
+  'shal-frostdrake': 'shal-Frostdrake.png',
+  'shal-gunstrider': 'shal-Shaltari_Gunstrider.png',
+  'shal-heavygravtank': 'shal-Shaltari_Heavy_Grav_tank.png',
+  'shal-heavywarsuits': 'shal-Shaltari_Heavy_Warsuits.png',
+  'shal-interceptor': 'shal-Shaltari_Interceptor.png',
+  'shal-lightgravtank': 'shal-Shaltari_Light_Grav_tank.png',
+  'shal-scoutstrider': 'shal-Shaltari_Scoutstrider.png',
+  'shal-edengate': 'shal-Eden_Medium_Gate.png',
+  'shal-gaiagate': 'shal-Gaia_Heavy_Gate.png',
+  'shal-haventerragate': 'shal-Haven_Terragate.png',
+  'shal-spiritgate': 'shal-Spirit_Light_Gate.png',
+  'shal-ziongatespire': 'shal-Zion_Gatespire.png',
+
+  'bio-grievancegenitorark': 'bio-Grievance_Genitor_Ark.png',
+  'bio-thornlightskimmer': 'bio-Thorn_Light_Skimmer.png',
+  'bio-tuskmainbattleskimmer': 'bio-Tusk_Main_Battle_Skimmer.png',
+  'bio-surgegunship': 'bio-Surge_Gunship.png',
+  'bio-tangentsupportskimmer': 'bio-Tangent_Support_Skimmer.png',
+  'bio-silenceheavygunship': 'bio-Silence_Heavy_Gunship.png',
+  'bio-gyroaerogenitor': 'bio-Gyro_Aero_Genitor.png',
+  'bio-datastrikedropship': 'bio-Data_Strike_Dropship.png',
+  'bio-devicedropship': 'bio-Device_Dropship.png',
+  'bio-digitlightdropship': 'bio-Digit_Light_Dropship.png',
+  'bio-drones': 'bio-Drones.png',
+  'bio-hulks': 'bio-Hulks.png',
 };
 
 /* ---------------- TRANSPORT: Requirement / Capacity par type (V3, à remplir toi-même) ----------------
@@ -863,6 +1038,7 @@ TRANSPORT_DATA['res-lifthawktroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVeh
 TRANSPORT_DATA['res-patton'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['res-swifthawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['res-explorator'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:12, capVehLourd:6, capVeh:8, capVehLeg:0, capSpe:0, reqEither:false, capEither:true};
+TRANSPORT_DATA['res-miningengine'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 
 TRANSPORT_DATA['phr-angelos'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:1, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['phr-immortals'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
@@ -930,10 +1106,9 @@ TRANSPORT_DATA['shal-gaiagate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:
 TRANSPORT_DATA['shal-haventerragate'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['shal-spiritgate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['shal-ziongatespire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shaltari-dragon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['shaltari-siegestrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:8, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 
-/* Bioficer : la faction fonctionne via Genitor/Collector/RM Tokens (voir GLOSSARY), un système
-   totalement séparé du Inf/Véh classique ci-dessus. Valeurs laissées à 0 par défaut — à ajuster
-   uniquement si tu veux modéliser la capacité Genitor/Collector via ce même système. */
 TRANSPORT_DATA['bio-grievancegenitorark'] = {reqInf:0, reqVehLourd:4, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:12, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['bio-thornlightskimmer'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['bio-tuskmainbattleskimmer'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
@@ -946,6 +1121,83 @@ TRANSPORT_DATA['bio-devicedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVe
 TRANSPORT_DATA['bio-digitlightdropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['bio-drones'] = {reqInf:4, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
 TRANSPORT_DATA['bio-hulks'] = {reqInf:6, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+
+/* ---------------- TRANSPORT_DATA : entrées manquantes à compléter ---------------- */
+TRANSPORT_DATA['ucm-legionnaireweapon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-legionnaires'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-polecat'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-heavybuggy'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-lightbattletank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-mainbattletank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-falcon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-ferrumdronebase'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-osprey'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-armouredcommand'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-artilleryvehicle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-howitzer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-heavybattlemech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-lightbattlemech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-dominionbomber'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-eagle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-flail'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-hazardsuits'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-seraphim'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-heavytank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-supergunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-superheavytank'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-archangel'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-harrier'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-praetoriansnipers'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-praetorianspecops'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-starsprite'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-columbuswalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-troopbuggy'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-wolverine'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-albatross'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-bear'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-condor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-crow'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-ravenlight'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-raventroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-vulturedrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['ucm-vulturetroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+
+
+TRANSPORT_DATA['scourge-deathmech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scourge-terrormech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-despot'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-battlebeetle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-battleskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-lightskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-warriors'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-commandarthropod'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-commandbarge'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-gunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-supportbeetle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-supportcrawler'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-demolishers'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-evicerators'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-gunskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-heavyskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-mobileordnance'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-ordnancebarge'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-subjugator'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-razorworms'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-chamelopod'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-drone'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-interceptor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-screamer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-spider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-vampire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-despoilerdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-harbingerdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-harbingertroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-intruderdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-intrudertroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-invaderapc'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+TRANSPORT_DATA['scg-marauderdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false};
+
+
 
 
 /* ---------------- DATA: UNITS ---------------- */
