@@ -15,7 +15,7 @@
 	--ucm:#446a46; --ucm-dim:#213522;
 	--shaltari:#d9a441; --shaltari-dim:#7a5c20;
 	--bioficer:#b0201c; --bioficer-dim:#5a0f0d;
-    --bad:#e15b5b; --good:#5bc98a; --behe:#b98cf0;
+    --bad:#e15b5b; --good:#5bc98a; --behe:#2dd4c4;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
     --disp: "Arial Narrow", Oswald, Impact, sans-serif;
   }
@@ -51,8 +51,7 @@
   .unit-card.scourge{ border-left-color:var(--scourge); background:#1c1420; }
   .unit-card.shaltari{ border-left-color:var(--shaltari); background:#1c1608; }
   .unit-card.bioficer{ border-left-color:var(--bioficer); background:#1f0f0e; }
-  .unit-card.behe{ border-left-color:var(--behe); background:#191420; }
-  .unit-img-wrap{ float:left; width:96px; height:96px; margin-right:12px; margin-bottom:4px; }
+  .unit-card.behe{ border-left-color:var(--behe); background:#0e1e1c; }
   .unit-img-wrap img{ width:96px; height:96px; object-fit:contain; border-radius:5px; border:1px solid var(--line); display:block; }
   .unit-img-placeholder{ width:96px; height:96px; border-radius:5px; border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:10px; color:var(--dim); text-align:center; padding:4px; }
   .unit-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
@@ -812,9 +811,9 @@ const UNIT_IMAGES = {
   'phr-commandscorpion': 'phr-Type_4_Command_Scorpion.png',
   'phr-frontierwalker': 'phr-Type_9_Frontier_Walker.png',
   'phr-lokheira': 'phr-Type_11_Lokheira_Quad_Walker.png',
-  // 'phr-type7grandwalker': pas trouvé dans la liste
-  // 'phr-type6grandwalker': pas trouvé dans la liste
-  // 'phr-venusdrone': pas trouvé dans la liste
+  'phr-type7grandwalker': 'phr-type7grandwalker.png',
+  'phr-type6grandwalker': 'phr-type6grandwalker.png',
+  'phr-venusdrone': 'phr-venusdrone.png',
   'phr-mercuryscout': 'phr-Mercury_Scout_Drone.png',
   'phr-longreach': 'phr-Longreach_Snipers.png',
   'phr-airsuperiority': 'phr-PHR_Air_Superiority_Fighter.png',
@@ -852,8 +851,8 @@ const UNIT_IMAGES = {
   'res-ordnancebus': 'res-Ordnance_Bus.png',
   'res-superheavy': 'res-Resistance_Super_Heavy_Tank.png',
   'res-thunderstorm': 'res-Thunderstorm_Heavy_Hovercraft.png',
-  // 'res-explorator': pas trouvé dans la liste
-  // 'res-miningengine': pas trouvé dans la liste
+  'res-explorator': 'res-explorator.png',
+  'res-miningengine': 'res-miningengine.png',
   'res-drill109': 'res-109_Splitting_Drill.png',
   'res-drill209': 'res-209_Splitting_Drill.png',
   'res-atvs': 'res-ATVs.png',
@@ -885,8 +884,8 @@ const UNIT_IMAGES = {
   'ucm-armouredcommand': 'ucm-UCM_Armoured_Command_Vehicle.png',
   'ucm-artilleryvehicle': 'ucm-UCM_Artillery_Vehicle.png',
   'ucm-howitzer': 'ucm-UCM_Howitzer.png',
-  // 'ucm-heavybattlemech': pas trouvé dans la liste
-  // 'ucm-lightbattlemech': pas trouvé dans la liste
+  'ucm-heavybattlemech': 'ucm-heavybattlemech.png',
+  'ucm-lightbattlemech': 'ucm-lightbattlemech.png',
   'ucm-dominionbomber': 'ucm-Dominion_Heavy_Bomber.png',
   'ucm-eagle': 'ucm-Eagle_Heavy_Gunship.png',
   'ucm-flail': 'ucm-Flail_Heavy_Tank.png',
@@ -912,9 +911,8 @@ const UNIT_IMAGES = {
   'ucm-vulturedrop': 'ucm-Vulture_Dropship.png',
   'ucm-vulturetroop': 'ucm-Vulture_Troopship.png',
 
-  // Note : les fichiers de la liste utilisent le préfixe "scourge-" (et non "scg-")
-  // 'scourge-deathmech': pas trouvé dans la liste
-  // 'scourge-terrormech': pas trouvé dans la liste
+  'scourge-deathmech': 'scourge-deathmech.png',
+  'scourge-terrormech': 'scourge-terrormech.png',
   'scg-despot': 'scourge-Despot_Command_Walker.png',
   'scg-battlebeetle': 'scourge-Scourge_Battle_Beetle.png',
   'scg-battleskimmer': 'scourge-Scourge_Battle_Skimmer.png',
@@ -947,8 +945,8 @@ const UNIT_IMAGES = {
   'scg-invaderapc': 'scourge-Invader_APC.png',
   'scg-marauderdrop': 'scourge-Marauder_Dropship.png',
 
-  // 'shaltari-dragon': pas trouvé dans la liste
-  // 'shaltari-siegestrider': pas trouvé dans la liste
+  'shaltari-dragon': 'shaltari-dragon.png',
+  'shaltari-siegestrider': 'shaltari-siegestrider.png',
   'shal-bravewarsuits': 'shal-Brave_Warsuits.png',
   'shal-pungari': 'shal-Pungari.png',
   'shal-battlestrider': 'shal-Shaltari_Battlestrider.png',
