@@ -649,6 +649,8 @@ const I18N = {
     'pdf.load.line': 'Inf {reqInf}/{capInf} · VéhLourd {reqVL}/{capVL} · VéhStd {reqV}/{capV} · VéhLeg {reqVLeg}/{capVLeg} · Spé {reqS}/{capS}',
     'pdf.glossaryTitle': 'Définitions des règles spéciales de ce Groupe',
     'pdf.pointsSuffix': 'points',
+    'pdf.finalGlossaryTitle': 'Glossaire des règles spéciales de la liste',
+    'pdf.consolidateGlossaryToggle': 'Regrouper le glossaire sur une page finale',
   },
   en: {
     'brand.tag': 'V3.01 / last update : 17/08/2026',
@@ -765,6 +767,8 @@ const I18N = {
     'pdf.load.line': 'Inf {reqInf}/{capInf} · HeavyVeh {reqVL}/{capVL} · StdVeh {reqV}/{capV} · LightVeh {reqVLeg}/{capVLeg} · Special {reqS}/{capS}',
     'pdf.glossaryTitle': 'Special rule definitions for this Group',
     'pdf.pointsSuffix': 'points',
+    'pdf.finalGlossaryTitle': 'Roster special rules glossary',
+    'pdf.consolidateGlossaryToggle': 'Group glossary on a final page',
   }
 };
 
@@ -2756,6 +2760,7 @@ function exportPdf(){
   const tmap = transportLoadMap();
 
   const GROUP_PALETTE = ['#e8f3ff','#fff3e0','#e8f8ee','#f5e8ff','#fff9e0','#e0faf7','#ffe8ec','#eef0ff','#f0f7e0','#fbe8f6'];
+  const fullGlossary = new Map(); // term -> def, dédupliqué pour toute la liste (page finale)
 const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
     const hasAnySpecial = entries.some(e=>{
       const u = UNITS.find(uu=>uu.id===e.unitId);
@@ -2770,7 +2775,7 @@ const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
     const bgColor = GROUP_PALETTE[idx % GROUP_PALETTE.length];
     const borderColor = (overInf||overVeh||overSpe||overVehLourd||overVehLeg) ? '#d33' : '#bbb';
 
-    const groupGlossary = new Map(); // term -> def, dédupliqué pour tout le groupe
+    const groupGlossary = new Map(); // term -> def, dédupliqué pour ce groupe (mode par défaut)
 
     const memberRows = entries.map(entry=>{
       const u = UNITS.find(uu=>uu.id===entry.unitId);
@@ -2780,8 +2785,8 @@ const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
       const extraWeapons = (entry.extras||[]).map(name=>u.weapons.find(w=>w.n===name)).filter(Boolean);
       const allWeapons = [...filteredWeapons, ...extraWeapons];
 
-      extractGlossaryMatches(filteredSpecial).forEach(m=>groupGlossary.set(m.term, m.def));
-      allWeapons.forEach(w=> extractGlossaryMatches(w.sp).forEach(m=>groupGlossary.set(m.term, m.def)));
+      extractGlossaryMatches(filteredSpecial).forEach(m=>{ groupGlossary.set(m.term, m.def); fullGlossary.set(m.term, m.def); });
+      allWeapons.forEach(w=> extractGlossaryMatches(w.sp).forEach(m=>{ groupGlossary.set(m.term, m.def); fullGlossary.set(m.term, m.def); }));
 
 const p = parseStats(u);
 const statsTable = `<table class="pdf-stats-table">
@@ -2826,6 +2831,14 @@ ${hasAnySpecial ? `<td class="col-special">${filteredSpecial}</td>` : ''}
     </div>`;
   }).join('');
 
+  const finalGlossaryHtml = fullGlossary.size ? `
+    <div class="pdf-final-glossary" style="display:none;">
+      <table class="pdf-group-glossary">
+        <tr><th colspan="2">${t('pdf.finalGlossaryTitle')}</th></tr>
+        ${Array.from(fullGlossary.entries()).map(([term,def])=>`<tr><td class="gt">${term}</td><td>${def}</td></tr>`).join('')}
+      </table>
+    </div>` : '';
+
   const win = window.open('', '_blank');
   win.document.write(`
     <html><head><title>DZC Roster - ${factionSelect.value} - ${gameSizeSelect.value}</title>
@@ -2866,15 +2879,26 @@ ${hasAnySpecial ? `<td class="col-special">${filteredSpecial}</td>` : ''}
       .pdf-group-glossary{ margin-top:8px; table-layout:auto; font-size:9.5px; }
       .pdf-group-glossary th{ background:#444; }
       .pdf-group-glossary .gt{ width:130px; font-weight:bold; background:rgba(255,255,255,0.4); }
+      .pdf-final-glossary{ break-before: page; page-break-before: always; margin-top:20px; }
+      .pdf-final-glossary .pdf-group-glossary{ font-size:10.5px; }
+      .pdf-final-glossary .pdf-group-glossary th{ font-size:12px; }
 	  .pdf-group table{ width:100%; table-layout:fixed; }
 .printbtn{ margin-bottom:16px; padding:8px 16px; }
       @media print { .printbtn{ display:none; } }
     </style></head>
     <body>
-      <button class="printbtn" onclick="window.print()">${t('pdf.printBtn')}</button>
+      <div class="printbtn" style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        <button onclick="window.print()">${t('pdf.printBtn')}</button>
+        <label style="font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="checkbox" id="consolidateGlossaryChk"
+            onchange="var on=this.checked; document.querySelectorAll('.pdf-group-glossary').forEach(function(el){ if(!el.closest('.pdf-final-glossary')) el.style.display = on ? 'none' : ''; }); var fg=document.querySelector('.pdf-final-glossary'); if(fg) fg.style.display = on ? '' : 'none';">
+          ${t('pdf.consolidateGlossaryToggle')}
+        </label>
+      </div>
       <h1>${t('pdf.h1',{faction:factionSelect.value})}</h1>
       <div class="meta">${t('pdf.meta',{size:gameSizeSelect.value, total:fmt(total), target:fmt(target), groups:reservedGroupsCount(), maxGroups:cfg.groups})}</div>
       ${groupBlocksHtml}
+      ${finalGlossaryHtml}
     </body></html>
   `);
   win.document.close();
