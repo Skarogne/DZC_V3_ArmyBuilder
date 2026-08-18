@@ -29,6 +29,7 @@
   select, input[type=number], input[type=text]{ background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:4px; padding:6px 8px; font-size:13px; font-family:var(--mono);}
   select:focus, input:focus{ outline:1px solid var(--amber); }
   .spacer{flex:1;}
+  .pill-row{ display:flex; gap:8px; }
   .stat-pill{ font-family:var(--mono); font-size:12px; padding:7px 12px; border-radius:5px; background:var(--panel2); border:1px solid var(--line); text-align:center; min-width:88px;}
   .stat-pill b{ display:block; font-size:14px; font-family:var(--disp); letter-spacing:1px;}
   .stat-pill.warn{ border-color:var(--bad); color:var(--bad); }
@@ -37,12 +38,33 @@
   .layout{ display:grid; grid-template-columns:1fr 400px; gap:0; min-height:calc(100vh - 64px); }
   @media (max-width:960px){ .layout{ grid-template-columns:1fr; } }
 
+  @media (max-width:640px){
+    .topbar{ padding:8px 10px; gap:6px 10px; }
+    .brand{ font-size:14px; letter-spacing:2px; flex:1 1 auto; }
+    .brand .tag{ display:none; }
+    .field{ flex-direction:row; align-items:center; gap:6px; }
+    .field label{ font-size:9px; white-space:nowrap; }
+    select, input[type=number], input[type=text]{ padding:4px 6px; font-size:12px; }
+    #gameSizeSelect{ max-width:150px; }
+    #targetPoints{ width:64px !important; }
+    .spacer{ display:none; }
+    #langToggle{ padding:4px 8px !important; font-size:15px !important; }
+    .pill-row{ flex-basis:100%; gap:5px; }
+    .stat-pill{ padding:4px 5px; font-size:9px; min-width:0; flex:1 1 0; }
+    .stat-pill b{ font-size:10px; }
+    .layout{ min-height:auto; }
+  }
+
   .catalog{ padding:16px 18px; overflow-y:auto; }
   .catalog-controls{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
   .catalog-controls input[type=text]{ flex:1; min-width:160px; }
 
   .cat-group{ margin-bottom:22px; }
   .cat-group h3{ font-family:var(--disp); text-transform:uppercase; letter-spacing:2px; font-size:13px; color:var(--dim); border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:8px; display:flex; justify-content:space-between;}
+  .cat-group h3{ cursor:pointer; user-select:none; }
+  .cat-group h3 .chev{ font-family:var(--mono); color:var(--amber); margin-right:6px; }
+  .cat-group.collapsed .cat-group-body{ display:none; }
+  .cat-group.collapsed .cat-group-body{ display:none; }
 
   .unit-card{ background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:6px; padding:10px 12px; margin-bottom:8px;}
   .unit-card.phr{ border-left-color:var(--phr); background:#1c1a10; }
@@ -95,6 +117,16 @@
   .re-remove{ font-size:11px; color:var(--bad); background:none; border:none; cursor:pointer; padding:0 4px;}
   .re-remove:hover{ text-decoration:underline; }
 
+  .collapse-section{ margin-bottom:16px; }
+  .collapse-toggle{ display:flex; align-items:center; gap:8px; width:100%; text-align:left; background:var(--panel2); border:1px solid var(--line); border-radius:6px; padding:9px 12px; font-family:var(--disp); text-transform:uppercase; letter-spacing:1.5px; font-size:13px; color:var(--text); }
+  .collapse-toggle:hover{ border-color:var(--amber); color:var(--amber); }
+  .collapse-toggle .chev{ font-family:var(--mono); color:var(--amber); width:10px; flex:none; }
+  .collapse-toggle .sec-badge{ margin-left:auto; font-family:var(--mono); font-size:11px; letter-spacing:0; text-transform:none; }
+  .collapse-toggle .sec-badge.ok{ color:var(--good); }
+  .collapse-toggle .sec-badge.warn{ color:var(--bad); }
+  .collapse-body{ padding-top:10px; }
+  .collapse-body.hidden{ display:none; }
+
   .warnbox{ margin-top:14px; }
   .warn-item{ font-size:11.5px; padding:7px 9px; border-radius:5px; margin-bottom:6px; font-family:var(--mono);}
   .warn-item.bad{ background:#2a1414; border:1px solid var(--bad); color:#ff9d9d; }
@@ -130,7 +162,7 @@
 <body>
 
 <div class="topbar">
-  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.01 / last update : 17/08/2026</span></div>
+  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.01 / last update : 18/08/2026</span></div>
 
   <div class="field"><label data-i18n="label.faction">Faction</label>
 <select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
@@ -151,9 +183,11 @@
 
   <div class="spacer"></div>
   <button id="langToggle" class="btn-ghost" type="button" title="Français / English" style="padding:6px 10px; font-size:17px; line-height:1; border-color:var(--amber); color:var(--amber);">🇬🇧</button>
-  <div class="stat-pill" id="pillPoints">0 / 0<b>PTS</b></div>
-  <div class="stat-pill" id="pillGroups">0 / 0<b>GROUPES</b></div>
-  <div class="stat-pill" id="pillStatus">—<b>STATUT</b></div>
+  <div class="pill-row">
+    <div class="stat-pill" id="pillPoints">0 / 0<b>PTS</b></div>
+    <div class="stat-pill" id="pillGroups">0 / 0<b>GROUPES</b></div>
+    <div class="stat-pill" id="pillStatus">—<b>STATUT</b></div>
+  </div>
 </div>
 
 <div class="layout">
@@ -171,7 +205,20 @@
 
   <div class="roster">
     <h2 data-i18n="h2.rosterSheet">Feuille de Roster</h2>
-<div class="summary-grid" id="summaryGrid"></div>
+
+    <div class="collapse-section" id="secStatus">
+      <button class="collapse-toggle" type="button" data-target="statusBody" aria-expanded="true">
+        <span class="chev">▾</span>
+        <span data-i18n="section.status">Statut de la partie</span>
+        <span class="sec-badge" id="statusBadge"></span>
+      </button>
+      <div class="collapse-body" id="statusBody">
+        <div class="summary-grid" id="summaryGrid"></div>
+        <div class="cat-breakdown" id="catBreakdown"></div>
+        <div class="warnbox" id="warnBox"></div>
+      </div>
+    </div>
+
     <div class="export-row">
       <button class="btn-primary" id="exportCsv" data-i18n="btn.exportCsv">⇩ Exporter en CSV</button>
       <button class="btn-primary" id="exportPdf" style="background:var(--behe); border-color:var(--behe);" data-i18n="btn.exportPdf">⇩ Exporter en PDF</button>
@@ -180,10 +227,28 @@
       <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
       <button class="btn-danger" id="resetBtn" data-i18n="btn.reset">Vider le roster</button>
     </div>
-    <div id="rosterList"></div>
-    <div id="groupSummary"></div>
-    <div class="cat-breakdown" id="catBreakdown"></div>
-    <div class="warnbox" id="warnBox"></div>
+
+    <div class="collapse-section collapsed" id="secTransport">
+      <button class="collapse-toggle" type="button" data-target="transportBody" aria-expanded="false">
+        <span class="chev">▸</span>
+        <span data-i18n="section.transport">Transport</span>
+        <span class="sec-badge" id="transportBadge"></span>
+      </button>
+      <div class="collapse-body hidden" id="transportBody">
+        <div id="groupSummary"></div>
+      </div>
+    </div>
+
+    <div class="collapse-section" id="secUnits">
+      <button class="collapse-toggle" type="button" data-target="unitsBody" aria-expanded="true">
+        <span class="chev">▾</span>
+        <span data-i18n="section.units">Unités du roster</span>
+        <span class="sec-badge" id="unitsBadge"></span>
+      </button>
+      <div class="collapse-body" id="unitsBody">
+        <div id="rosterList"></div>
+      </div>
+    </div>
 
     <details class="glossary">
       <summary data-i18n="glossary.summary">Glossaire des règles spéciales (armes / unités / Behemoths)</summary>
@@ -534,7 +599,7 @@ function currentGlossary(){ return LANG==='en' ? GLOSSARY_EN : GLOSSARY; }
 
 const I18N = {
   fr: {
-    'brand.tag': 'V3.01 / last update : 17/08/2026',
+    'brand.tag': 'V3.01 / last update : 18/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Taille de partie',
     'label.targetPoints': 'Points visés',
@@ -544,6 +609,9 @@ const I18N = {
     'placeholder.search': 'Rechercher une unité...',
     'opt.allCategories': 'Toutes catégories',
     'h2.rosterSheet': 'Feuille de Roster',
+    'section.status': 'Statut de la partie',
+    'section.transport': 'Transport',
+    'section.units': 'Unités du roster',
     'btn.exportCsv': '⇩ Exporter en CSV',
     'btn.exportPdf': '⇩ Exporter en PDF',
     'btn.exportJson': '⇩ Exporter la liste (JSON)',
@@ -652,7 +720,7 @@ const I18N = {
     'pdf.consolidateGlossaryToggle': 'Regrouper le glossaire sur une page finale',
   },
   en: {
-    'brand.tag': 'V3.01 / last update : 17/08/2026',
+    'brand.tag': 'V3.01 / last update : 18/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Game size',
     'label.targetPoints': 'Points target',
@@ -662,6 +730,9 @@ const I18N = {
     'placeholder.search': 'Search for a unit...',
     'opt.allCategories': 'All categories',
     'h2.rosterSheet': 'Roster Sheet',
+    'section.status': 'Game Status',
+    'section.transport': 'Transport',
+    'section.units': 'Roster Units',
     'btn.exportCsv': '⇩ Export to CSV',
     'btn.exportPdf': '⇩ Export to PDF',
     'btn.exportJson': '⇩ Export list (JSON)',
@@ -2305,6 +2376,29 @@ function transportLoadMap(){
 }
 
 /* ---------------- RENDER CATALOG ---------------- */
+const collapsedCats = new Set(); // catégories repliées, persiste entre les re-renders
+
+function buildCatGroup(list, label, items){
+  const collapsed = collapsedCats.has(label);
+  const wrap = document.createElement('div');
+  wrap.className = 'cat-group' + (collapsed ? ' collapsed' : '');
+
+  const h3 = document.createElement('h3');
+  h3.innerHTML = `<span><span class="chev">${collapsed?'▸':'▾'}</span>${label}</span><span>${items.length}</span>`;
+  h3.addEventListener('click', ()=>{
+    collapsedCats.has(label) ? collapsedCats.delete(label) : collapsedCats.add(label);
+    renderCatalog();
+  });
+  wrap.appendChild(h3);
+
+  const body = document.createElement('div');
+  body.className = 'cat-group-body';
+  items.forEach(u=>body.appendChild(renderUnitCard(u)));
+  wrap.appendChild(body);
+
+  list.appendChild(wrap);
+}
+
 function renderCatalog(){
   const faction = factionSelect.value;
   const search = searchBox.value.trim().toLowerCase();
@@ -2314,11 +2408,7 @@ function renderCatalog(){
 
   if(catFilterVal==='Behemoth'){
     const items = UNITS.filter(u=>u.faction===faction && u.isBehemoth && (!search || u.name.toLowerCase().includes(search)));
-    const wrap = document.createElement('div');
-    wrap.className='cat-group';
-    wrap.innerHTML = `<h3>Behemoths <span>${items.length}</span></h3>`;
-    items.forEach(u=>wrap.appendChild(renderUnitCard(u)));
-    list.appendChild(wrap);
+    buildCatGroup(list, 'Behemoths', items);
     return;
   }
 
@@ -2327,11 +2417,7 @@ function renderCatalog(){
     if(catFilterVal && catFilterVal!==cat) return;
     const items = UNITS.filter(u=>u.faction===faction && u.category===cat && (!search || u.name.toLowerCase().includes(search)));
     if(items.length===0) return;
-    const wrap = document.createElement('div');
-    wrap.className='cat-group';
-    wrap.innerHTML = `<h3>${cat} <span>${items.length}</span></h3>`;
-    items.forEach(u=>wrap.appendChild(renderUnitCard(u)));
-    list.appendChild(wrap);
+    buildCatGroup(list, cat, items);
   });
 }
 
@@ -2537,6 +2623,15 @@ function renderSummary(){
   }).join('');
 
   $('#warnBox').innerHTML = warnings.map(w=>`<div class="warn-item ${w.type}">${w.type==='bad'?'⚠':'✓'} ${w.msg}</div>`).join('');
+
+  const statusBadge = $('#statusBadge');
+  if(roster.length===0){ statusBadge.textContent=''; statusBadge.className='sec-badge'; }
+  else if(badCount>0){ statusBadge.textContent = `⚠ ${badCount}`; statusBadge.className='sec-badge warn'; }
+  else { statusBadge.textContent='✓'; statusBadge.className='sec-badge ok'; }
+
+  const unitsBadge = $('#unitsBadge');
+  unitsBadge.textContent = roster.length ? `${roster.length}` : '';
+  unitsBadge.className = 'sec-badge';
 }
 
 function computeWarnings(target, cfg, total, groupsUsed){
@@ -2649,10 +2744,12 @@ function exportCsv(){
 /* ---------------- GROUP SUMMARY (qui transporte qui) ---------------- */
 function renderGroupSummary(){
   const box = $('#groupSummary');
-  if(roster.length===0){ box.innerHTML=''; return; }
+  const transportBadge = $('#transportBadge');
+  if(roster.length===0){ box.innerHTML=''; transportBadge.textContent=''; transportBadge.className='sec-badge'; return; }
   const groups = {};
   roster.forEach(r=>{ (groups[r.groupId] = groups[r.groupId]||[]).push(r); });
   const tmap = transportLoadMap();
+  let anyOver = false;
 
   box.innerHTML = Object.entries(groups).map(([gid, entries])=>{
     const load = tmap[gid] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
@@ -2667,6 +2764,7 @@ function renderGroupSummary(){
     const equalVeh = load.reqVeh == load.capVeh;
 	const equalVehLeg = load.reqVehLeg == load.capVehLeg;
     const status = (overInf||overVeh||overSpe||overVehLourd||overVehLeg) ? 'bad' : 'ok';
+    if(status==='bad') anyOver = true;
     const members = entries.map(e=>{
       const u = UNITS.find(uu=>uu.id===e.unitId);
       const td = TRANSPORT_DATA[e.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
@@ -2684,6 +2782,9 @@ function renderGroupSummary(){
       </div>` : '';
     return `<div class="group-block ${status}"><h4>${t('group.label',{gid:gid})}</h4>${members}${loadHtml}</div>`;
   }).join('');
+
+  if(anyOver){ transportBadge.textContent='⚠'; transportBadge.className='sec-badge warn'; }
+  else { transportBadge.textContent='✓'; transportBadge.className='sec-badge ok'; }
 }
 
 /* ---------------- PDF EXPORT (via impression navigateur) ---------------- */
@@ -2979,6 +3080,15 @@ $('#langToggle').addEventListener('click', ()=>{
   applyStaticI18n();
   renderGlossary();
   renderAll();
+});
+
+document.querySelectorAll('.collapse-toggle').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const body = document.getElementById(btn.dataset.target);
+    const nowHidden = body.classList.toggle('hidden');
+    btn.querySelector('.chev').textContent = nowHidden ? '▸' : '▾';
+    btn.setAttribute('aria-expanded', String(!nowHidden));
+  });
 });
 
 applyStaticI18n();
