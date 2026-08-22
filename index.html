@@ -162,7 +162,7 @@
 <body>
 
 <div class="topbar">
-  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.02 / last update : 22/08/2026</span></div>
+  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.01 / last update : 18/08/2026</span></div>
 
   <div class="field"><label data-i18n="label.faction">Faction</label>
 <select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
@@ -599,7 +599,7 @@ function currentGlossary(){ return LANG==='en' ? GLOSSARY_EN : GLOSSARY; }
 
 const I18N = {
   fr: {
-    'brand.tag': 'V3.02 / last update : 22/08/2026',
+    'brand.tag': 'V3.01 / last update : 18/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Taille de partie',
     'label.targetPoints': 'Points visés',
@@ -620,7 +620,7 @@ const I18N = {
     'glossary.summary': 'Glossaire des règles spéciales (armes / unités / Behemoths)',
     'footnote.text': `Un « Groupe » = une escouade (et son transport dédié le cas échéant). Donnez le même n° de Groupe
       à une escouade et à son transport pour qu'ils comptent comme un seul Groupe. Plafond de points par
-      Groupe : 25% du total visé (V3.02, 3.2). Les Behemoths comptent leur "Group Equivalent" en nombre
+      Groupe : 25% du total visé (V3.01, 3.2). Les Behemoths comptent leur "Group Equivalent" en nombre
       de Groupes consommés (limite max de Groupes) mais restent évalués comme 1 seul Groupe pour le
       plafond de 25%. Colonnes Arc/MA/R/Att/Ac/E = Arc de tir / Move&Attack / Portée / Nb d'attaques /
       Précision / Énergie, telles que publiées sur les stat cards officielles.
@@ -669,11 +669,12 @@ const I18N = {
     'warn.catOverStandard': 'Catégorie {cat} ({catPts} pts) dépasse les points de Standard ({stdPts} pts).',
     'warn.noStandard': 'Aucune unité Standard dans le roster.',
     'warn.groupOverCap': 'Groupe {gid} : {pts} pts dépasse le plafond de 25% ({cap} pts).',
+    'warn.shaltariAircraftMultiGroup': "Groupe {gid} : un Aéronef ne peut pas être combiné avec d'autres escouades dans un Groupe multi-escouades Shaltari (règle des 250 pts : non-Gate, non-Aéronef uniquement).",
     'warn.rareOver': '"{name}" (Rare) : {count} pris, max {max} en {size}.',
     'warn.uniqueOver': '"{name}" (Unique) : {count} pris, max 1.',
     'warn.squadSizeOut': '{name} : taille d\'escouade {size} hors bornes ({min}-{max}).',
     'warn.behemothSquadSize': '{name} : un Behemoth a toujours Squad Size 1.',
-    'warn.allGood': 'Roster conforme aux règles de construction V3.02 (points, Groupes, catégories, Rare/Unique, Behemoths).',
+    'warn.allGood': 'Roster conforme aux règles de construction V3.01 (points, Groupes, catégories, Rare/Unique, Behemoths).',
     'warn.transportInf': 'Groupe {gid} : charge Infanterie {req}/{cap} — dépasse la capacité Infanterie du transport.',
     'warn.transportVeh': 'Groupe {gid} : charge Véhicule Standard {req}/{cap} — dépasse la capacité Véhicule Standard du transport.',
     'warn.transportVehLourd': 'Groupe {gid} : charge Véhicule Lourd {req}/{cap} — dépasse la capacité Véhicule Lourd du transport.',
@@ -720,7 +721,7 @@ const I18N = {
     'pdf.consolidateGlossaryToggle': 'Regrouper le glossaire sur une page finale',
   },
   en: {
-    'brand.tag': 'V3.02 / last update : 22/08/2026',
+    'brand.tag': 'V3.01 / last update : 18/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Game size',
     'label.targetPoints': 'Points target',
@@ -741,7 +742,7 @@ const I18N = {
     'glossary.summary': 'Glossary of special rules (weapons / units / Behemoths)',
     'footnote.text': `A "Group" = one squad (and its dedicated transport, if any). Give the same Group #
       to a squad and its transport so they count as a single Group. Points cap per
-      Group: 25% of the target total (V3.02, 3.2). Behemoths count their "Group Equivalent" toward
+      Group: 25% of the target total (V3.01, 3.2). Behemoths count their "Group Equivalent" toward
       the number of Groups consumed (max Group limit) but are still evaluated as a single Group for
       the 25% cap. Arc/MA/R/Att/Ac/E columns = Firing Arc / Move&Attack / Range / Number of attacks /
       Accuracy / Energy, as published on the official stat cards.
@@ -790,11 +791,12 @@ const I18N = {
     'warn.catOverStandard': 'Category {cat} ({catPts} pts) exceeds Standard points ({stdPts} pts).',
     'warn.noStandard': 'No Standard unit in the roster.',
     'warn.groupOverCap': 'Group {gid}: {pts} pts exceeds the 25% cap ({cap} pts).',
+    'warn.shaltariAircraftMultiGroup': 'Group {gid}: an Aircraft cannot be combined with other Squads in a Shaltari multi-Squad Group (250pts rule: non-Gate, non-Aircraft only).',
     'warn.rareOver': '"{name}" (Rare): {count} taken, max {max} in {size}.',
     'warn.uniqueOver': '"{name}" (Unique): {count} taken, max 1.',
     'warn.squadSizeOut': '{name}: squad size {size} out of bounds ({min}-{max}).',
     'warn.behemothSquadSize': '{name}: a Behemoth always has Squad Size 1.',
-    'warn.allGood': 'Roster complies with V3.02 construction rules (points, Groups, categories, Rare/Unique, Behemoths).',
+    'warn.allGood': 'Roster complies with V3.01 construction rules (points, Groups, categories, Rare/Unique, Behemoths).',
     'warn.transportInf': 'Group {gid}: Infantry load {req}/{cap} — exceeds the transport\'s Infantry capacity.',
     'warn.transportVeh': 'Group {gid}: Standard Vehicle load {req}/{cap} — exceeds the transport\'s Standard Vehicle capacity.',
     'warn.transportVehLourd': 'Group {gid}: Heavy Vehicle load {req}/{cap} — exceeds the transport\'s Heavy Vehicle capacity.',
@@ -2325,8 +2327,15 @@ function transportLoadMap(){
 
   // 1er passage : cumul des BESOINS (reqX) de chaque groupe — gère reqEither et capExclusive
   roster.forEach(r=>{
-    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+    const unit = UNITS.find(uu=>uu.id===r.unitId);
     if(!map[r.groupId]) map[r.groupId] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
+
+    // Shaltari exception (official Stat Cards, 'Gate' rule): Gates are always taken with NO
+    // units aboard at list-building time — Squads Embark/Disembark from ANY compatible Gate
+    // in-game via Holding, so there is no per-Group req<=cap pairing to validate for them.
+    if(unit && unit.faction==='Shaltari' && !isShaltariGate(unit)) return;
+
+    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
 
     if(td.capExclusive){
       // le mode CHOISI est auto-couvert par sa propre capacité (l'unité s'embarque elle-même dans ce mode-là) ;
@@ -2673,6 +2682,21 @@ function computeWarnings(target, cfg, total, groupsUsed){
     }) && entries.length>=2;
     const cap = distinctShaltariNonGateNonAircraft ? Math.min(stdCap, 250) : stdCap;
     if(pts>cap) warnings.push({type:'bad', msg:t('warn.groupOverCap',{gid:gid, pts:fmt(pts), cap:fmt(Math.floor(cap))})});
+
+    // Shaltari special rule: only non-Gate, non-Aircraft Squads may be merged into a shared,
+    // transport-less multi-Squad Group. A group containing an Aux Gate (a real Auxiliary
+    // Transport carrying its own cargo Squad, per rule 3.2.4.3) is a different, legitimate
+    // case and is not affected by this restriction.
+    const hasAuxGateOrGate = entries.some(e=>{
+      const u = UNITS.find(uu=>uu.id===e.unitId);
+      return u && (isShaltariGate(u) || (u.special||'').includes('Aux Gate'));
+    });
+    const isMultiSquad = entries.length>=2;
+    const allShaltari = entries.length>0 && entries.every(e=>{ const u = UNITS.find(uu=>uu.id===e.unitId); return u && u.faction==='Shaltari'; });
+    const hasAircraft = entries.some(e=>{ const u = UNITS.find(uu=>uu.id===e.unitId); return u && u.type.startsWith('Aircraft'); });
+    if(allShaltari && isMultiSquad && !hasAuxGateOrGate && hasAircraft){
+      warnings.push({type:'bad', msg:t('warn.shaltariAircraftMultiGroup',{gid:gid})});
+    }
   });
 
   const rareCounts = {}; const uniqueCounts = {};
