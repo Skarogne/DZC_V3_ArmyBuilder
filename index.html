@@ -165,7 +165,7 @@
   <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.02 / last update : 22/08/2026</span></div>
 
   <div class="field"><label data-i18n="label.faction">Faction</label>
-<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari(transport issue)</option><option value="Bioficer">Bioficer</option></select>
+<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
   </div>
 
   <div class="field"><label data-i18n="label.gameSize">Taille de partie</label>
@@ -2269,9 +2269,23 @@ function groupWeight(groupId){
   });
   return weight;
 }
+function isShaltariGate(unit){
+  // Shaltari Gates: category 'Transport' units of the Shaltari faction (Eden, Gaia, Haven, Spirit, Zion...).
+  // Per the official Shaltari Stat Cards: "Gates do not count against your number of allowed Groups."
+  return unit.faction==='Shaltari' && unit.category==='Transport';
+}
+function isGateOnlyGroup(groupId){
+  const entries = roster.filter(r=>r.groupId===groupId);
+  if(entries.length===0) return false;
+  return entries.every(e=>{
+    const u = UNITS.find(uu=>uu.id===e.unitId);
+    return u && isShaltariGate(u);
+  });
+}
 function reservedGroupsCount(){
   const groups = new Set(roster.map(r=>r.groupId));
-  let total=0; groups.forEach(g=>total+=groupWeight(g));
+  let total=0;
+  groups.forEach(g=>{ if(!isGateOnlyGroup(g)) total+=groupWeight(g); });
   return total;
 }
 
@@ -2646,8 +2660,18 @@ function computeWarnings(target, cfg, total, groupsUsed){
   if(catMap.Standard===0 && roster.length>0) warnings.push({type:'bad', msg:t('warn.noStandard')});
 
   const gmap = groupPointsMap();
-  const cap = target/4;
+  const stdCap = target/4;
   Object.entries(gmap).forEach(([gid,pts])=>{
+    const entries = roster.filter(r=>r.groupId===gid || r.groupId===parseInt(gid,10));
+    // Shaltari special rule (official Stat Cards): "Two or more non-Gate, non-Aircraft
+    // Squads within a Shaltari Army may form Groups if their combined points cost does
+    // not exceed 250pts." This is an alternative allowance, capped at min(target/4, 250)
+    // rather than the standard target/4 alone, and only when 2+ distinct such Squads share the Group.
+    const distinctShaltariNonGateNonAircraft = entries.every(e=>{
+      const u = UNITS.find(uu=>uu.id===e.unitId);
+      return u && u.faction==='Shaltari' && !isShaltariGate(u) && !u.type.startsWith('Aircraft');
+    }) && entries.length>=2;
+    const cap = distinctShaltariNonGateNonAircraft ? Math.min(stdCap, 250) : stdCap;
     if(pts>cap) warnings.push({type:'bad', msg:t('warn.groupOverCap',{gid:gid, pts:fmt(pts), cap:fmt(Math.floor(cap))})});
   });
 
