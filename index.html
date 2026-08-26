@@ -2753,7 +2753,10 @@ function computeWarnings(target, cfg, total, groupsUsed){
 
   // Règle de composition de Groupe (toutes factions) : un Groupe légal est soit
   // "Une Escouade dans plusieurs Transports", soit "Plusieurs Escouades dans un Transport",
-  // mais jamais "Plusieurs Escouades dans plusieurs Transports".
+  // mais jamais "Plusieurs Escouades dans plusieurs Transports" — SAUF si une chaîne imbriquée
+  // relie les deux (Transport A transporte des Transporteurs B, qui transportent des unités C).
+  // Une unité "pont" (à la fois transportée ET transporteuse, ex: le Transporteur B) légitime
+  // alors la combinaison de plusieurs transports racines avec plusieurs escouades finales.
   Object.keys(gmap).forEach(gid=>{
     const entries = roster.filter(r=>r.groupId===gid || r.groupId===parseInt(gid,10));
     // Les Gates Shaltari sont exclues : elles n'embarquent jamais de cargo au moment de la
@@ -2763,12 +2766,17 @@ function computeWarnings(target, cfg, total, groupsUsed){
       const u = UNITS.find(uu=>uu.id===e.unitId);
       return u && !isShaltariGate(u);
     });
-    const nTransports = relevant.filter(e=>{
+    let nPureTransports = 0, nPureSquads = 0, nBridges = 0;
+    relevant.forEach(e=>{
       const td = TRANSPORT_DATA[e.unitId];
-      return td && (td.capInf>0 || td.capVehLourd>0 || td.capVeh>0 || td.capVehLeg>0 || td.capSpe>0 || td.capSpe2>0);
-    }).length;
-    const nSquads = relevant.length - nTransports;
-    if(nTransports>=2 && nSquads>=2){
+      if(!td) return;
+      const capTotal = (td.capInf||0)+(td.capVehLourd||0)+(td.capVeh||0)+(td.capVehLeg||0)+(td.capSpe||0)+(td.capSpe2||0);
+      const reqTotal = (td.reqInf||0)+(td.reqVehLourd||0)+(td.reqVeh||0)+(td.reqVehLeg||0)+(td.reqSpe||0)+(td.reqSpe2||0);
+      if(capTotal>0 && reqTotal>0) nBridges++;          // unité "pont" : transportée ET transporteuse
+      else if(capTotal>0) nPureTransports++;             // transport pur (racine)
+      else if(reqTotal>0) nPureSquads++;                 // escouade pure (feuille)
+    });
+    if(nPureTransports>=2 && nPureSquads>=2 && nBridges===0){
       warnings.push({type:'bad', msg:t('warn.manySquadsManyTransports',{gid:gid})});
     }
   });
