@@ -228,16 +228,15 @@
       <button class="btn-danger" id="resetBtn" data-i18n="btn.reset">Vider le roster</button>
     </div>
 
-    <div class="collapse-section collapsed" id="secTransport">
-      <button class="collapse-toggle" type="button" data-target="transportBody" aria-expanded="true">
-        <span class="chev">▸</span>
-        <span data-i18n="section.transport">Transport</span>
-        <span class="sec-badge" id="transportBadge"></span>
-      </button>
-      <div class="collapse-body hidden" id="transportBody">
-        <div id="groupSummary"></div>
-      </div>
-    </div>
+<div class="collapse-section" id="secTransport">
+  <button class="collapse-toggle" type="button" data-target="transportBody" aria-expanded="true">
+    <span class="chev">▾</span>
+    <span data-i18n="section.transport">Transport</span>
+    <span class="sec-badge" id="transportBadge"></span>
+  </button>
+  <div class="collapse-body" id="transportBody">
+    <div id="groupSummary"></div>
+  </div>
 
     <div class="collapse-section" id="secUnits">
       <button class="collapse-toggle" type="button" data-target="unitsBody" aria-expanded="true">
@@ -691,6 +690,7 @@ const I18N = {
     'warn.transportVehLeg': 'Groupe {gid} : charge Véhicule Léger {req}/{cap} — dépasse la capacité Véhicule Léger du transport.',
     'warn.transportSpe': 'Groupe {gid} : charge Spéciale {req}/{cap} — dépasse la capacité Spéciale du transport.',
     'warn.transportSpe2': 'Groupe {gid} : charge Spéciale 2 {req}/{cap} — dépasse la capacité Spéciale 2 du transport.',
+	'warn.manySquadsManyTransports': 'Groupe {gid} : plusieurs escouades combinées avec plusieurs transports dans le même Groupe — composition illégale (autorisé : une escouade dans plusieurs transports, ou plusieurs escouades dans un seul transport).',
     'group.transporter': ' 🚛 transporteur',
     'group.embarked': ' 🪖 embarque',
     'group.label': 'Groupe {gid}',
@@ -698,7 +698,7 @@ const I18N = {
     'group.load.vehLourd': '🔺Véh Lourd {req}/{cap}',
     'group.load.veh': '🔶Véh Std {req}/{cap}',
     'group.load.vehLeg': '🔵Véh Lég {req}/{cap}',
-    'group.load.spe': '▼Spé {req}/{cap}',
+    'group.load.spe': '▼Spé1 {req}/{cap}',
     'group.load.spe2': '<span style="color:#e0791e">⬢</span>Spé2 {req}/{cap}',
     'alert.badJsonVersion': 'Fichier de liste non reconnu.',
     'alert.someUnitsIgnored': 'Attention : certaines unités du fichier importé ne correspondent plus au catalogue actuel et ont été ignorées.',
@@ -789,7 +789,7 @@ const I18N = {
     'transport.vehHeavy': 'Heavy Vehicle',
     'transport.veh': 'Vehicle',
     'transport.vehLight': 'Light Vehicle',
-    'transport.special': 'Special',
+    'transport.special': 'Special 1',
     'transport.special2': 'Special 2',
     'status.legal': 'LEGAL',
     'status.empty': 'EMPTY',
@@ -816,6 +816,7 @@ const I18N = {
     'warn.transportVehLeg': 'Group {gid}: Light Vehicle load {req}/{cap} — exceeds the transport\'s Light Vehicle capacity.',
     'warn.transportSpe': 'Group {gid}: Special load {req}/{cap} — exceeds the transport\'s Special capacity.',
     'warn.transportSpe2': 'Group {gid}: Special 2 load {req}/{cap} — exceeds the transport\'s Special 2 capacity.',
+	'warn.manySquadsManyTransports': 'Group {gid}: multiple squads combined with multiple transports in the same Group — illegal composition (legal: one squad in many transports, or many squads in one transport).',
     'group.transporter': ' 🚛 transport',
     'group.embarked': ' 🪖 embarked',
     'group.label': 'Group {gid}',
@@ -823,8 +824,8 @@ const I18N = {
     'group.load.vehLourd': '🔺HeavyVeh {req}/{cap}',
     'group.load.veh': '🔶StdVeh {req}/{cap}',
     'group.load.vehLeg': '🔵LightVeh {req}/{cap}',
-    'group.load.spe': '▼Special {req}/{cap}',
-    'group.load.spe2': '<span style="color:#e0791e">⬢</span>Special2 {req}/{cap}',
+    'group.load.spe': '▼Spe 1 {req}/{cap}',
+    'group.load.spe2': '<span style="color:#e0791e">⬢</span>Spe 2 {req}/{cap}',
     'alert.badJsonVersion': 'Unrecognised list file.',
     'alert.someUnitsIgnored': 'Warning: some units from the imported file no longer match the current catalog and were ignored.',
     'alert.jsonReadError': 'Could not read this JSON file: {err}',
@@ -2750,7 +2751,30 @@ function computeWarnings(target, cfg, total, groupsUsed){
 
   });
 
+  // Règle de composition de Groupe (toutes factions) : un Groupe légal est soit
+  // "Une Escouade dans plusieurs Transports", soit "Plusieurs Escouades dans un Transport",
+  // mais jamais "Plusieurs Escouades dans plusieurs Transports".
+  Object.keys(gmap).forEach(gid=>{
+    const entries = roster.filter(r=>r.groupId===gid || r.groupId===parseInt(gid,10));
+    // Les Gates Shaltari sont exclues : elles n'embarquent jamais de cargo au moment de la
+    // construction de liste (voir l'exception isShaltariGate plus haut) et ne participent
+    // donc pas à cet appariement Escouade/Transport classique.
+    const relevant = entries.filter(e=>{
+      const u = UNITS.find(uu=>uu.id===e.unitId);
+      return u && !isShaltariGate(u);
+    });
+    const nTransports = relevant.filter(e=>{
+      const td = TRANSPORT_DATA[e.unitId];
+      return td && (td.capInf>0 || td.capVehLourd>0 || td.capVeh>0 || td.capVehLeg>0 || td.capSpe>0 || td.capSpe2>0);
+    }).length;
+    const nSquads = relevant.length - nTransports;
+    if(nTransports>=2 && nSquads>=2){
+      warnings.push({type:'bad', msg:t('warn.manySquadsManyTransports',{gid:gid})});
+    }
+  });
+
   return warnings;
+
 }
 
 /* ---------------- GLOSSARY RENDER ---------------- */
