@@ -162,10 +162,10 @@
 <body>
 
 <div class="topbar">
-  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.01 / last update : 18/08/2026</span></div>
+  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.02 / last update : 26/08/2026</span></div>
 
   <div class="field"><label data-i18n="label.faction">Faction</label>
-<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge(miss transports)</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
+<select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
   </div>
 
   <div class="field"><label data-i18n="label.gameSize">Taille de partie</label>
@@ -280,6 +280,15 @@ function filterSpecialByVariant(specialStr, variantName){
   const parts = specialStr.split(',').map(s=>s.trim()).filter(Boolean);
   const kept = parts.filter(p => weaponMatchesVariant(p, variantName));
   return kept.length ? kept.join(', ') : '—';
+}
+
+// Vérifie si une règle spéciale nommée (ex: 'Cling') est présente dans la chaîne "special"
+// d'une unité (liste séparée par des virgules, ex: 'Cling, Ev1, UC'). Comparaison insensible
+// à la casse et tolérante aux valeurs numériques accolées (ex: 'Ev1' ne matche pas 'Cling').
+function hasSpecialRule(specialStr, ruleName){
+  if(!specialStr || specialStr==='-' || specialStr==='—') return false;
+  return specialStr.split(',').map(s=>s.trim().toLowerCase())
+    .some(p => p === ruleName.toLowerCase());
 }
 
 function parseStats(u){
@@ -599,7 +608,7 @@ function currentGlossary(){ return LANG==='en' ? GLOSSARY_EN : GLOSSARY; }
 
 const I18N = {
   fr: {
-    'brand.tag': 'V3.01 / last update : 18/08/2026',
+    'brand.tag': 'V3.02 / last update : 26/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Taille de partie',
     'label.targetPoints': 'Points visés',
@@ -620,7 +629,7 @@ const I18N = {
     'glossary.summary': 'Glossaire des règles spéciales (armes / unités / Behemoths)',
     'footnote.text': `Un « Groupe » = une escouade (et son transport dédié le cas échéant). Donnez le même n° de Groupe
       à une escouade et à son transport pour qu'ils comptent comme un seul Groupe. Plafond de points par
-      Groupe : 25% du total visé (V3.01, 3.2). Les Behemoths comptent leur "Group Equivalent" en nombre
+      Groupe : 25% du total visé (V3.02, 3.2). Les Behemoths comptent leur "Group Equivalent" en nombre
       de Groupes consommés (limite max de Groupes) mais restent évalués comme 1 seul Groupe pour le
       plafond de 25%. Colonnes Arc/MA/R/Att/Ac/E = Arc de tir / Move&Attack / Portée / Nb d'attaques /
       Précision / Énergie, telles que publiées sur les stat cards officielles.
@@ -656,6 +665,7 @@ const I18N = {
     'transport.veh': 'Véhicule',
     'transport.vehLight': 'Véhicule Léger',
     'transport.special': 'Spéciale',
+    'transport.special2': 'Spéciale 2',
     'status.legal': 'LÉGALE',
     'status.empty': 'VIDE',
     'status.errors': '{n} ERREUR{s}',
@@ -674,12 +684,13 @@ const I18N = {
     'warn.uniqueOver': '"{name}" (Unique) : {count} pris, max 1.',
     'warn.squadSizeOut': '{name} : taille d\'escouade {size} hors bornes ({min}-{max}).',
     'warn.behemothSquadSize': '{name} : un Behemoth a toujours Squad Size 1.',
-    'warn.allGood': 'Roster conforme aux règles de construction V3.01 (points, Groupes, catégories, Rare/Unique, Behemoths).',
+    'warn.allGood': 'Roster conforme aux règles de construction V3.02 (points, Groupes, catégories, Rare/Unique, Behemoths).',
     'warn.transportInf': 'Groupe {gid} : charge Infanterie {req}/{cap} — dépasse la capacité Infanterie du transport.',
     'warn.transportVeh': 'Groupe {gid} : charge Véhicule Standard {req}/{cap} — dépasse la capacité Véhicule Standard du transport.',
     'warn.transportVehLourd': 'Groupe {gid} : charge Véhicule Lourd {req}/{cap} — dépasse la capacité Véhicule Lourd du transport.',
     'warn.transportVehLeg': 'Groupe {gid} : charge Véhicule Léger {req}/{cap} — dépasse la capacité Véhicule Léger du transport.',
     'warn.transportSpe': 'Groupe {gid} : charge Spéciale {req}/{cap} — dépasse la capacité Spéciale du transport.',
+    'warn.transportSpe2': 'Groupe {gid} : charge Spéciale 2 {req}/{cap} — dépasse la capacité Spéciale 2 du transport.',
     'group.transporter': ' 🚛 transporteur',
     'group.embarked': ' 🪖 embarque',
     'group.label': 'Groupe {gid}',
@@ -688,6 +699,7 @@ const I18N = {
     'group.load.veh': '🔶Véh Std {req}/{cap}',
     'group.load.vehLeg': '🔵Véh Lég {req}/{cap}',
     'group.load.spe': '▼Spé {req}/{cap}',
+    'group.load.spe2': '<span style="color:#e0791e">⬢</span>Spé2 {req}/{cap}',
     'alert.badJsonVersion': 'Fichier de liste non reconnu.',
     'alert.someUnitsIgnored': 'Attention : certaines unités du fichier importé ne correspondent plus au catalogue actuel et ont été ignorées.',
     'alert.jsonReadError': 'Impossible de lire ce fichier JSON : {err}',
@@ -714,14 +726,14 @@ const I18N = {
     'pdf.hdr.weapons': 'Armement',
     'pdf.noWeapons': 'Sans armement',
     'pdf.groupHead': 'Groupe {gid}',
-    'pdf.load.line': 'Inf {reqInf}/{capInf} · VéhLourd {reqVL}/{capVL} · VéhStd {reqV}/{capV} · VéhLeg {reqVLeg}/{capVLeg} · Spé {reqS}/{capS}',
+    'pdf.load.line': 'Inf {reqInf}/{capInf} · VéhLourd {reqVL}/{capVL} · VéhStd {reqV}/{capV} · VéhLeg {reqVLeg}/{capVLeg} · Spé {reqS}/{capS} · Spé2 {reqS2}/{capS2}',
     'pdf.glossaryTitle': 'Définitions des règles spéciales de ce Groupe',
     'pdf.pointsSuffix': 'points',
     'pdf.finalGlossaryTitle': 'Glossaire des règles spéciales de la liste',
     'pdf.consolidateGlossaryToggle': 'Regrouper le glossaire sur une page finale',
   },
   en: {
-    'brand.tag': 'V3.01 / last update : 18/08/2026',
+    'brand.tag': 'V3.02 / last update : 26/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Game size',
     'label.targetPoints': 'Points target',
@@ -742,7 +754,7 @@ const I18N = {
     'glossary.summary': 'Glossary of special rules (weapons / units / Behemoths)',
     'footnote.text': `A "Group" = one squad (and its dedicated transport, if any). Give the same Group #
       to a squad and its transport so they count as a single Group. Points cap per
-      Group: 25% of the target total (V3.01, 3.2). Behemoths count their "Group Equivalent" toward
+      Group: 25% of the target total (V3.02, 3.2). Behemoths count their "Group Equivalent" toward
       the number of Groups consumed (max Group limit) but are still evaluated as a single Group for
       the 25% cap. Arc/MA/R/Att/Ac/E columns = Firing Arc / Move&Attack / Range / Number of attacks /
       Accuracy / Energy, as published on the official stat cards.
@@ -778,6 +790,7 @@ const I18N = {
     'transport.veh': 'Vehicle',
     'transport.vehLight': 'Light Vehicle',
     'transport.special': 'Special',
+    'transport.special2': 'Special 2',
     'status.legal': 'LEGAL',
     'status.empty': 'EMPTY',
     'status.errors': '{n} ERROR{s}',
@@ -796,12 +809,13 @@ const I18N = {
     'warn.uniqueOver': '"{name}" (Unique): {count} taken, max 1.',
     'warn.squadSizeOut': '{name}: squad size {size} out of bounds ({min}-{max}).',
     'warn.behemothSquadSize': '{name}: a Behemoth always has Squad Size 1.',
-    'warn.allGood': 'Roster complies with V3.01 construction rules (points, Groups, categories, Rare/Unique, Behemoths).',
+    'warn.allGood': 'Roster complies with V3.02 construction rules (points, Groups, categories, Rare/Unique, Behemoths).',
     'warn.transportInf': 'Group {gid}: Infantry load {req}/{cap} — exceeds the transport\'s Infantry capacity.',
     'warn.transportVeh': 'Group {gid}: Standard Vehicle load {req}/{cap} — exceeds the transport\'s Standard Vehicle capacity.',
     'warn.transportVehLourd': 'Group {gid}: Heavy Vehicle load {req}/{cap} — exceeds the transport\'s Heavy Vehicle capacity.',
     'warn.transportVehLeg': 'Group {gid}: Light Vehicle load {req}/{cap} — exceeds the transport\'s Light Vehicle capacity.',
     'warn.transportSpe': 'Group {gid}: Special load {req}/{cap} — exceeds the transport\'s Special capacity.',
+    'warn.transportSpe2': 'Group {gid}: Special 2 load {req}/{cap} — exceeds the transport\'s Special 2 capacity.',
     'group.transporter': ' 🚛 transport',
     'group.embarked': ' 🪖 embarked',
     'group.label': 'Group {gid}',
@@ -810,6 +824,7 @@ const I18N = {
     'group.load.veh': '🔶StdVeh {req}/{cap}',
     'group.load.vehLeg': '🔵LightVeh {req}/{cap}',
     'group.load.spe': '▼Special {req}/{cap}',
+    'group.load.spe2': '<span style="color:#e0791e">⬢</span>Special2 {req}/{cap}',
     'alert.badJsonVersion': 'Unrecognised list file.',
     'alert.someUnitsIgnored': 'Warning: some units from the imported file no longer match the current catalog and were ignored.',
     'alert.jsonReadError': 'Could not read this JSON file: {err}',
@@ -836,7 +851,7 @@ const I18N = {
     'pdf.hdr.weapons': 'Weapons',
     'pdf.noWeapons': 'No weapons',
     'pdf.groupHead': 'Group {gid}',
-    'pdf.load.line': 'Inf {reqInf}/{capInf} · HeavyVeh {reqVL}/{capVL} · StdVeh {reqV}/{capV} · LightVeh {reqVLeg}/{capVLeg} · Special {reqS}/{capS}',
+    'pdf.load.line': 'Inf {reqInf}/{capInf} · HeavyVeh {reqVL}/{capVL} · StdVeh {reqV}/{capV} · LightVeh {reqVLeg}/{capVLeg} · Special {reqS}/{capS} · Special2 {reqS2}/{capS2}',
     'pdf.glossaryTitle': 'Special rule definitions for this Group',
     'pdf.pointsSuffix': 'points',
     'pdf.finalGlossaryTitle': 'Roster special rules glossary',
@@ -1071,206 +1086,206 @@ const UNIT_IMAGES = {
    Ces valeurs sont multipliées par la taille d'escouade de l'entrée dans le roster.
 ------------------------------------------------------------- */
 const TRANSPORT_DATA = {};
-Object.keys(UNIT_IMAGES).forEach(id => {TRANSPORT_DATA[id] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};});
-TRANSPORT_DATA['res-mcclellan'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-commandhover'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-fighters'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-mbt'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-technical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-wagon'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-artillerywagon'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-attackheli'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-berserkers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-lifthawkgun'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-mechloader'] = {reqInf:0, reqVehLourd:2, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:true, capExclusive:false};
-TRANSPORT_DATA['res-bombbus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-repairtechnical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-sentry'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-strikehawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:2, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-atilla'] = {reqInf:0, reqVehLourd:3, reqVeh:3, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:true, capExclusive:false};
-TRANSPORT_DATA['res-carryhawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:3, capVeh:0, capVehLeg:2, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-hellhog'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-occupation'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-ordnancebus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-superheavy'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-thunderstorm'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:12, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-drill109'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-drill209'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:18, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-atvs'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-freeriders'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-k9pack'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:1, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:true,capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-columbuswalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-sappers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-tempest'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-theropod'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-battlebus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-jackson'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-k9technical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:1, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-kraken'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-leviathan'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:24, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-lifthawkdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-lifthawktroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:6, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-patton'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-swifthawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['res-explorator'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:12, capVehLourd:6, capVeh:8, capVehLeg:0, capSpe:0, reqEither:false, capEither:true, capExclusive:false};
-TRANSPORT_DATA['res-miningengine'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+Object.keys(UNIT_IMAGES).forEach(id => {TRANSPORT_DATA[id] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};});
+TRANSPORT_DATA['res-mcclellan'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-commandhover'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-fighters'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-mbt'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-technical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-wagon'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-artillerywagon'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-attackheli'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-berserkers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-lifthawkgun'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-mechloader'] = {reqInf:0, reqVehLourd:2, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:true, capExclusive:false};
+TRANSPORT_DATA['res-bombbus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-repairtechnical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-sentry'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-strikehawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:2, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-atilla'] = {reqInf:0, reqVehLourd:3, reqVeh:3, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:true, capExclusive:false};
+TRANSPORT_DATA['res-carryhawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:3, capVeh:0, capVehLeg:2, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-hellhog'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-occupation'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-ordnancebus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-superheavy'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-thunderstorm'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:12, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-drill109'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-drill209'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:18, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-atvs'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-freeriders'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-k9pack'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:1, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:true,capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-columbuswalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-sappers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-tempest'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-theropod'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-battlebus'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-jackson'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-k9technical'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:1, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-kraken'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:6, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-leviathan'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:24, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-lifthawkdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-lifthawktroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:6, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-patton'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-swifthawk'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['res-explorator'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:12, capVehLourd:6, capVeh:8, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:true, capExclusive:false};
+TRANSPORT_DATA['res-miningengine'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
 
-TRANSPORT_DATA['phr-angelos'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:1, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-immortals'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-proteus'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-t1walker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-hecate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-luna'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-medusa'] = {reqInf:2, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-advjetskimmer'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-artillerytank'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-siren'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-supjetskimmer'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-tritonx'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-t3emwalker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-tiamat'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-t2heavywalker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-battlescorpion'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-commandscorpion'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-frontierwalker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-lokheira'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-mercuryscout'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-longreach'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-airsuperiority'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-columbuswalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-strikewalker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-scoutwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-valkyrie'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-juno'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-neptune'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-njord'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-poseidon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-tritonlightdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:2, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-tritonlighttroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-atlasquad'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-type7grandwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-type6grandwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:8, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['phr-venusdrone'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-angelos'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:1, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-immortals'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-proteus'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-t1walker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-hecate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-luna'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-medusa'] = {reqInf:2, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-advjetskimmer'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-artillerytank'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-siren'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-supjetskimmer'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-tritonx'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-t3emwalker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-tiamat'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-t2heavywalker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-battlescorpion'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-commandscorpion'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-frontierwalker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-lokheira'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-mercuryscout'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-longreach'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-airsuperiority'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-columbuswalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-strikewalker'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-scoutwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-valkyrie'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-juno'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-neptune'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-njord'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-poseidon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-tritonlightdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:2, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-tritonlighttroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-atlasquad'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-type7grandwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-type6grandwalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:8, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['phr-venusdrone'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
 
-TRANSPORT_DATA['shal-bravewarsuits'] = {reqInf:2, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-pungari'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-battlestrider'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-maingravtank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-warstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-firedrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-obeliskionspire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-gunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-supportgravtank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-supportwarstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-bravewarsuits'] = {reqInf:2, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-pungari'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-battlestrider'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-maingravtank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-warstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-firedrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-obeliskionspire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-gunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-supportgravtank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-supportwarstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
 
 //TODO
-TRANSPORT_DATA['shal-tegugatestrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:true, capExclusive:true};
+TRANSPORT_DATA['shal-tegugatestrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:4, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:true, capExclusive:true};
 
-TRANSPORT_DATA['shal-totemshieldspire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-adamahgungate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:9, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-assaultwarsuits'] = {reqInf:2, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-frostdrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-gunstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-heavygravtank'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-heavywarsuits'] = {reqInf:2, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:true, capExclusive:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-interceptor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-lightgravtank'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-scoutstrider'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-edengate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-gaiagate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-haventerragate'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-spiritgate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shal-ziongatespire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shaltari-dragon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['shaltari-siegestrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:8, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-totemshieldspire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-adamahgungate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:9, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-assaultwarsuits'] = {reqInf:2, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-frostdrake'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-gunstrider'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-heavygravtank'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-heavywarsuits'] = {reqInf:2, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:true, capExclusive:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-interceptor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-lightgravtank'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-scoutstrider'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-edengate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-gaiagate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-haventerragate'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-spiritgate'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shal-ziongatespire'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shaltari-dragon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['shaltari-siegestrider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:8, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
 
-TRANSPORT_DATA['bio-grievancegenitorark'] = {reqInf:0, reqVehLourd:4, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:12, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-thornlightskimmer'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-tuskmainbattleskimmer'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-surgegunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-tangentsupportskimmer'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-silenceheavygunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-gyroaerogenitor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:8, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-datastrikedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-devicedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:8, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-digitlightdropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-drones'] = {reqInf:4, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['bio-hulks'] = {reqInf:6, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-grievancegenitorark'] = {reqInf:0, reqVehLourd:4, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:12, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-thornlightskimmer'] = {reqInf:0, reqVehLourd:1, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-tuskmainbattleskimmer'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-surgegunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-tangentsupportskimmer'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-silenceheavygunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-gyroaerogenitor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:8, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-datastrikedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:4, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-devicedropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:8, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-digitlightdropship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-drones'] = {reqInf:4, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['bio-hulks'] = {reqInf:6, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
 
 /* ---------------- TRANSPORT_DATA : entrées manquantes à compléter ---------------- */
-TRANSPORT_DATA['ucm-legionnaireweapon'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-legionnaires'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-polecat'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-heavybuggy'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-lightbattletank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-mainbattletank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-falcon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-ferrumdronebase'] = {reqInf:0, reqVehLourd:18, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-osprey'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-armouredcommand'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-artilleryvehicle'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-howitzer'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-heavybattlemech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-lightbattlemech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-dominionbomber'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-eagle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-flail'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-hazardsuits'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-seraphim'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-heavytank'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-supergunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-superheavytank'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-archangel'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-harrier'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-praetoriansnipers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-praetorianspecops'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-starsprite'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-columbuswalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-troopbuggy'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:1, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-wolverine'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-albatross'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-bear'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:3, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-condor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-crow'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-ravenlight'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:2, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-raventroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-vulturedrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:4, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['ucm-vulturetroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-legionnaireweapon'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-legionnaires'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-polecat'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-heavybuggy'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-lightbattletank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-mainbattletank'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-falcon'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-ferrumdronebase'] = {reqInf:0, reqVehLourd:18, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-osprey'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-armouredcommand'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-artilleryvehicle'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-howitzer'] = {reqInf:0, reqVehLourd:0, reqVeh:2, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-heavybattlemech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-lightbattlemech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-dominionbomber'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-eagle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-flail'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-hazardsuits'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-seraphim'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-heavytank'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-supergunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-superheavytank'] = {reqInf:0, reqVehLourd:6, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-archangel'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-harrier'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-praetoriansnipers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-praetorianspecops'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-starsprite'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-columbuswalker'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-troopbuggy'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:1, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-wolverine'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-albatross'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-bear'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:3, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-condor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-crow'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:2, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-ravenlight'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:2, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-raventroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-vulturedrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:4, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['ucm-vulturetroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:4, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
 
 
-TRANSPORT_DATA['scourge-deathmech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scourge-terrormech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-despot'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-battlebeetle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-battleskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-lightskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-warriors'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-commandarthropod'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-commandbarge'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-gunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-supportbeetle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-supportcrawler'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-demolishers'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-evicerators'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-gunskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-heavyskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-mobileordnance'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-ordnancebarge'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-subjugator'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-razorworms'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-chamelopod'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-drone'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-interceptor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-screamer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-spider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-vampire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-despoilerdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-harbingerdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-harbingertroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-intruderdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-intrudertroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-invaderapc'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
-TRANSPORT_DATA['scg-marauderdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scourge-deathmech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scourge-terrormech'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-despot'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:4, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-battlebeetle'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-battleskimmer'] = {reqInf:0, reqVehLourd:2, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-lightskimmer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:1, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-warriors'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-commandarthropod'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-commandbarge'] = {reqInf:0, reqVehLourd:0, reqVeh:1, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-gunship'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-supportbeetle'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-supportcrawler'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:4, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-demolishers'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-evicerators'] = {reqInf:1, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-gunskimmer'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-heavyskimmer'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:1, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-mobileordnance'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-ordnancebarge'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-subjugator'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-razorworms'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:1, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-chamelopod'] = {reqInf:0, reqVehLourd:0, reqVeh:3, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-drone'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-interceptor'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-screamer'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:2, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-spider'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:1, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-vampire'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-despoilerdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:18, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-harbingerdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:3, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-harbingertroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:3, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:4, capSpe2:0, reqEither:false, capEither:false, capExclusive:true};
+TRANSPORT_DATA['scg-intruderdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:4, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-intrudertroop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:2, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-invaderapc'] = {reqInf:0, reqVehLourd:3, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:3, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
+TRANSPORT_DATA['scg-marauderdrop'] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:6, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
 
 
 
@@ -2322,20 +2337,26 @@ function transportLoadMap(){
     {key:'vehLourd',  reqField:'reqVehLourd', capField:'capVehLourd'},
     {key:'veh',       reqField:'reqVeh',      capField:'capVeh'},
     {key:'vehLeg',    reqField:'reqVehLeg',   capField:'capVehLeg'},
-    {key:'spe',       reqField:'reqSpe',      capField:'capSpe'}
+    {key:'spe',       reqField:'reqSpe',      capField:'capSpe'},
+    {key:'spe2',      reqField:'reqSpe2',     capField:'capSpe2'}
   ];
 
   // 1er passage : cumul des BESOINS (reqX) de chaque groupe — gère reqEither et capExclusive
   roster.forEach(r=>{
     const unit = UNITS.find(uu=>uu.id===r.unitId);
-    if(!map[r.groupId]) map[r.groupId] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
+    if(!map[r.groupId]) map[r.groupId] = {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0};
 
     // Shaltari exception (official Stat Cards, 'Gate' rule): Gates are always taken with NO
     // units aboard at list-building time — Squads Embark/Disembark from ANY compatible Gate
     // in-game via Holding, so there is no per-Group req<=cap pairing to validate for them.
     if(unit && unit.faction==='Shaltari' && !isShaltariGate(unit)) return;
 
-    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+    // Cling exception (Scourge special rule): a Squad with Cling may be Embarked aboard ANY
+    // Aircraft without Cling (Transport or not) that has at least as much DP — Transport
+    // Symbols are ignored. So a Cling Squad never needs its own req<=cap pairing validated.
+    if(unit && hasSpecialRule(unit.special, 'Cling')) return;
+
+    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
 
     if(td.capExclusive){
       // le mode CHOISI est auto-couvert par sa propre capacité (l'unité s'embarque elle-même dans ce mode-là) ;
@@ -2355,6 +2376,7 @@ function transportLoadMap(){
       else if(r.transportMode==='veh') map[r.groupId].reqVeh += (td.reqVeh||0) * r.squadSize;
       else if(r.transportMode==='vehLeg') map[r.groupId].reqVehLeg += (td.reqVehLeg||0) * r.squadSize;
       else if(r.transportMode==='spe') map[r.groupId].reqSpe += (td.reqSpe||0) * r.squadSize;
+      else if(r.transportMode==='spe2') map[r.groupId].reqSpe2 += (td.reqSpe2||0) * r.squadSize;
       else map[r.groupId].reqInf += (td.reqInf||0) * r.squadSize;
     } else {
       map[r.groupId].reqInf += (td.reqInf||0) * r.squadSize;
@@ -2362,12 +2384,13 @@ function transportLoadMap(){
       map[r.groupId].reqVeh += (td.reqVeh||0) * r.squadSize;
       map[r.groupId].reqVehLeg += (td.reqVehLeg||0) * r.squadSize;
       map[r.groupId].reqSpe += (td.reqSpe||0) * r.squadSize;
+      map[r.groupId].reqSpe2 += (td.reqSpe2||0) * r.squadSize;
     }
   });
 
   // 2e passage : cumul des CAPACITÉS (capX), en résolvant capEither / capExclusive
   roster.forEach(r=>{
-    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, reqEither:false, capEither:false, capExclusive:false};
+    const td = TRANSPORT_DATA[r.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0, reqEither:false, capEither:false, capExclusive:false};
     const g = map[r.groupId];
 
     if(td.capExclusive){
@@ -2392,6 +2415,7 @@ function transportLoadMap(){
       g.capVeh += (td.capVeh||0) * r.squadSize;
       g.capVehLeg += (td.capVehLeg||0) * r.squadSize;
       g.capSpe += (td.capSpe||0) * r.squadSize;
+      g.capSpe2 += (td.capSpe2||0) * r.squadSize;
     }
   });
 
@@ -2568,7 +2592,8 @@ const unit = UNITS.find(u=>u.id===entry.unitId);
         {key:'vehLourd', req:'reqVehLourd', label:t('transport.vehHeavy')},
         {key:'veh',      req:'reqVeh',      label:t('transport.veh')},
         {key:'vehLeg',   req:'reqVehLeg',   label:t('transport.vehLight')},
-        {key:'spe',      req:'reqSpe',      label:t('transport.special')}
+        {key:'spe',      req:'reqSpe',      label:t('transport.special')},
+        {key:'spe2',     req:'reqSpe2',     label:t('transport.special2')}
       ];
       const availableTypes = TRANSPORT_TYPES.filter(t => (td[t.req]||0) > 0);
 
@@ -2592,7 +2617,8 @@ const unit = UNITS.find(u=>u.id===entry.unitId);
         {key:'vehLourd', field:'capVehLourd', label:t('transport.vehHeavy')},
         {key:'veh',      field:'capVeh',      label:t('transport.veh')},
         {key:'vehLeg',   field:'capVehLeg',   label:t('transport.vehLight')},
-        {key:'spe',      field:'capSpe',      label:t('transport.special')}
+        {key:'spe',      field:'capSpe',      label:t('transport.special')},
+        {key:'spe2',     field:'capSpe2',     label:t('transport.special2')}
       ];
       const availableCapTypes = CAP_TYPES.filter(t => (td[t.field]||0) > 0);
 
@@ -2720,6 +2746,7 @@ function computeWarnings(target, cfg, total, groupsUsed){
     if(load.reqVehLourd>load.capVehLourd) warnings.push({type:'bad', msg:t('warn.transportVehLourd',{gid:gid, req:load.reqVehLourd, cap:load.capVehLourd})});
     if(load.reqVehLeg>load.capVehLeg) warnings.push({type:'bad', msg:t('warn.transportVehLeg',{gid:gid, req:load.reqVehLeg, cap:load.capVehLeg})});
     if(load.reqSpe>load.capSpe) warnings.push({type:'bad', msg:t('warn.transportSpe',{gid:gid, req:load.reqSpe, cap:load.capSpe})});
+    if(load.reqSpe2>load.capSpe2) warnings.push({type:'bad', msg:t('warn.transportSpe2',{gid:gid, req:load.reqSpe2, cap:load.capSpe2})});
 
   });
 
@@ -2800,33 +2827,36 @@ function renderGroupSummary(){
   let anyOver = false;
 
   box.innerHTML = Object.entries(groups).map(([gid, entries])=>{
-    const load = tmap[gid] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
+    const load = tmap[gid] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0};
     const overInf = load.reqInf > load.capInf;
 	const overSpe = load.reqSpe > load.capSpe;
+	const overSpe2 = load.reqSpe2 > load.capSpe2;
 	const overVehLourd = load.reqVehLourd > load.capVehLourd;
     const overVeh = load.reqVeh > load.capVeh;
 	const overVehLeg = load.reqVehLeg > load.capVehLeg;
 	const equalInf = load.reqInf == load.capInf;
 	const equalSpe = load.reqSpe == load.capSpe;
+	const equalSpe2 = load.reqSpe2 == load.capSpe2;
 	const equalVehLourd = load.reqVehLourd == load.capVehLourd;
     const equalVeh = load.reqVeh == load.capVeh;
 	const equalVehLeg = load.reqVehLeg == load.capVehLeg;
-    const status = (overInf||overVeh||overSpe||overVehLourd||overVehLeg) ? 'bad' : 'ok';
+    const status = (overInf||overVeh||overSpe||overSpe2||overVehLourd||overVehLeg) ? 'bad' : 'ok';
     if(status==='bad') anyOver = true;
     const members = entries.map(e=>{
       const u = UNITS.find(uu=>uu.id===e.unitId);
-      const td = TRANSPORT_DATA[e.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
-      const isTransport = (td.capInf>0 || td.capVehLourd>0 || td.capVeh>0 || td.capVehLeg>0 || td.capSpe>0 );
-      const tag = isTransport ? t('group.transporter') : ((td.reqInf>0||td.reqVehLourd>0||td.reqVeh>0||td.reqVehLeg>0||td.reqSpe>0) ? t('group.embarked') : '');
+      const td = TRANSPORT_DATA[e.unitId] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0};
+      const isTransport = (td.capInf>0 || td.capVehLourd>0 || td.capVeh>0 || td.capVehLeg>0 || td.capSpe>0 || td.capSpe2>0 );
+      const tag = isTransport ? t('group.transporter') : ((td.reqInf>0||td.reqVehLourd>0||td.reqVeh>0||td.reqVehLeg>0||td.reqSpe>0||td.reqSpe2>0) ? t('group.embarked') : '');
       return `<div class="gb-member${isTransport?' transport':''}">${u.name} ×${e.squadSize}${tag}</div>`;
     }).join('');
-    const loadHtml = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe) ? `
+    const loadHtml = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe||load.capSpe2||load.reqSpe2) ? `
       <div class="gb-load">
         <span class="${overInf ? 'over' : (equalInf ? 'equal' : '')}">${t('group.load.inf',{req:load.reqInf, cap:load.capInf})}</span>
         <span class="${overVehLourd ? 'over' : (equalVehLourd ? 'equal' : '')}">${t('group.load.vehLourd',{req:load.reqVehLourd, cap:load.capVehLourd})}</span>
 		<span class="${overVeh ? 'over' : (equalVeh ? 'equal' : '')}">${t('group.load.veh',{req:load.reqVeh, cap:load.capVeh})}</span>
 		<span class="${overVehLeg ? 'over' : (equalVehLeg ? 'equal' : '')}">${t('group.load.vehLeg',{req:load.reqVehLeg, cap:load.capVehLeg})}</span>
 		<span class="${overSpe ? 'over' : (equalSpe ? 'equal' : '')}">${t('group.load.spe',{req:load.reqSpe, cap:load.capSpe})}</span>
+		<span class="${overSpe2 ? 'over' : (equalSpe2 ? 'equal' : '')}">${t('group.load.spe2',{req:load.reqSpe2, cap:load.capSpe2})}</span>
       </div>` : '';
     return `<div class="group-block ${status}"><h4>${t('group.label',{gid:gid})}</h4>${members}${loadHtml}</div>`;
   }).join('');
@@ -2913,14 +2943,15 @@ const groupBlocksHtml = Object.entries(groups).map(([gid, entries], idx)=>{
       const u = UNITS.find(uu=>uu.id===e.unitId);
       return u.special && u.special!=='—' && u.special!=='-';
     });
-    const load = tmap[gid] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0};
+    const load = tmap[gid] || {reqInf:0, reqVehLourd:0, reqVeh:0, reqVehLeg:0, reqSpe:0, reqSpe2:0, capInf:0, capVehLourd:0, capVeh:0, capVehLeg:0, capSpe:0, capSpe2:0};
     const overInf = load.reqInf > load.capInf;
 	const overSpe = load.reqSpe > load.capSpe;
+	const overSpe2 = load.reqSpe2 > load.capSpe2;
 	const overVehLourd = load.reqVehLourd > load.capVehLourd;
     const overVeh = load.reqVeh > load.capVeh;
 	const overVehLeg = load.reqVehLeg > load.capVehLeg;
     const bgColor = GROUP_PALETTE[idx % GROUP_PALETTE.length];
-    const borderColor = (overInf||overVeh||overSpe||overVehLourd||overVehLeg) ? '#d33' : '#bbb';
+    const borderColor = (overInf||overVeh||overSpe||overSpe2||overVehLourd||overVehLeg) ? '#d33' : '#bbb';
 
     const groupGlossary = new Map(); // term -> def, dédupliqué pour ce groupe (mode par défaut)
 
@@ -2956,8 +2987,8 @@ ${hasAnySpecial ? `<td class="col-special">${filteredSpecial}</td>` : ''}
       </tr>`;
     }).join('');
 
-    const loadLine = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe)
-      ? t('pdf.load.line',{reqInf:load.reqInf, capInf:load.capInf, reqVL:load.reqVehLourd, capVL:load.capVehLourd, reqV:load.reqVeh, capV:load.capVeh, reqVLeg:load.reqVehLeg, capVLeg:load.capVehLeg, reqS:load.reqSpe, capS:load.capSpe}) : '';
+    const loadLine = (load.capInf||load.reqInf||load.capVehLourd||load.reqVehLourd||load.capVeh||load.reqVeh||load.capVehLeg||load.reqVehLeg||load.capSpe||load.reqSpe||load.capSpe2||load.reqSpe2)
+      ? t('pdf.load.line',{reqInf:load.reqInf, capInf:load.capInf, reqVL:load.reqVehLourd, capVL:load.capVehLourd, reqV:load.reqVeh, capV:load.capVeh, reqVLeg:load.reqVehLeg, capVLeg:load.capVehLeg, reqS:load.reqSpe, capS:load.capSpe, reqS2:load.reqSpe2, capS2:load.capSpe2}) : '';
 
     const glossaryHtml = groupGlossary.size ? `
       <table class="pdf-group-glossary">
