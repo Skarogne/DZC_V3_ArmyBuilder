@@ -162,7 +162,7 @@
 <body>
 
 <div class="topbar">
-  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.02 / last update : 26/08/2026</span></div>
+  <div class="brand">⛛ DZC ROSTER <span class="tag" data-i18n="brand.tag">V3.02 / last update : 28/08/2026</span></div>
 
   <div class="field"><label data-i18n="label.faction">Faction</label>
 <select id="factionSelect"><option value="PHR">PHR</option><option value="Resistance">Resistance</option><option value="UCM">UCM</option><option value="Scourge">Scourge</option><option value="Shaltari">Shaltari</option><option value="Bioficer">Bioficer</option></select>
@@ -430,7 +430,7 @@ const GLOSSARY = [
 ["Capacitors: X","Peut recevoir un bonus temporaire via le Gear 'Weapons Capacitors' du Behemoth."],
 ["Disrupt","Ajoute un jet de Systems Damage supplémentaire non modifiable si l'arme blesse un Behemoth."],
 ["Razorworm Pod / Particle","Effets spécifiques au profil d'arme concerné — se référer au texte de l'unité."],
-["Skimmer","Déjà utilisé par PHR/Resistance mais absent du glossaire — l'unité peut survoler eau/terrain accidenté à sa vitesse normale."],
+["Skimmer","L'unité peut survoler eau/terrain accidenté à sa vitesse normale."],
 ["Strong","L'unité compte double pour déterminer si elle est mise en déroute par pertes lors des tests de moral d'escouade."],
 ["Cling","Une escouade avec Cling peut être Embarquée sur n'importe quel Aéronef (même sans capacité de Transport ni Cling) ayant au moins autant de DP total qu'elle ; les symboles de Transport sont ignorés. Une fois débarquée, elle ne peut plus être ré-embarquée."],
 ["Plasma Generator X\"","Les armes amies contenant « plasma » dans leur nom gagnent +1E si elles attaquent à moins de X\" de cette unité. Non cumulable avec un autre Plasma Generator ; sans effet sur les armes des Fast Movers."],
@@ -563,7 +563,7 @@ const GLOSSARY_EN = [
 ["Capacitors: X","Can receive a temporary bonus via the Behemoth's 'Weapons Capacitors' Gear."],
 ["Disrupt","Adds an extra, unmodifiable Systems Damage roll if the weapon damages a Behemoth."],
 ["Razorworm Pod / Particle","Effects specific to the weapon profile in question — refer to the unit's text."],
-["Skimmer","Already used by PHR/Resistance but missing from the glossary — the unit can fly over water/rough terrain at its normal speed."],
+["Skimmer","The unit can fly over water/rough terrain at its normal speed."],
 ["Strong","The unit counts double when determining whether the squad is routed by casualties during morale tests."],
 ["Cling","A squad with Cling can be Embarked on any Aircraft (even one without Transport capacity or Cling) that has at least as many total DP as it does; Transport symbols are ignored. Once disembarked, it can no longer re-embark."],
 ["Plasma Generator X\"","Friendly weapons containing 'plasma' in their name get +1E if they attack within X\" of this unit. Doesn't stack with another Plasma Generator; has no effect on Fast Movers' weapons."],
@@ -607,7 +607,7 @@ function currentGlossary(){ return LANG==='en' ? GLOSSARY_EN : GLOSSARY; }
 
 const I18N = {
   fr: {
-    'brand.tag': 'V3.02 / last update : 26/08/2026',
+    'brand.tag': 'V3.02 / last update : 28/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Taille de partie',
     'label.targetPoints': 'Points visés',
@@ -733,7 +733,7 @@ const I18N = {
     'pdf.consolidateGlossaryToggle': 'Regrouper le glossaire sur une page finale',
   },
   en: {
-    'brand.tag': 'V3.02 / last update : 26/08/2026',
+    'brand.tag': 'V3.02 / last update : 28/08/2026',
     'label.faction': 'Faction',
     'label.gameSize': 'Game size',
     'label.targetPoints': 'Points target',
@@ -2710,18 +2710,15 @@ function computeWarnings(target, cfg, total, groupsUsed){
     const cap = distinctShaltariNonGateNonAircraft ? Math.min(stdCap, 250) : stdCap;
     if(pts>cap) warnings.push({type:'bad', msg:t('warn.groupOverCap',{gid:gid, pts:fmt(pts), cap:fmt(Math.floor(cap))})});
 
-    // Shaltari special rule: only non-Gate, non-Aircraft Squads may be merged into a shared,
-    // transport-less multi-Squad Group. A group containing an Aux Gate (a real Auxiliary
-    // Transport carrying its own cargo Squad, per rule 3.2.4.3) is a different, legitimate
-    // case and is not affected by this restriction.
-    const hasAuxGateOrGate = entries.some(e=>{
-      const u = UNITS.find(uu=>uu.id===e.unitId);
-      return u && (isShaltariGate(u) || (u.special||'').includes('Aux Gate'));
-    });
+    // Shaltari special rule (ruling confirmed by Alex/TTC): a multi-Squad Group can never
+    // contain an Aircraft, with NO exception for Aux Gates. A ground Aux Gate may join a
+    // Group with other ground non-Gate Squads, but an Aircraft Aux Gate can never be grouped
+    // with anything — it must always activate alone. Real Gates are never part of a Group at
+    // all, so they never trigger this check in the first place.
     const isMultiSquad = entries.length>=2;
     const allShaltari = entries.length>0 && entries.every(e=>{ const u = UNITS.find(uu=>uu.id===e.unitId); return u && u.faction==='Shaltari'; });
     const hasAircraft = entries.some(e=>{ const u = UNITS.find(uu=>uu.id===e.unitId); return u && u.type.startsWith('Aircraft'); });
-    if(allShaltari && isMultiSquad && !hasAuxGateOrGate && hasAircraft){
+    if(allShaltari && isMultiSquad && hasAircraft){
       warnings.push({type:'bad', msg:t('warn.shaltariAircraftMultiGroup',{gid:gid})});
     }
   });
